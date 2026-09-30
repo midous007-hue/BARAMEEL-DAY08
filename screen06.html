@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — ALEXANDRIA</title>
-<link rel="stylesheet" href="./styles.css?v=20261001-21.3"><script src="./config.js?v=20261001-21.3"></script>
+<link rel="stylesheet" href="./styles.css?v=20261001-21.4"><script src="./config.js?v=20261001-21.4"></script>
 <style>#imagePreload{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}</style>
 </head>
 <body>
 <main class="stage collection-stage">
   <img class="base" src="./assets/screen06-puzzle.webp" alt="ALEXANDRIA Collection">
   <button id="back" class="collection-back" aria-label="Back"></button>
-  <select id="select" class="collection-select" aria-label="Select collection"><option value="collection01">ALEXANDRIA</option></select>
+  <select id="select" class="collection-select" aria-label="Select collection"><option value="collection01">ALEXANDRIA</option></select><div id="collectionName" class="collection-name" aria-hidden="true">ALEXANDRIA</div>
   <div id="heroGrid" class="hero-grid"></div>
   <div id="pointsBadge" class="points-badge common"><span id="pointsNumber" class="points-number">0</span></div>
   <div id="rewardFlash" class="reward-flash" aria-hidden="true"><img id="rewardFlashImage" class="reward-flash-image" alt=""></div>
@@ -22,21 +22,22 @@
   <div id="imagePreload"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261001-21.3"></script>
-<script src="./barameel-v205-fix.js?v=20261001-21.3"></script>
+<script src="./app.js?v=20261001-21.4"></script>
+<script src="./barameel-v205-fix.js?v=20261001-21.4"></script>
 <script>
 (async()=>{
   const cfg=await BR.fetchCollection('collection01');
+  collectionName.textContent=String(cfg.displayName||'ALEXANDRIA').toUpperCase();
   const rewardFlash=document.getElementById('rewardFlash'),rewardFlashImage=document.getElementById('rewardFlashImage');
-  const rewardFlashAssets={SUPER:'./assets/rewards/reward-super.webp?v=20261001-21.3',AMAZING:'./assets/rewards/reward-amazing.webp?v=20261001-21.3',SPECTACULAR:'./assets/rewards/reward-spectacular.webp?v=20261001-21.3'};
+  const rewardFlashAssets={SUPER:'./assets/rewards/reward-super.webp?v=20261001-21.4',AMAZING:'./assets/rewards/reward-amazing.webp?v=20261001-21.4',SPECTACULAR:'./assets/rewards/reward-spectacular.webp?v=20261001-21.4'};
   Object.values(rewardFlashAssets).forEach(src=>{const i=new Image();i.decoding='async';i.src=src});
-  const hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs'),pointsBadge=document.getElementById('pointsBadge'),pointsNumber=document.getElementById('pointsNumber'),jackpotFlash=document.getElementById('jackpotFlash'),jackpotWord=document.getElementById('jackpotWord'),select=document.getElementById('select'),completeFlash=document.getElementById('completeFlash');
+  const hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs'),pointsBadge=document.getElementById('pointsBadge'),pointsNumber=document.getElementById('pointsNumber'),jackpotFlash=document.getElementById('jackpotFlash'),jackpotWord=document.getElementById('jackpotWord'),select=document.getElementById('select'),collectionName=document.getElementById('collectionName'),completeFlash=document.getElementById('completeFlash');
   let handoff=null;try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
   const params=new URLSearchParams(location.search);
   const requestedImage=params.get('image')||handoff?.image_id||handoff?.image||handoff?.reward?.image_id||handoff?.reward?.image||BR.state?.lastReward?.image_id||'image01';
   const cache=new Map();
   try{await BR.syncPlayer()}catch{}
-  function url(file){if(!file)return '';let s=String(file).replace(/^\.\//,'');if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s))s=s.replace(/\.png$/i,'.webp');return './'+s+'?v=20261001-21.3'}
+  function url(file){if(!file)return '';let s=String(file).replace(/^\.\//,'');if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s))s=s.replace(/\.png$/i,'.webp');return './'+s+'?v=20261001-21.4'}
   function load(file,priority='low'){const u=url(file);if(!u)return Promise.resolve(null);if(cache.has(u))return cache.get(u);const p=new Promise(resolve=>{const img=new Image();img.decoding='async';img.loading='eager';try{img.fetchPriority=priority}catch{}img.onload=async()=>{try{await img.decode()}catch{}resolve(img)};img.onerror=()=>resolve(null);img.src=u});cache.set(u,p);return p}
   function crop(el,p){el.style.backgroundSize='300% 300%';el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`;el.style.backgroundRepeat='no-repeat'}
   function rarityFor(im,n){return String(im.pieces[n-1]?.rarity||'COMMON').toUpperCase()}
@@ -51,8 +52,8 @@
   }
   // Exact outer card bounds measured from the supplied 954×1649 artwork.
   const pos=[
-    [2.83,75.14,18.24,10.07],[22.01,75.08,18.24,10.13],[41.20,75.14,17.93,10.07],[60.27,75.08,18.03,10.13],[79.46,75.08,18.13,10.13],
-    [2.83,85.63,18.24,10.07],[22.01,85.63,18.24,10.13],[41.20,85.63,17.93,10.13],[60.27,85.63,18.03,10.13],[79.46,85.63,18.13,10.13]
+    [2.725,75.015,17.610,10.249],[21.698,75.015,17.715,10.249],[40.671,75.015,17.715,10.249],[59.748,75.015,17.925,10.249],[78.826,75.015,17.715,10.249],
+    [2.725,85.506,17.610,10.249],[21.698,85.506,17.715,10.249],[40.671,85.506,17.715,10.249],[59.748,85.506,17.925,10.249],[78.826,85.506,17.715,10.249]
   ];
   const jobs=[];
   cfg.images.forEach((im,idx)=>{
@@ -80,15 +81,15 @@
   function jackpotWordFor(rarity){
     return ({COMMON:'SUPER',UNCOMMON:'AMAZING',RARE:'SPECTACULAR',EPIC:'JACKPOT',LEGENDARY:'JACKPOT',MYTHIC:'JACKPOT'})[String(rarity||'COMMON').toUpperCase()]||'SUPER';
   }
-  function rewardFlashFor(rarity){
-    const r=String(rarity||'COMMON').toUpperCase();
-    if(r==='COMMON')return 'SUPER';
-    if(r==='UNCOMMON')return 'AMAZING';
-    if(r==='RARE')return 'SPECTACULAR';
-    return 'JACKPOT';
+  function rewardFlashFor(rarity,points){
+    const value=Number(points)||0;
+    if(value>=60000)return 'JACKPOT';
+    if(value>=40000)return 'SPECTACULAR';
+    if(value>=20000)return 'AMAZING';
+    return 'SUPER';
   }
-  function showRewardFlash(rarity){
-    const word=rewardFlashFor(rarity);
+  function showRewardFlash(rarity,points){
+    const word=rewardFlashFor(rarity,points);
     if(word==='JACKPOT'){
       jackpotWord.textContent='JACKPOT';
       jackpotFlash.classList.remove('on');void jackpotFlash.offsetWidth;jackpotFlash.classList.add('on');
@@ -98,7 +99,7 @@
     if(!src)return;
     rewardFlashImage.src=src;
     rewardFlashImage.alt=word;
-    rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
+    rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');setTimeout(()=>rewardFlash.classList.remove('on'), word==='SUPER'?720:word==='AMAZING'?860:980);
   }
   async function revealReward(points,rarity){
     const safePoints=Math.max(10000,Number(points)||10000);
@@ -112,7 +113,7 @@
     await animateNumber(safePoints,Math.max(900,Number(spec.duration)||1400));
     pointsBadge.classList.remove('revealing');
     if(['EPIC','LEGENDARY','MYTHIC'].includes(String(spec.rarity).toUpperCase())&&BR.playJackpot)BR.playJackpot(spec.rarity,.02);
-    showRewardFlash(spec.rarity);
+    showRewardFlash(spec.rarity,safePoints);
   }
   function normalizeHandoff(h){
     if(!h)return null;

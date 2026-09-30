@@ -1,6 +1,6 @@
-BARAMEEL V21.3 — SCREEN 06 FLASH / POINTS REFINEMENT
+BARAMEEL V21.4 — SCREEN 06 FLASH / POINTS REFINEMENT
 
-This build is based on the stable V21.2 Screen 06 build.
+This build is based on the stable V21.4 Screen 06 build.
 
 Changes in this build:
 - Removed the CSS yellow star badge behind the live points number. The artwork's own STAR = POINTS = crown graphic remains untouched.
@@ -14,7 +14,7 @@ Changes in this build:
 - Flash images are preloaded and use a short screen/mirror-like brightness animation.
 - EPIC / LEGENDARY / MYTHIC finish with the JACKPOT flash and jackpot arcade sound after the count-up.
 - Corrected all 10 lower thumbnail card positions against the supplied 954×1649 artwork. The internal 3×3 crop stays inside each gold card frame.
-- Large 3×3 hero geometry is preserved from V21.2 because it matches the supplied artwork.
+- Large 3×3 hero geometry is preserved from V21.4 because it matches the supplied artwork.
 - MY REWARDS / SCAN MORE hotspots remain aligned to the new artwork.
 - No Supabase schema/function change is required for this build.
 

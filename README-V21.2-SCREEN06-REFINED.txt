@@ -1,4 +1,4 @@
-BARAMEEL V21.2 — SCREEN 06 REFINED
+BARAMEEL V21.4 — SCREEN 06 REFINED
 
 This build is based on the stable V21.1 interaction build.
 
@@ -13,7 +13,7 @@ SCREEN 06 changes:
 - Added rarity-aware count-up animation and arcade counter sound. Higher point values use longer/faster pitch escalation.
 - Added SUPER / AMAZING / SPECTACULAR / JACKPOT star flash. EPIC/LEGENDARY/MYTHIC use the stronger jackpot audio.
 - Preserved the approved character-specific arcade selection sounds and the existing Supabase / Universal QR / Auto Ticket architecture.
-- Updated collection cache-busting to V21.2.
+- Updated collection cache-busting to V21.4.
 
 UPLOAD:
 Replace the code files at repo root and keep the existing production assets/masters if they are already present. This ZIP includes the new screen06 artwork and the existing runtime assets included in V21.1.

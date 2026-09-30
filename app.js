@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261001-21.3';
+  const VERSION = '20261001-21.4';
   const STORAGE = 'barameel.world.player.v20.4';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -189,7 +189,7 @@
   async function fetchCollection(id='collection01'){
     const key='barameel.collection.'+id+'.v21.2';
     try{const c=sessionStorage.getItem(key);if(c)return JSON.parse(c);}catch{}
-    const r=await fetch(`./assets/collections/${id}/collection.json?v=20261001-21.3`,{cache:'no-store'});
+    const r=await fetch(`./assets/collections/${id}/collection.json?v=20261001-21.4`,{cache:'no-store'});
     if(!r.ok)throw Error('COLLECTION_UNAVAILABLE');
     const d=await r.json();try{sessionStorage.setItem(key,JSON.stringify(d));}catch{}return d;
   }
