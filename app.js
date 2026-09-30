@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261001-20.9';
+  const VERSION = '20261001-21.0';
   const STORAGE = 'barameel.world.player.v20.4';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');

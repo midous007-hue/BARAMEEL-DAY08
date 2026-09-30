@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — ALEXANDRIA</title>
-<link rel="stylesheet" href="./styles.css?v=20261001-20.9"><script src="./config.js?v=20261001-20.9"></script>
+<link rel="stylesheet" href="./styles.css?v=20261001-21.0"><script src="./config.js?v=20261001-21.0"></script>
 <style>#imagePreload{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}</style>
 </head>
 <body>
@@ -20,8 +20,8 @@
   <div id="imagePreload"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261001-20.9"></script>
-<script src="./barameel-v205-fix.js?v=20261001-20.9"></script>
+<script src="./app.js?v=20261001-21.0"></script>
+<script src="./barameel-v205-fix.js?v=20261001-21.0"></script>
 <script>
 (async()=>{
   const cfg=await BR.fetchCollection('collection01');
@@ -31,9 +31,9 @@
   const requestedImage=params.get('image')||handoff?.image_id||handoff?.image||handoff?.reward?.image_id||handoff?.reward?.image||BR.state?.lastReward?.image_id||'image01';
   const cache=new Map();
   try{await BR.syncPlayer()}catch{}
-  function url(file){if(!file)return '';let s=String(file).replace(/^\.\//,'');if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s))s=s.replace(/\.png$/i,'.webp');return './'+s+'?v=20261001-20.9'}
+  function url(file){if(!file)return '';let s=String(file).replace(/^\.\//,'');if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s))s=s.replace(/\.png$/i,'.webp');return './'+s+'?v=20261001-21.0'}
   function load(file,priority='low'){const u=url(file);if(!u)return Promise.resolve(null);if(cache.has(u))return cache.get(u);const p=new Promise(resolve=>{const img=new Image();img.decoding='async';img.loading='eager';try{img.fetchPriority=priority}catch{}img.onload=async()=>{try{await img.decode()}catch{}resolve(img)};img.onerror=()=>resolve(null);img.src=u});cache.set(u,p);return p}
-  function crop(el,p){el.style.backgroundSize='300% 300%';el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`}
+  function crop(el,p){el.style.backgroundSize='300% 300%';el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`;el.style.backgroundRepeat='no-repeat'}
   function rarityFor(im,n){return String(im.pieces[n-1]?.rarity||'COMMON').toUpperCase()}
   function piecePointsFor(im,n){return Number(im.pieces[n-1]?.points||BR.RARITY?.[rarityFor(im,n)]?.points||10000)}
   function isComplete(im){return BR.count('collection01',im.imageId)>=9}
@@ -63,19 +63,32 @@
   function render(im){select.value=im.imageId;renderHero(im);load(im.masterFile,'high').then(img=>applyThumbs(im,img));preloadAll()}
   function animateNumber(target,duration){const start=0;const t0=performance.now();return new Promise(resolve=>{function step(now){const p=Math.min(1,(now-t0)/duration);const eased=1-Math.pow(1-p,3);reward.textContent='+'+Math.round(start+(target-start)*eased).toLocaleString();if(p<1)requestAnimationFrame(step);else{reward.textContent='+'+target.toLocaleString();resolve()}}requestAnimationFrame(step)})}
   function revealReward(points,rarity){
-    const spec=BR.rewardSpec?BR.rewardSpec(rarity,points):{duration:1400,rarity:'COMMON',points};
+    const safePoints=Math.max(10000,Number(points)||10000);
+    const spec=BR.rewardSpec?BR.rewardSpec(rarity,safePoints):{duration:1400,rarity:String(rarity||'COMMON').toUpperCase(),points:safePoints};
     const key=String(spec.rarity||'COMMON').toLowerCase();reward.className='reward-text '+key+' revealing';
-    BR.playRewardReveal?BR.playRewardReveal(points,spec.rarity):BR.playPointsCountUp(points,spec.rarity);
-    animateNumber(points,Number(spec.duration)||1400).then(()=>{reward.classList.remove('revealing')});
+    BR.playRewardReveal?BR.playRewardReveal(safePoints,spec.rarity):BR.playPointsCountUp(safePoints,spec.rarity);
+    animateNumber(safePoints,Number(spec.duration)||1400).then(()=>{reward.classList.remove('revealing')});
     if(spec.rarity==='LEGENDARY'||spec.rarity==='MYTHIC'){completeFlash.classList.remove('on');void completeFlash.offsetWidth;completeFlash.classList.add('on')}
+  }
+  function normalizeHandoff(h){
+    if(!h)return null;
+    const imageId=h.image_id||h.image||h.reward?.image_id||h.reward?.image;
+    const pieceNumber=Number(h.piece_number||h.piece||h.reward?.piece_number||h.reward?.piece||0);
+    const im=cfg.images.find(x=>x.imageId===imageId);
+    const meta=im?.pieces?.[pieceNumber-1];
+    const serverPoints=Number(h.points??h.points_awarded??h.reward?.points??0);
+    const points=(serverPoints>=10000?serverPoints:Number(meta?.points||BR.RARITY?.[String(meta?.rarity||h.rarity||'COMMON').toUpperCase()]?.points||10000));
+    const rarity=String(h.rarity||h.reward?.rarity||meta?.rarity||'COMMON').toUpperCase();
+    return {...h,image_id:imageId,piece_number:pieceNumber,points,rarity};
   }
   const current=cfg.images.find(im=>im.imageId===requestedImage)||cfg.images[0];
   render(current);select.onchange=()=>{BR.play('tap');const im=cfg.images.find(x=>x.imageId===select.value)||cfg.images[0];render(im)};
   if(handoff){
-    const points=Number(handoff.points??handoff.points_awarded??handoff.reward?.points??0);
-    const rarity=String(handoff.rarity||handoff.reward?.rarity||'COMMON').toUpperCase();
+    handoff=normalizeHandoff(handoff);
+    const points=Number(handoff?.points||0);
+    const rarity=String(handoff?.rarity||'COMMON').toUpperCase();
     if(points>0&&!handoff.duplicate)revealReward(points,rarity);
-    const rewardedImage=handoff.image_id||handoff.image||handoff.reward?.image_id||handoff.reward?.image;
+    const rewardedImage=handoff?.image_id;
     if(rewardedImage){const im=cfg.images.find(x=>x.imageId===rewardedImage);if(im){select.value=im.imageId;render(im);if(isComplete(im)){BR.playCompletionSound();completeFlash.classList.add('on');BR.flash()}}}
   }
   document.getElementById('back').onclick=()=>BR.goAfter('screen05.html','back',180);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d"><title>BARAMEEL RUN — Scan</title>
-<link rel="stylesheet" href="./styles.css?v=20261001-20.9"><script src="./config.js?v=20261001-20.9"></script>
+<link rel="stylesheet" href="./styles.css?v=20261001-21.0"><script src="./config.js?v=20261001-21.0"></script>
 </head>
 <body>
 <main class="scan-stage">
@@ -21,8 +21,8 @@
   <div id="msg" class="scan-message" aria-live="polite"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261001-20.9"></script>
-<script src="./barameel-v205-fix.js?v=20261001-20.9"></script>
+<script src="./app.js?v=20261001-21.0"></script>
+<script src="./barameel-v205-fix.js?v=20261001-21.0"></script>
 <script>
 (()=>{
   const video=document.getElementById('video'),cam=document.getElementById('cameraWindow'),msg=document.getElementById('msg'),canvas=document.getElementById('scanCanvas'),ctx=canvas.getContext('2d',{willReadFrequently:true}),open=document.getElementById('open'),back=document.getElementById('back'),collections=document.getElementById('collections'),flash=document.getElementById('flash');
@@ -62,10 +62,14 @@
     locked=true;stop();BR.play('scan');flash.classList.add('on');
     const result=await BR.scanUniversal({ticketId});
     const reward=result?.reward||BR.normalizeReward?.(result);
-    const hasPiece=!!(reward?.piece_number||reward?.piece||result?.piece_number||result?.piece);
+    const pieceNumber=Number(result?.piece_number||reward?.piece_number||reward?.piece||0);
+    const imageId=result?.image_id||reward?.image_id||reward?.image||'image01';
+    let metaReward=null;
+    if(pieceNumber){try{const c=await BR.fetchCollection(result?.collection_id||reward?.collection_id||'collection01');const im=c.images.find(x=>x.imageId===imageId);metaReward=im?.pieces?.[pieceNumber-1]||null}catch{}}
+    const hasPiece=!!pieceNumber;
     if(result?.ok&&(result.type==='piece'||result.type==='bonus'||result.idempotent||hasPiece)){
       BR.play('confirm');BR.flash();
-      const handoff={...result,reward:reward||result.reward||null,collection_id:result.collection_id||reward?.collection_id||reward?.collection||'collection01',image_id:result.image_id||reward?.image_id||reward?.image||'image01',piece_number:Number(result.piece_number||reward?.piece_number||reward?.piece||0),points:Number(result.points??result.points_awarded??reward?.points??0),rarity:String(result.rarity||reward?.rarity||'COMMON').toUpperCase()};
+      const handoff={...result,reward:reward||result.reward||null,collection_id:result.collection_id||reward?.collection_id||reward?.collection||'collection01',image_id:result.image_id||reward?.image_id||reward?.image||'image01',piece_number:Number(result.piece_number||reward?.piece_number||reward?.piece||0),points:(Number(result.points??result.points_awarded??reward?.points??0)>=10000?Number(result.points??result.points_awarded??reward?.points):Number(metaReward?.points||10000)),rarity:String(result.rarity||reward?.rarity||metaReward?.rarity||'COMMON').toUpperCase()};
       try{sessionStorage.setItem('barameelLastScan',JSON.stringify(handoff))}catch{}
       status('QR ACCEPTED — REWARD READY','success');
       await BR.track('qr_scan',{reward:handoff,mode:'universal'});
