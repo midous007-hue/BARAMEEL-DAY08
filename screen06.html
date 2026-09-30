@@ -1,52 +1,136 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — ALEXANDRIA</title>
-<link rel="stylesheet" href="./styles.css?v=20260930-20.7.1"><script src="./config.js?v=20260930-20.7.1"></script>
+<link rel="stylesheet" href="./styles.css?v=20260930-20.7.2">
+<script src="./config.js?v=20260930-20.7.2"></script>
 <style>
-.collection-load{position:absolute;left:47.9%;top:32.5%;width:47.5%;height:22%;z-index:18;display:flex;align-items:center;justify-content:center;color:#f0c830;font:900 clamp(10px,2.5vw,18px)/1 Arial,sans-serif;text-shadow:2px 2px #000;pointer-events:none}
-.collection-master{position:absolute;left:47.90356%;top:32.50455%;width:47.48428%;height:21.95270%;z-index:19;display:block;object-fit:fill;opacity:0;transition:opacity .16s ease;pointer-events:none}
-.collection-master.ready{opacity:1}
+/* WebP performance layer: invisible preload/decode only. The visible artwork
+   remains the original 3x3 crop grid; no full-master overlay is painted. */
+#imagePreload{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
 <main class="stage collection-stage">
 <img class="base" src="./assets/screen06-puzzle.webp" alt="ALEXANDRIA Collection">
 <button id="back" class="hotspot" style="left:2%;top:2%;width:20%;height:7%" aria-label="Back"></button>
-<select id="select" style="position:absolute;left:27%;top:13%;width:46%;z-index:20;height:4%;font-weight:900"><option value="collection01">ALEXANDRIA</option></select>
-<div id="load" class="collection-load" hidden>LOADING</div>
-<img id="master" class="collection-master" alt="" decoding="async" fetchpriority="high">
+<select id="select" class="collection-select" aria-label="Select collection"><option value="collection01">ALEXANDRIA</option></select>
 <div id="heroGrid" class="hero-grid"></div>
 <div id="reward" class="reward-text"></div>
 <div id="thumbs" class="collection-thumbs"></div>
 <button id="myRewards" class="hotspot" style="left:7%;top:81%;width:41%;height:9%" aria-label="My Rewards"></button>
 <button id="scanMore" class="hotspot" style="left:52%;top:81%;width:41%;height:9%" aria-label="Scan More"></button>
 <div id="completeFlash" class="barameel-flash"></div>
+<div id="imagePreload"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20260930-20.7.1"></script>
-<script src="./barameel-v205-fix.js?v=20260930-20.7.1"></script>
+<script src="./app.js?v=20260930-20.4"></script>
+<script src="./barameel-v205-fix.js?v=20260930-20.6.1"></script>
 <script>
 (async()=>{
-const cfg=await BR.fetchCollection('collection01'),hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs'),reward=document.getElementById('reward'),select=document.getElementById('select'),master=document.getElementById('master'),load=document.getElementById('load');
-const params=new URLSearchParams(location.search);let handoff=null;try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
-const requestedImage=params.get('image')||handoff?.image_id||handoff?.image||handoff?.reward?.image_id||handoff?.reward?.image||BR.state?.lastReward?.image_id||'image01';
-try{await BR.syncPlayer()}catch{}
-const cache=new Map();
-function urlFor(im){return './'+String(im.masterFile||'').replace(/^\.?\//,'').replace(/\.png$/i,'.webp')+'?v=20260930-20.7.1'}
-function crop(el,p){el.style.backgroundSize='300% 300%';el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`}
-function setGrid(im){hero.innerHTML='';const els=[];for(let n=1;n<=9;n++){const p=im.pieces[n-1],c=document.createElement('div');c.className='hero-piece';crop(c,p);c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));hero.appendChild(c);els.push(c)}return els}
-function loadImage(im,priority='low'){const u=urlFor(im);if(cache.has(u))return cache.get(u);const p=new Promise(resolve=>{const x=new Image();x.decoding='async';try{x.fetchPriority=priority}catch{}x.onload=async()=>{try{await x.decode()}catch{}resolve(x)};x.onerror=()=>resolve(null);x.src=u});cache.set(u,p);return p}
-async function show(im){load.hidden=false;load.textContent='LOADING';master.classList.remove('ready');master.removeAttribute('src');const x=await loadImage(im,'high');if(!x){load.textContent='IMAGE UNAVAILABLE';hero.innerHTML='';return false}master.src=x.src;try{await master.decode()}catch{}master.classList.add('ready');load.hidden=true;const els=setGrid(im);const bg=`url("${x.src}")`;els.forEach(e=>e.style.backgroundImage=bg);return true}
-const pos=[[2.62,71.07,18.24,11.83],[22.12,71.07,17.92,11.83],[41.19,71.07,17.92,11.83],[60.17,71.07,17.82,11.83],[79.35,71.07,18.24,11.83],[2.62,83.38,18.24,12.07],[22.12,83.38,17.92,12.07],[41.19,83.38,17.92,12.07],[60.17,83.38,17.92,12.07],[79.35,83.38,18.24,12.07]];
-const jobs=[];
-cfg.images.forEach((im,idx)=>{const b=document.createElement('button');b.type='button';b.className='collection-thumb';b.style.cssText=`left:${pos[idx][0]}%;top:${pos[idx][1]}%;width:${pos[idx][2]}%;height:${pos[idx][3]}%`;const grid=document.createElement('div');grid.className='thumb-grid';for(let n=1;n<=9;n++){const p=im.pieces[n-1],c=document.createElement('span');c.className='thumb-piece';crop(c,p);c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));grid.appendChild(c)}b.appendChild(grid);const badge=document.createElement('span');badge.className='thumb-index';badge.textContent=idx+1;b.appendChild(badge);const count=document.createElement('span');count.className='thumb-count';count.textContent=BR.count('collection01',im.imageId);b.appendChild(count);b.onclick=()=>{BR.play('tap');select.value=im.imageId;show(im)};thumbs.appendChild(b);jobs.push({im,pieces:[...grid.children]})});
-async function preloadOthers(selected){await Promise.all(cfg.images.filter(im=>im.imageId!==selected.imageId).map(im=>loadImage(im,'low')));jobs.forEach(j=>{const p=cache.get(urlFor(j.im));if(p)p.then(x=>{if(x)j.pieces.forEach(e=>e.style.backgroundImage=`url("${x.src}")`)})})}
-const initial=cfg.images.find(im=>im.imageId===requestedImage)||cfg.images[0];select.value=initial.imageId;await show(initial);preloadOthers(initial);
-select.onchange=()=>{BR.play('tap');const im=cfg.images.find(x=>x.imageId===select.value)||cfg.images[0];show(im)};
-if(handoff){const points=Number(handoff.points??handoff.points_awarded??handoff.reward?.points??0);if(points>0&&!handoff.duplicate){reward.textContent='+'+points.toLocaleString();BR.playPointsCountUp(points)}const ri=handoff.image_id||handoff.image||handoff.reward?.image_id||handoff.reward?.image;if(ri){const im=cfg.images.find(x=>x.imageId===ri);if(im){select.value=im.imageId;await show(im);if(BR.count('collection01',im.imageId)===9){BR.playCompletionSound();BR.flash()}}}}
-back.onclick=()=>BR.goAfter('screen05.html','back',180);myRewards.onclick=()=>BR.goAfter('screen04.html','confirm',180);scanMore.onclick=()=>BR.goAfter('screen05.html','scan',180);BR.track('collection_view',{image_id:select.value});
+  const cfg=await BR.fetchCollection('collection01');
+  const hero=document.getElementById('heroGrid');
+  const thumbs=document.getElementById('thumbs');
+  const reward=document.getElementById('reward');
+  const select=document.getElementById('select');
+  const preloadBox=document.getElementById('imagePreload');
+  const params=new URLSearchParams(location.search);
+  let handoff=null; try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
+  const requestedImage=params.get('image')||handoff?.image_id||handoff?.image||handoff?.reward?.image_id||handoff?.reward?.image||BR.state?.lastReward?.image_id||'image01';
+  const cache=new Map();
+
+  try{await BR.syncPlayer()}catch{}
+
+  function url(file){
+    if(!file)return '';
+    let s=String(file).replace(/^\.\//,'');
+    if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s)) s=s.replace(/\.png$/i,'.webp');
+    return './'+s+'?v=20260930-20.7.2';
+  }
+  function load(file,priority='low'){
+    const u=url(file); if(!u)return Promise.resolve(null);
+    if(cache.has(u))return cache.get(u);
+    const p=new Promise(resolve=>{
+      const img=new Image(); img.decoding='async'; img.loading='eager';
+      try{img.fetchPriority=priority}catch{}
+      img.onload=async()=>{try{await img.decode()}catch{} resolve(img)};
+      img.onerror=()=>resolve(null); img.src=u;
+    });
+    cache.set(u,p); return p;
+  }
+  function crop(el,p){
+    el.style.backgroundSize='300% 300%';
+    el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`;
+  }
+  async function paintMaster(im){
+    const img=await load(im.masterFile,'high');
+    if(!img)return false;
+    const bg=`url("${img.src}")`;
+    for(let n=1;n<=9;n++){
+      const p=im.pieces[n-1], c=hero.children[n-1];
+      if(c){ c.style.backgroundImage=bg; c.style.backgroundSize='300% 300%'; c.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`; }
+    }
+    return true;
+  }
+  function renderHero(im){
+    hero.innerHTML='';
+    for(let n=1;n<=9;n++){
+      const p=im.pieces[n-1], c=document.createElement('div');
+      c.className='hero-piece';
+      crop(c,p);
+      c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));
+      c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));
+      hero.appendChild(c);
+    }
+    paintMaster(im);
+  }
+  const pos=[
+    [2.62,71.07,18.24,11.83],[22.12,71.07,17.92,11.83],[41.19,71.07,17.92,11.83],
+    [60.17,71.07,17.82,11.83],[79.35,71.07,18.24,11.83],
+    [2.62,83.38,18.24,12.07],[22.12,83.38,17.92,12.07],[41.19,83.38,17.92,12.07],
+    [60.17,83.38,17.92,12.07],[79.35,83.38,18.24,12.07]
+  ];
+  const jobs=[];
+  cfg.images.forEach((im,idx)=>{
+    const b=document.createElement('button'); b.type='button'; b.className='collection-thumb';
+    b.style.cssText=`left:${pos[idx][0]}%;top:${pos[idx][1]}%;width:${pos[idx][2]}%;height:${pos[idx][3]}%`;
+    const grid=document.createElement('div'); grid.className='thumb-grid';
+    for(let n=1;n<=9;n++){
+      const p=im.pieces[n-1], c=document.createElement('span'); c.className='thumb-piece'; crop(c,p);
+      c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));
+      c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));
+      grid.appendChild(c);
+    }
+    b.appendChild(grid);
+    const badge=document.createElement('span'); badge.className='thumb-index'; badge.textContent=idx+1; b.appendChild(badge);
+    const count=document.createElement('span'); count.className='thumb-count'; count.textContent=BR.count('collection01',im.imageId); b.appendChild(count);
+    b.onclick=()=>{BR.play('tap');select.value=im.imageId;render(im)};
+    thumbs.appendChild(b); jobs.push({im,pieces:[...grid.children]});
+  });
+  function applyThumbs(im,img){
+    if(!img)return;
+    const u=`url("${img.src}")`; const job=jobs.find(x=>x.im.imageId===im.imageId); if(job)job.pieces.forEach(el=>el.style.backgroundImage=u);
+  }
+  async function preloadAll(){
+    const loaded=await Promise.all(cfg.images.map(im=>load(im.masterFile,'low')));
+    loaded.forEach((img,i)=>applyThumbs(cfg.images[i],img));
+  }
+  function render(im){select.value=im.imageId;renderHero(im);load(im.masterFile,'high').then(img=>applyThumbs(im,img));preloadAll();}
+  const current=cfg.images.find(im=>im.imageId===requestedImage)||cfg.images[0];
+  render(current);
+  select.onchange=()=>{BR.play('tap');const im=cfg.images.find(x=>x.imageId===select.value)||cfg.images[0];render(im)};
+  if(handoff){
+    const points=Number(handoff.points??handoff.points_awarded??handoff.reward?.points??0);
+    if(points>0&&!handoff.duplicate){reward.textContent='+'+points.toLocaleString();BR.playPointsCountUp(points);}
+    const rewardedImage=handoff.image_id||handoff.image||handoff.reward?.image_id||handoff.reward?.image;
+    if(rewardedImage){const im=cfg.images.find(x=>x.imageId===rewardedImage);if(im){select.value=im.imageId;render(im);if(BR.count('collection01',im.imageId)===9){BR.playCompletionSound();BR.flash();}}}
+  }
+  document.getElementById('back').onclick=()=>BR.goAfter('screen05.html','back',180);
+  document.getElementById('myRewards').onclick=()=>BR.goAfter('screen04.html','confirm',180);
+  document.getElementById('scanMore').onclick=()=>BR.goAfter('screen05.html','scan',180);
+  BR.track('collection_view',{image_id:select.value});
 })();
 </script>
 </body>
