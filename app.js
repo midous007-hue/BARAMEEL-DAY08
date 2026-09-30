@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261001-21.0';
+  const VERSION = '20261001-21.2';
   const STORAGE = 'barameel.world.player.v20.4';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -85,19 +85,34 @@
     const root=roots[runner]||494;
     [1,1.25,1.5,2,2.5].forEach((m,i)=>tone(root*m,.065,i===4?'triangle':'square',.18,i*.045));
   }
-  // Backward-compatible points counter hook used by older screen builds.
-  // Keep it defined so exporting BR never throws and blocks every page interaction.
+  // POINTS COUNT-UP — classic BARAMEEL arcade counter. The pitch and number of ticks rise with rarity/value.
   function playPointsCountUp(points,rarity='COMMON'){
-    const spec=rewardSpec(rarity,points);
+    const spec=rewardSpec(rarity,points), value=Math.max(10000,Number(points)||spec.points);
     unlockAudio();
-    const start=Math.max(0,Number(points)||spec.points);
     const root={COMMON:392,UNCOMMON:440,RARE:494,EPIC:554,LEGENDARY:622,MYTHIC:698}[spec.rarity]||494;
-    tone(root,.055,'square',.045);
-    tone(root*1.25,.055,'square',.055,.055);
-    tone(root*1.5,.065,'triangle',.065,.11);
-    return {points:start,rarity:spec.rarity};
+    const ratio=Math.max(.1,Math.min(1,value/100000));
+    const steps=Math.max(8,Math.min(20,Math.round(8+ratio*12)));
+    const span=Math.max(760,Math.min(2200,spec.duration));
+    for(let i=0;i<steps;i++){
+      const p=i/Math.max(1,steps-1),f=root*(1.0+1.65*p+0.15*ratio*p);
+      tone(f, i===steps-1 ? .075 : .045, i%4===3?'triangle':'square', .038+.020*ratio, (span*p)/1000);
+    }
+    const end=Math.max(.05,(span-120)/1000);
+    tone(root*2.5,.11,'triangle',.09+.05*ratio,end);
+    tone(root*3,.14,'sine',.075+.06*ratio,end+.075);
+    if(['EPIC','LEGENDARY','MYTHIC'].includes(spec.rarity)) playJackpot(spec.rarity,end+.16);
+    return spec;
   }
-
+  function playJackpot(rarity='EPIC',delay=.15){
+    unlockAudio();
+    const roots={EPIC:554,LEGENDARY:622,MYTHIC:698};
+    const root=roots[String(rarity).toUpperCase()]||554;
+    const chord=[1,1.25,1.5,2,2.5,3];
+    chord.forEach((m,i)=>tone(root*m,.13,i<3?'triangle':'sine',.07+(i*.012),delay+i*.065));
+    tone(root*4,.18,'triangle',.13,delay+.40);
+    tone(root*5,.22,'sine',.10,delay+.50);
+  }
+  // Backward-compatible reward reveal hook.
   function playRewardReveal(points,rarity='COMMON'){
     unlockAudio();
     const spec=rewardSpec(rarity,points), ratio=Math.max(.1,Math.min(1,spec.points/100000));
@@ -173,14 +188,14 @@
   }
   async function duoLink(otherPlayerCode){const r=await api('/duo-link',{player_id:state.playerId,other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:'duo-'+crypto.randomUUID()});if(r?.player)mergePlayer(r.player);return r;}
   async function fetchCollection(id='collection01'){
-    const key='barameel.collection.'+id+'.v20.9';
+    const key='barameel.collection.'+id+'.v21.2';
     try{const c=sessionStorage.getItem(key);if(c)return JSON.parse(c);}catch{}
-    const r=await fetch(`./assets/collections/${id}/collection.json?v=20261001-20.9`,{cache:'no-store'});
+    const r=await fetch(`./assets/collections/${id}/collection.json?v=20261001-21.2`,{cache:'no-store'});
     if(!r.ok)throw Error('COLLECTION_UNAVAILABLE');
     const d=await r.json();try{sessionStorage.setItem(key,JSON.stringify(d));}catch{}return d;
   }
   function parseUniversalQR(raw){const s=decodeURIComponent(String(raw||'')).trim();if(/^BARAMEEL[-_:]?UNIVERSAL$/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};if(/(?:^|[?&])qr=BARAMEEL-UNIVERSAL(?:&|$)/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};return null;}
 
-  window.BR={VERSION,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,playPointsCountUp,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,duoLink,fetchCollection,parseUniversalQR,saveState,ensureAuth,API_BASE};
+  window.BR={VERSION,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,duoLink,fetchCollection,parseUniversalQR,saveState,ensureAuth,API_BASE};
   idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
 })();

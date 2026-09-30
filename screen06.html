@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — ALEXANDRIA</title>
-<link rel="stylesheet" href="./styles.css?v=20261001-21.0"><script src="./config.js?v=20261001-21.0"></script>
+<link rel="stylesheet" href="./styles.css?v=20261001-21.2"><script src="./config.js?v=20261001-21.2"></script>
 <style>#imagePreload{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}</style>
 </head>
 <body>
@@ -12,26 +12,27 @@
   <button id="back" class="collection-back" aria-label="Back"></button>
   <select id="select" class="collection-select" aria-label="Select collection"><option value="collection01">ALEXANDRIA</option></select>
   <div id="heroGrid" class="hero-grid"></div>
-  <div id="reward" class="reward-text" aria-live="polite"></div>
+  <div id="pointsBadge" class="points-badge common"><span id="pointsNumber" class="points-number">+0</span></div>
+  <div id="jackpotFlash" class="jackpot-flash" aria-live="polite"><span id="jackpotWord" class="jackpot-word">SUPER</span></div>
   <div id="thumbs" class="collection-thumbs"></div>
-  <button id="myRewards" class="hotspot" style="left:44.5%;top:62.8%;width:24.8%;height:5.2%" aria-label="My Rewards"></button>
-  <button id="scanMore" class="hotspot" style="left:70.0%;top:62.8%;width:25.0%;height:5.2%" aria-label="Scan More"></button>
+  <button id="myRewards" class="hotspot" aria-label="My Rewards"></button>
+  <button id="scanMore" class="hotspot" aria-label="Scan More"></button>
   <div id="completeFlash" class="complete-flash"></div>
   <div id="imagePreload"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261001-21.0"></script>
-<script src="./barameel-v205-fix.js?v=20261001-21.0"></script>
+<script src="./app.js?v=20261001-21.2"></script>
+<script src="./barameel-v205-fix.js?v=20261001-21.2"></script>
 <script>
 (async()=>{
   const cfg=await BR.fetchCollection('collection01');
-  const hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs'),reward=document.getElementById('reward'),select=document.getElementById('select'),completeFlash=document.getElementById('completeFlash');
+  const hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs'),pointsBadge=document.getElementById('pointsBadge'),pointsNumber=document.getElementById('pointsNumber'),jackpotFlash=document.getElementById('jackpotFlash'),jackpotWord=document.getElementById('jackpotWord'),select=document.getElementById('select'),completeFlash=document.getElementById('completeFlash');
   let handoff=null;try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
   const params=new URLSearchParams(location.search);
   const requestedImage=params.get('image')||handoff?.image_id||handoff?.image||handoff?.reward?.image_id||handoff?.reward?.image||BR.state?.lastReward?.image_id||'image01';
   const cache=new Map();
   try{await BR.syncPlayer()}catch{}
-  function url(file){if(!file)return '';let s=String(file).replace(/^\.\//,'');if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s))s=s.replace(/\.png$/i,'.webp');return './'+s+'?v=20261001-21.0'}
+  function url(file){if(!file)return '';let s=String(file).replace(/^\.\//,'');if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s))s=s.replace(/\.png$/i,'.webp');return './'+s+'?v=20261001-21.2'}
   function load(file,priority='low'){const u=url(file);if(!u)return Promise.resolve(null);if(cache.has(u))return cache.get(u);const p=new Promise(resolve=>{const img=new Image();img.decoding='async';img.loading='eager';try{img.fetchPriority=priority}catch{}img.onload=async()=>{try{await img.decode()}catch{}resolve(img)};img.onerror=()=>resolve(null);img.src=u});cache.set(u,p);return p}
   function crop(el,p){el.style.backgroundSize='300% 300%';el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`;el.style.backgroundRepeat='no-repeat'}
   function rarityFor(im,n){return String(im.pieces[n-1]?.rarity||'COMMON').toUpperCase()}
@@ -45,8 +46,8 @@
     paintMaster(im);
   }
   const pos=[
-    [2.62,69.25,18.24,11.83],[22.12,69.25,17.92,11.83],[41.19,69.25,17.92,11.83],[60.17,69.25,17.82,11.83],[79.35,69.25,18.24,11.83],
-    [2.62,81.25,18.24,12.07],[22.12,81.25,17.92,12.07],[41.19,81.25,17.92,12.07],[60.17,81.25,17.92,12.07],[79.35,81.25,18.24,12.07]
+    [2.72,73.15,18.05,9.70],[21.55,73.15,17.70,9.70],[40.05,73.15,17.90,9.70],[58.70,73.15,17.85,9.70],[77.35,73.15,18.10,9.70],
+    [2.72,83.48,18.05,9.68],[21.55,83.48,17.70,9.68],[40.05,83.48,17.90,9.68],[58.70,83.48,17.85,9.68],[77.35,83.48,18.10,9.68]
   ];
   const jobs=[];
   cfg.images.forEach((im,idx)=>{
@@ -54,20 +55,39 @@
     const grid=document.createElement('div');grid.className='thumb-grid';
     for(let n=1;n<=9;n++){const p=im.pieces[n-1],c=document.createElement('span');c.className='thumb-piece';crop(c,p);c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));grid.appendChild(c)}
     b.appendChild(grid);
-    const count=document.createElement('span');count.className='thumb-count';count.textContent=BR.count('collection01',im.imageId);b.appendChild(count);
     b.onclick=()=>{BR.play('tap');select.value=im.imageId;render(im)};
     thumbs.appendChild(b);jobs.push({im,pieces:[...grid.children]});
   });
   function applyThumbs(im,img){if(!img)return;const u=`url("${img.src}")`;const job=jobs.find(x=>x.im.imageId===im.imageId);if(job)job.pieces.forEach(el=>el.style.backgroundImage=u)}
   async function preloadAll(){const loaded=await Promise.all(cfg.images.map(im=>load(im.masterFile,'low')));loaded.forEach((img,i)=>applyThumbs(cfg.images[i],img))}
   function render(im){select.value=im.imageId;renderHero(im);load(im.masterFile,'high').then(img=>applyThumbs(im,img));preloadAll()}
-  function animateNumber(target,duration){const start=0;const t0=performance.now();return new Promise(resolve=>{function step(now){const p=Math.min(1,(now-t0)/duration);const eased=1-Math.pow(1-p,3);reward.textContent='+'+Math.round(start+(target-start)*eased).toLocaleString();if(p<1)requestAnimationFrame(step);else{reward.textContent='+'+target.toLocaleString();resolve()}}requestAnimationFrame(step)})}
+  function animateNumber(target,duration){
+    const t0=performance.now(),start=0;
+    return new Promise(resolve=>{
+      function step(now){
+        const p=Math.min(1,(now-t0)/duration),eased=1-Math.pow(1-p,3);
+        pointsNumber.textContent='+'+Math.round(start+(target-start)*eased).toLocaleString();
+        if(p<1)requestAnimationFrame(step);else{pointsNumber.textContent='+'+target.toLocaleString();resolve()}
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  function jackpotWordFor(rarity){
+    return ({COMMON:'SUPER',UNCOMMON:'AMAZING',RARE:'SPECTACULAR',EPIC:'JACKPOT',LEGENDARY:'JACKPOT',MYTHIC:'JACKPOT'})[String(rarity||'COMMON').toUpperCase()]||'SUPER';
+  }
   function revealReward(points,rarity){
     const safePoints=Math.max(10000,Number(points)||10000);
     const spec=BR.rewardSpec?BR.rewardSpec(rarity,safePoints):{duration:1400,rarity:String(rarity||'COMMON').toUpperCase(),points:safePoints};
-    const key=String(spec.rarity||'COMMON').toLowerCase();reward.className='reward-text '+key+' revealing';
-    BR.playRewardReveal?BR.playRewardReveal(safePoints,spec.rarity):BR.playPointsCountUp(safePoints,spec.rarity);
-    animateNumber(safePoints,Number(spec.duration)||1400).then(()=>{reward.classList.remove('revealing')});
+    const key=String(spec.rarity||'COMMON').toLowerCase();
+    pointsBadge.className='points-badge '+key+' revealing';
+    pointsNumber.textContent='+'+safePoints.toLocaleString();
+    jackpotWord.textContent=jackpotWordFor(spec.rarity);
+    jackpotFlash.classList.remove('on');void jackpotFlash.offsetWidth;jackpotFlash.classList.add('on');
+    if(BR.playPointsCountUp)BR.playPointsCountUp(safePoints,spec.rarity);
+    setTimeout(()=>{
+      pointsBadge.classList.remove('revealing');
+      animateNumber(safePoints,Math.max(900,Number(spec.duration)||1400));
+    },280);
     if(spec.rarity==='LEGENDARY'||spec.rarity==='MYTHIC'){completeFlash.classList.remove('on');void completeFlash.offsetWidth;completeFlash.classList.add('on')}
   }
   function normalizeHandoff(h){
