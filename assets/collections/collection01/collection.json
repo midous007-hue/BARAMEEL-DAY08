@@ -53,7 +53,7 @@
       "imageNumber": 1,
       "displayName": "ALEXANDRIA 01",
       "description": "Alexandria Library & Corniche Sunset",
-      "masterFile": "assets/collections/collection01/masters/image01-master.png",
+      "masterFile": "assets/collections/collection01/masters/image01-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image01.jpg",
       "pieces": [
         {
@@ -162,7 +162,7 @@
       "imageNumber": 2,
       "displayName": "ALEXANDRIA 02",
       "description": "Blue Tram & Minaret in Rain",
-      "masterFile": "assets/collections/collection01/masters/image02-master.png",
+      "masterFile": "assets/collections/collection01/masters/image02-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image02.jpg",
       "pieces": [
         {
@@ -271,7 +271,7 @@
       "imageNumber": 3,
       "displayName": "ALEXANDRIA 03",
       "description": "Qaitbay Citadel & Fishing Harbor",
-      "masterFile": "assets/collections/collection01/masters/image03-master.png",
+      "masterFile": "assets/collections/collection01/masters/image03-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image03.jpg",
       "pieces": [
         {
@@ -380,7 +380,7 @@
       "imageNumber": 4,
       "displayName": "ALEXANDRIA 04",
       "description": "Yellow Tram & Historic Facade",
-      "masterFile": "assets/collections/collection01/masters/image04-master.png",
+      "masterFile": "assets/collections/collection01/masters/image04-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image04.jpg",
       "pieces": [
         {
@@ -489,7 +489,7 @@
       "imageNumber": 5,
       "displayName": "ALEXANDRIA 05",
       "description": "Historic Street to the Sea & Taxi",
-      "masterFile": "assets/collections/collection01/masters/image05-master.png",
+      "masterFile": "assets/collections/collection01/masters/image05-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image05.jpg",
       "pieces": [
         {
@@ -598,7 +598,7 @@
       "imageNumber": 6,
       "displayName": "ALEXANDRIA 06",
       "description": "Au Pavillon de Florelle",
-      "masterFile": "assets/collections/collection01/masters/image06-master.png",
+      "masterFile": "assets/collections/collection01/masters/image06-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image06.jpg",
       "pieces": [
         {
@@ -707,7 +707,7 @@
       "imageNumber": 7,
       "displayName": "ALEXANDRIA 07",
       "description": "Historic Monument & Sunset Hotel",
-      "masterFile": "assets/collections/collection01/masters/image07-master.png",
+      "masterFile": "assets/collections/collection01/masters/image07-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image07.jpg",
       "pieces": [
         {
@@ -816,7 +816,7 @@
       "imageNumber": 8,
       "displayName": "ALEXANDRIA 08",
       "description": "Fishing Boats Canal",
-      "masterFile": "assets/collections/collection01/masters/image08-master.png",
+      "masterFile": "assets/collections/collection01/masters/image08-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image08.jpg",
       "pieces": [
         {
@@ -925,7 +925,7 @@
       "imageNumber": 9,
       "displayName": "ALEXANDRIA 09",
       "description": "Stanley Bridge at Night",
-      "masterFile": "assets/collections/collection01/masters/image09-master.png",
+      "masterFile": "assets/collections/collection01/masters/image09-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image09.jpg",
       "pieces": [
         {
@@ -1034,7 +1034,7 @@
       "imageNumber": 10,
       "displayName": "ALEXANDRIA 10",
       "description": "Alexandria Sunset Panorama / Existing Master",
-      "masterFile": "assets/collections/collection01/masters/image10-master.png",
+      "masterFile": "assets/collections/collection01/masters/image10-master.webp",
       "thumbnailFile": "assets/collections/collection01/thumbs/image10.jpg",
       "pieces": [
         {
