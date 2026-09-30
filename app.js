@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20260930-20.8';
+  const VERSION = '20261001-20.9';
   const STORAGE = 'barameel.world.player.v20.4';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -33,47 +33,80 @@
     return state;
   }
 
-  // These are the classic BARAMEEL arcade assets from the earlier approved build.
-  const SOUND_FILES={
-    tap:'./audio/tap.wav',
-    select:'./audio/select.wav',
-    confirm:'./audio/confirm.wav',
-    back:'./audio/back.wav',
-    scan:'./audio/scan.wav',
-    error:'./audio/error.wav',
-    completion:'./audio/completion-arcade.wav',
-    levelup:'./audio/reward-levelup.mp3'
-  };
+  // CLASSIC BARAMEEL CHARACTER-SELECT ARCADE AUDIO — restored from the approved V13/V8 selection build.
+  // Selection is intentionally synthesized per runner so every character has a distinct motif/pitch.
+  const SOUND_FILES={completion:'./audio/completion-arcade.wav'};
   const bank={}; let audioCtx=null;
   function audio(){
     if(audioCtx) return audioCtx;
     const C=window.AudioContext||window.webkitAudioContext; if(!C) return null;
     audioCtx=new C();
-    const g=audioCtx.createGain(); g.gain.value=.72; g.connect(audioCtx.destination); audioCtx.master=g;
+    const g=audioCtx.createGain(); g.gain.value=.64; g.connect(audioCtx.destination); audioCtx.master=g;
     return audioCtx;
   }
-  function unlockAudio(){ const c=audio(); if(!c) return; if(c.state==='suspended') c.resume().catch(()=>{}); }
+  function unlockAudio(){const c=audio();if(!c)return;if(c.state==='suspended')c.resume().catch(()=>{});}
   function tone(f,d=.07,type='square',gain=.12,delay=0){
-    const c=audio(); if(!c) return;
-    try{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+delay;o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(gain,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(c.master);o.start(t);o.stop(t+d+.02);}catch{}
+    const c=audio();if(!c)return;
+    try{
+      const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+delay;
+      o.type=type;o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t);
+      g.gain.exponentialRampToValueAtTime(gain,t+.006);
+      g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g).connect(c.master);o.start(t);o.stop(t+d+.02);
+    }catch{}
   }
-  function prime(){Object.entries(SOUND_FILES).forEach(([k,src])=>{if(bank[k])return;const a=new Audio(src);a.preload='auto';a.playsInline=true;bank[k]=a;});}
-  function fallback(k){
-    if(k==='error') [220,165,110].forEach((f,i)=>tone(f,.12,'sawtooth',.15,i*.11));
-    else if(k==='scan') [520,780,1040].forEach((f,i)=>tone(f,.055,'square',.12,i*.055));
-    else if(k==='confirm') [523,659,784].forEach((f,i)=>tone(f,.07,'square',.13,i*.06));
-    else if(k==='select') [392,523,659].forEach((f,i)=>tone(f,.065,'square',.12,i*.05));
-    else if(k==='back') [659,523,392].forEach((f,i)=>tone(f,.07,'square',.11,i*.06));
-    else tone(740,.06,'square',.11);
+  function playArcadeTap(){unlockAudio();tone(740,.055,'square',.095);tone(1040,.065,'triangle',.075,.045)}
+  function playArcadeConfirm(){unlockAudio();[523,659,784,1047].forEach((f,i)=>tone(f,.065,i===3?'triangle':'square',.115,i*.055))}
+  function playArcadeBack(){unlockAudio();tone(659,.065,'square',.10);tone(523,.075,'square',.09,.065);tone(392,.10,'triangle',.075,.135)}
+  function playArcadeScan(){unlockAudio();[660,880,1175,1568].forEach((f,i)=>tone(f,.052,'square',.095,i*.052))}
+  function playArcadeError(){unlockAudio();tone(247,.085,'square',.12);tone(196,.095,'triangle',.105,.085);tone(147,.12,'square',.085,.18)}
+  function prime(){
+    if(bank.completion)return;
+    const a=new Audio(SOUND_FILES.completion);a.preload='auto';a.playsInline=true;bank.completion=a;
   }
   function play(k){
-    prime(); unlockAudio();
-    const a=bank[k];
-    if(!a){fallback(k);return;}
-    try{a.currentTime=0;a.volume=(k==='error'?0.9:0.82);const p=a.play();p?.catch(()=>fallback(k));}catch{fallback(k);}
+    if(k==='tap'){playArcadeTap();return}
+    if(k==='confirm'){playArcadeConfirm();return}
+    if(k==='back'){playArcadeBack();return}
+    if(k==='scan'){playArcadeScan();return}
+    if(k==='error'){playArcadeError();return}
+    if(k==='select'){playArcadeTap();return}
+    if(k==='completion'){
+      unlockAudio();prime();const a=bank.completion;
+      try{a.currentTime=0;a.volume=.72;const q=a.play();q?.catch(()=>{});return}catch{}
+    }
+    playArcadeTap();
   }
-  function playSelect(){play('select');}
-  function playCompletionSound(){play('completion');}
+  // Exact character-specific motif from the earlier approved selection screen.
+  function playSelect(runner){
+    unlockAudio();
+    const roots={rookie:392,skater:440,brona:494,racer:554,chiller:622,dreamer:698};
+    const root=roots[runner]||494;
+    [1,1.25,1.5,2,2.5].forEach((m,i)=>tone(root*m,.065,i===4?'triangle':'square',.18,i*.045));
+  }
+  function playRewardReveal(points,rarity='COMMON'){
+    unlockAudio();
+    const spec=rewardSpec(rarity,points), ratio=Math.max(.1,Math.min(1,spec.points/100000));
+    const roots={COMMON:392,UNCOMMON:440,RARE:494,EPIC:554,LEGENDARY:622,MYTHIC:698};
+    const root=roots[spec.rarity]||494;
+    const motif=[1,1.25,1.5,2,2.5];
+    const steps=Math.max(8,Math.min(22,Math.round(spec.duration/115)));
+    for(let i=0;i<steps;i++){
+      const p=i/Math.max(1,steps-1),f=root*motif[i%motif.length]*(1+.35*p*ratio);
+      tone(f,.05,i%5===4?'triangle':'square',.055+.035*ratio,(i*(spec.duration/steps))/1000);
+    }
+    const end=(spec.duration-180)/1000;
+    tone(root*3,.08,'triangle',.12+.08*ratio,Math.max(0,end));
+    if(spec.rarity==='RARE'||spec.rarity==='EPIC'||spec.rarity==='LEGENDARY'||spec.rarity==='MYTHIC')tone(root*4,.10,'triangle',.10+.08*ratio,Math.max(0,end+.08));
+    if(spec.rarity==='LEGENDARY'||spec.rarity==='MYTHIC'){
+      tone(root*5,.12,'triangle',.13+.08*ratio,Math.max(0,end+.16));
+      tone(root*6,.14,'triangle',.12+.09*ratio,Math.max(0,end+.25));
+    }
+    return spec;
+  }
+  function playCompletionSound(){play('completion')}
+  ['pointerdown','touchstart','mousedown','keydown'].forEach(e=>window.addEventListener(e,unlockAudio,{capture:true,passive:true}));
 
   const RARITY={COMMON:{points:10000,duration:950,volume:.58},UNCOMMON:{points:20000,duration:1200,volume:.62},RARE:{points:40000,duration:1550,volume:.68},EPIC:{points:60000,duration:1900,volume:.74},LEGENDARY:{points:80000,duration:2350,volume:.80},MYTHIC:{points:100000,duration:2850,volume:.88}};
   function rewardSpec(rarity,points){
@@ -81,27 +114,6 @@
     const spec=RARITY[key]||{points:Number(points)||10000,duration:1400,volume:.65};
     return {...spec,points:Number(points)||spec.points,rarity:key||'REWARD'};
   }
-  function playRewardReveal(points,rarity='COMMON'){
-    const spec=rewardSpec(rarity,points);
-    prime(); unlockAudio();
-    const a=bank.levelup;
-    if(a){try{a.currentTime=0;a.volume=spec.volume;const p=a.play();p?.catch(()=>fallback('confirm'));}catch{fallback('confirm');}}
-    // Light arcade ticks sit underneath the approved reward asset; higher tiers climb further and longer.
-    const steps=Math.max(12,Math.min(34,Math.round(spec.duration/75)));
-    const start=420, end=720+(spec.points/100000)*980;
-    for(let i=0;i<steps;i++){
-      const p=i/(steps-1), f=start+(end-start)*(p*p);
-      tone(f,.035,'square',.055+(spec.points/100000)*.045,(i*(spec.duration/steps))/1000);
-    }
-    if(spec.rarity==='LEGENDARY'||spec.rarity==='MYTHIC'){
-      [880,1175,1568].forEach((f,i)=>tone(f,.08,'triangle',.10+(spec.points/100000)*.05,(spec.duration-260+i*80)/1000));
-    }
-    return spec;
-  }
-  // Backward-compatible alias used by older pages.
-  function playPointsCountUp(points,rarity){return playRewardReveal(points,rarity);}
-
-  ['pointerdown','touchstart','mousedown','keydown'].forEach(e=>window.addEventListener(e,unlockAudio,{capture:true,passive:true}));
   function go(url){location.href=url;}
   function goAfter(url,sound='tap',delay=180){play(sound);setTimeout(()=>go(url),delay);}
   function idle(fn){if('requestIdleCallback' in window)requestIdleCallback(fn,{timeout:900});else setTimeout(fn,80);}
@@ -148,9 +160,9 @@
   }
   async function duoLink(otherPlayerCode){const r=await api('/duo-link',{player_id:state.playerId,other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:'duo-'+crypto.randomUUID()});if(r?.player)mergePlayer(r.player);return r;}
   async function fetchCollection(id='collection01'){
-    const key='barameel.collection.'+id+'.v20.8';
+    const key='barameel.collection.'+id+'.v20.9';
     try{const c=sessionStorage.getItem(key);if(c)return JSON.parse(c);}catch{}
-    const r=await fetch(`./assets/collections/${id}/collection.json?v=20260930-20.8`,{cache:'no-store'});
+    const r=await fetch(`./assets/collections/${id}/collection.json?v=20261001-20.9`,{cache:'no-store'});
     if(!r.ok)throw Error('COLLECTION_UNAVAILABLE');
     const d=await r.json();try{sessionStorage.setItem(key,JSON.stringify(d));}catch{}return d;
   }
