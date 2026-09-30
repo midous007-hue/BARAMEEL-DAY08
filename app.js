@@ -1,4 +1,4 @@
-/* BARAMEEL WORLD — V20.8 DESIGN PRECISION BUILD
+/* BARAMEEL WORLD — V21.1 INTERACTION FIX BUILD
    Presentation/scanner client only. Production game state stays server-side.
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
@@ -85,6 +85,19 @@
     const root=roots[runner]||494;
     [1,1.25,1.5,2,2.5].forEach((m,i)=>tone(root*m,.065,i===4?'triangle':'square',.18,i*.045));
   }
+  // Backward-compatible points counter hook used by older screen builds.
+  // Keep it defined so exporting BR never throws and blocks every page interaction.
+  function playPointsCountUp(points,rarity='COMMON'){
+    const spec=rewardSpec(rarity,points);
+    unlockAudio();
+    const start=Math.max(0,Number(points)||spec.points);
+    const root={COMMON:392,UNCOMMON:440,RARE:494,EPIC:554,LEGENDARY:622,MYTHIC:698}[spec.rarity]||494;
+    tone(root,.055,'square',.045);
+    tone(root*1.25,.055,'square',.055,.055);
+    tone(root*1.5,.065,'triangle',.065,.11);
+    return {points:start,rarity:spec.rarity};
+  }
+
   function playRewardReveal(points,rarity='COMMON'){
     unlockAudio();
     const spec=rewardSpec(rarity,points), ratio=Math.max(.1,Math.min(1,spec.points/100000));
