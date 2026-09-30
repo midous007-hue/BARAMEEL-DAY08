@@ -1,20 +1,28 @@
-BARAMEEL V20.6 — AUTOMATIC SCAN TICKET
+BARAMEEL V20.6.1 — AUTO TICKET + PIECE FIX
 
-This is a minimal Screen05-only update.
-No change is required to app.js, /scan, or the server-side reward draw.
+IMPORTANT:
+The previous V20.6 file correctly automated the ticket, but it omitted the existing
+barameel-v205-fix.js bridge. That bridge is required because the live scan response
+can contain the piece fields outside result.reward. Without it, points can update
+while the collection piece is not written to the client state.
 
-Install:
-1. Replace the root screen05.html with the file in this ZIP.
-2. Keep the existing app.js (V20.4) unchanged.
-3. Do NOT add ?ticket= to the URL.
-4. Hard refresh the game.
+This version restores that bridge and keeps the automatic ticket behavior.
 
-New flow:
-Screen05 opens -> /scan-ticket automatically issues/reuses a ticket.
-Open camera -> scan BARAMEEL-UNIVERSAL -> /scan consumes that ticket.
-SCAN MORE -> Screen05 -> a fresh ticket is created after the previous one was consumed.
-Refresh before scanning -> the existing valid ticket is reused by the server.
+FILES:
+- screen05.html
+- barameel-v205-fix.js
+- README.txt
 
-Expected:
-+100 and a piece on a normal scan, then Screen06.
-The universal QR remains exactly the same.
+INSTALL:
+1. Replace screen05.html in GitHub.
+2. Make sure barameel-v205-fix.js is also in the repo root (this ZIP includes it).
+3. Do NOT change app.js.
+4. Do NOT add ?ticket=.
+5. Commit and hard-refresh.
+
+EXPECTED:
+Screen05 -> automatic ticket -> one successful scan -> piece + points -> Screen06.
+SCAN MORE -> automatic fresh ticket after the consumed ticket.
+Refresh before scan -> same valid ticket reused.
+
+No changes to /scan, consume_universal_scan, or the reward draw.

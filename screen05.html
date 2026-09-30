@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d"><title>BARAMEEL RUN — Scan</title>
-<link rel="stylesheet" href="./styles.css?v=20260930-20.6"><script src="./config.js?v=20260930-20.6"></script>
+<link rel="stylesheet" href="./styles.css?v=20260930-20.6.1"><script src="./config.js?v=20260930-20.6.1"></script>
 </head><body>
 <main class="scan-stage">
   <img class="scan-art" src="./assets/screen05-scanner.webp" alt="Scan the checkpoint">
@@ -10,10 +10,11 @@
   <div id="cameraWindow" class="camera-window"><video id="video" playsinline webkit-playsinline muted autoplay></video><div class="scanner-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="scanner-line" aria-hidden="true"></div><div id="flash" class="success-flash"></div></div>
   <button id="open" class="scan-open-hotspot" aria-label="Open camera and scan"></button>
   <button id="collections" class="scan-collections-hotspot" aria-label="Direct to my collections"></button>
-  <canvas id="scanCanvas" hidden></canvas>
-  <div id="msg" class="scan-message" aria-live="polite"></div>
+  <canvas id="scanCanvas" hidden></canvas><div id="msg" class="scan-message" aria-live="polite"></div>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20260930-20.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20260930-20.4"></script>
+<script src="./barameel-v205-fix.js?v=20260930-20.6.1"></script>
 <script>
 (()=>{
  const video=document.getElementById('video'),cam=document.getElementById('cameraWindow'),msg=document.getElementById('msg'),canvas=document.getElementById('scanCanvas'),ctx=canvas.getContext('2d',{willReadFrequently:true}),open=document.getElementById('open'),back=document.getElementById('back'),collections=document.getElementById('collections'),flash=document.getElementById('flash');
@@ -31,8 +32,7 @@
        status('POINT CAMERA AT THE BARAMEEL QR');
        return ticketId;
      }
-     const text=r?.error||r?.code||'SCAN TICKET UNAVAILABLE';
-     status(text);
+     status(r?.error||r?.code||'SCAN TICKET UNAVAILABLE');
      BR.play('error');
      return null;
    })().finally(()=>{ticketPromise=null;});
@@ -73,16 +73,25 @@
    if(!q){status('NOT A BARAMEEL UNIVERSAL QR');BR.play('error');return;}
    locked=true;stop();BR.play('scan');flash.classList.add('on');
    const result=await BR.scanUniversal({ticketId});
-   if(result?.ok&&(result.type==='piece'||result.type==='bonus'||result.idempotent)){
+   const reward=result?.reward||BR.normalizeReward?.(result);
+   const hasPiece=!!(reward?.piece_number||reward?.piece||result?.piece_number||result?.piece);
+   if(result?.ok&&(result.type==='piece'||result.type==='bonus'||result.idempotent||hasPiece)){
      BR.play('confirm');BR.flash();
-     const reward={...result};
-     try{sessionStorage.setItem('barameelLastScan',JSON.stringify(reward));}catch{}
-     await BR.track('qr_scan',{reward,mode:'universal'});
-     setTimeout(()=>BR.go('screen06.html?collection='+(result.collection_id||'collection01')+'&image='+(result.image_id||'image01')),420);
+     const handoff={
+       ...result,
+       reward:reward||result.reward||null,
+       collection_id:result.collection_id||reward?.collection_id||reward?.collection||'collection01',
+       image_id:result.image_id||reward?.image_id||reward?.image||'image01',
+       piece_number:Number(result.piece_number||reward?.piece_number||reward?.piece||0),
+       points:Number(result.points??result.points_awarded??reward?.points??0)
+     };
+     try{sessionStorage.setItem('barameelLastScan',JSON.stringify(handoff))}catch{}
+     await BR.track('qr_scan',{reward:handoff,mode:'universal'});
+     setTimeout(()=>BR.go('screen06.html?collection='+encodeURIComponent(handoff.collection_id)+'&image='+encodeURIComponent(handoff.image_id)),420);
    }else{
-     const text=result?.code==='BACKEND_NOT_CONFIGURED'?'CONNECT THE BARAMEEL GAME SERVER FIRST':result?.error||'SCAN NOT AVAILABLE — TRY AGAIN';
-     status(text);BR.play('error');locked=false;
-     if(result?.code==='SCAN_TICKET_REQUIRED'||result?.code==='SCAN_TICKET_EXPIRED'||result?.code==='SCAN_TICKET_ALREADY_USED')ticketId=null;
+     status(result?.code==='BACKEND_NOT_CONFIGURED'?'CONNECT THE BARAMEEL GAME SERVER FIRST':result?.error||'SCAN NOT AVAILABLE — TRY AGAIN');
+     BR.play('error');locked=false;
+     if(['SCAN_TICKET_REQUIRED','SCAN_TICKET_EXPIRED','SCAN_TICKET_ALREADY_USED'].includes(result?.code))ticketId=null;
    }
  }
  ensureTicket();
