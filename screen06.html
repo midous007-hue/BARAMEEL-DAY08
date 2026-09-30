@@ -1,285 +1,52 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#0e2a3d">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — ALEXANDRIA</title>
-<link rel="stylesheet" href="./styles.css?v=20260930-20.7">
-<script src="./config.js?v=20260930-20.7"></script>
+<link rel="stylesheet" href="./styles.css?v=20260930-20.7.1"><script src="./config.js?v=20260930-20.7.1"></script>
 <style>
-/* V20.7: image loading layer. Existing layout/hotspots remain untouched. */
-.collection-image-layer{position:absolute;inset:0;pointer-events:none;z-index:2}
-.collection-master-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .12s ease;display:block}
-.collection-master-img.ready{opacity:1}
-.collection-loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;pointer-events:none;opacity:.85;font:900 12px/1.1 system-ui,sans-serif;letter-spacing:.08em}
+.collection-load{position:absolute;left:47.9%;top:32.5%;width:47.5%;height:22%;z-index:18;display:flex;align-items:center;justify-content:center;color:#f0c830;font:900 clamp(10px,2.5vw,18px)/1 Arial,sans-serif;text-shadow:2px 2px #000;pointer-events:none}
+.collection-master{position:absolute;left:47.90356%;top:32.50455%;width:47.48428%;height:21.95270%;z-index:19;display:block;object-fit:fill;opacity:0;transition:opacity .16s ease;pointer-events:none}
+.collection-master.ready{opacity:1}
 </style>
 </head>
 <body>
 <main class="stage collection-stage">
-  <img class="base" src="./assets/screen06-puzzle.webp" alt="ALEXANDRIA Collection">
-
-  <div id="masterLayer" class="collection-image-layer" aria-hidden="true"></div>
-  <div id="loading" class="collection-loading" hidden>LOADING</div>
-
-  <button id="back" class="hotspot" style="left:2%;top:2%;width:20%;height:7%" aria-label="Back"></button>
-
-  <select id="select" style="position:absolute;left:27%;top:13%;width:46%;z-index:20;height:4%;font-weight:900">
-    <option value="collection01">ALEXANDRIA</option>
-  </select>
-
-  <div id="heroGrid" class="hero-grid"></div>
-  <div id="reward" class="reward-text"></div>
-  <div id="thumbs" class="collection-thumbs"></div>
-
-  <button id="myRewards" class="hotspot" style="left:7%;top:81%;width:41%;height:9%" aria-label="My Rewards"></button>
-  <button id="scanMore" class="hotspot" style="left:52%;top:81%;width:41%;height:9%" aria-label="Scan More"></button>
-  <div id="completeFlash" class="barameel-flash"></div>
+<img class="base" src="./assets/screen06-puzzle.webp" alt="ALEXANDRIA Collection">
+<button id="back" class="hotspot" style="left:2%;top:2%;width:20%;height:7%" aria-label="Back"></button>
+<select id="select" style="position:absolute;left:27%;top:13%;width:46%;z-index:20;height:4%;font-weight:900"><option value="collection01">ALEXANDRIA</option></select>
+<div id="load" class="collection-load" hidden>LOADING</div>
+<img id="master" class="collection-master" alt="" decoding="async" fetchpriority="high">
+<div id="heroGrid" class="hero-grid"></div>
+<div id="reward" class="reward-text"></div>
+<div id="thumbs" class="collection-thumbs"></div>
+<button id="myRewards" class="hotspot" style="left:7%;top:81%;width:41%;height:9%" aria-label="My Rewards"></button>
+<button id="scanMore" class="hotspot" style="left:52%;top:81%;width:41%;height:9%" aria-label="Scan More"></button>
+<div id="completeFlash" class="barameel-flash"></div>
 </main>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20260930-20.4"></script>
-<script src="./barameel-v205-fix.js?v=20260930-20.6.1"></script>
-
+<script src="./app.js?v=20260930-20.7.1"></script>
+<script src="./barameel-v205-fix.js?v=20260930-20.7.1"></script>
 <script>
 (async()=>{
-  const cfg=await BR.fetchCollection('collection01');
-  const hero=document.getElementById('heroGrid');
-  const thumbs=document.getElementById('thumbs');
-  const reward=document.getElementById('reward');
-  const select=document.getElementById('select');
-  const layer=document.getElementById('masterLayer');
-  const loading=document.getElementById('loading');
-
-  const params=new URLSearchParams(location.search);
-  let handoff=null;
-  try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
-
-  const requestedImage=params.get('image')
-    || handoff?.image_id
-    || handoff?.image
-    || handoff?.reward?.image_id
-    || handoff?.reward?.image
-    || BR.state?.lastReward?.image_id
-    || 'image01';
-
-  const imageCache=new Map();
-
-  try{await BR.syncPlayer()}catch{}
-
-  function masterUrl(file){
-    if(!file)return '';
-    // collection.json now contains the real .webp path.
-    return './'+file.replace(/^\.?\//,'');
-  }
-
-  function loadMaster(file, priority='auto'){
-    const url=masterUrl(file);
-    if(!url)return Promise.resolve(null);
-    if(imageCache.has(url))return imageCache.get(url);
-
-    const p=new Promise(resolve=>{
-      const img=new Image();
-      img.decoding='async';
-      img.loading='eager';
-      try{img.fetchPriority=priority}catch{}
-      img.onload=async()=>{
-        try{await img.decode()}catch{}
-        resolve(img);
-      };
-      img.onerror=()=>resolve(null);
-      img.src=url;
-    });
-    imageCache.set(url,p);
-    return p;
-  }
-
-  async function showMaster(im){
-    layer.innerHTML='';
-    loading.hidden=false;
-
-    const img=document.createElement('img');
-    img.className='collection-master-img';
-    img.alt='';
-    img.decoding='async';
-    img.loading='eager';
-    try{img.fetchPriority='high'}catch{}
-    img.src=masterUrl(im.masterFile);
-    layer.appendChild(img);
-
-    const ready=await new Promise(resolve=>{
-      if(img.complete&&img.naturalWidth>0)return resolve(true);
-      img.onload=()=>resolve(true);
-      img.onerror=()=>resolve(false);
-    });
-
-    if(ready){
-      try{await img.decode()}catch{}
-      img.classList.add('ready');
-      loading.hidden=true;
-    }else{
-      loading.textContent='IMAGE ERROR';
-      // Fallback: try a direct Image object from the same path through cache.
-      const cached=await loadMaster(im.masterFile,'high');
-      if(cached){
-        img.src=cached.src;
-        try{await img.decode()}catch{}
-        img.classList.add('ready');
-        loading.hidden=true;
-      }
-    }
-    return ready;
-  }
-
-  function crop(el,p){
-    el.style.backgroundSize='300% 300%';
-    el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`;
-  }
-
-  function renderPieceGrid(im){
-    hero.innerHTML='';
-    const els=[];
-    for(let n=1;n<=9;n++){
-      const p=im.pieces[n-1];
-      const c=document.createElement('div');
-      c.className='hero-piece';
-      crop(c,p);
-      c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));
-      c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));
-      hero.appendChild(c);
-      els.push(c);
-    }
-    // Keep the existing CSS piece-grid behavior; once the master is decoded,
-    // also give each crop the same real WebP as a background for compatibility.
-    return loadMaster(im.masterFile,'high').then(img=>{
-      if(img){
-        const u=`url("${img.src}")`;
-        els.forEach(el=>el.style.backgroundImage=u);
-      }
-    });
-  }
-
-  function renderThumbGrid(im){
-    const b=document.createElement('button');
-    b.type='button';
-    b.className='collection-thumb';
-
-    const grid=document.createElement('div');
-    grid.className='thumb-grid';
-    for(let n=1;n<=9;n++){
-      const p=im.pieces[n-1];
-      const c=document.createElement('span');
-      c.className='thumb-piece';
-      crop(c,p);
-      c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));
-      c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));
-      grid.appendChild(c);
-    }
-    b.appendChild(grid);
-
-    const badge=document.createElement('span');
-    badge.className='thumb-index';
-    badge.textContent=im.imageNumber;
-    b.appendChild(badge);
-
-    const count=document.createElement('span');
-    count.className='thumb-count';
-    count.textContent=BR.count('collection01',im.imageId);
-    b.appendChild(count);
-
-    b.onclick=()=>{
-      BR.play('tap');
-      select.value=im.imageId;
-      render(im);
-    };
-    return {button:b,pieces:[...grid.children]};
-  }
-
-  const pos=[
-    [2.62,71.07,18.24,11.83],[22.12,71.07,17.92,11.83],[41.19,71.07,17.92,11.83],
-    [60.17,71.07,17.82,11.83],[79.35,71.07,18.24,11.83],
-    [2.62,83.38,18.24,12.07],[22.12,83.38,17.92,12.07],[41.19,83.38,17.92,12.07],
-    [60.17,83.38,17.92,12.07],[79.35,83.38,18.24,12.07]
-  ];
-
-  const thumbJobs=[];
-  cfg.images.forEach((im,idx)=>{
-    const job=renderThumbGrid(im);
-    job.button.style.cssText=`left:${pos[idx][0]}%;top:${pos[idx][1]}%;width:${pos[idx][2]}%;height:${pos[idx][3]}%`;
-    thumbs.appendChild(job.button);
-    thumbJobs.push({im,pieces:job.pieces});
-  });
-
-  // Preload all 10 WebP masters concurrently after the selected image is ready.
-  async function preloadAllMasters(){
-    await Promise.all(cfg.images.map(im=>loadMaster(im.masterFile,'low')));
-    thumbJobs.forEach(job=>{
-      const p=imageCache.get(masterUrl(job.im.masterFile));
-      if(p)p.then(img=>{
-        if(!img)return;
-        const u=`url("${img.src}")`;
-        job.pieces.forEach(el=>el.style.backgroundImage=u);
-      });
-    });
-  }
-
-  let renderToken=0;
-  async function render(im){
-    const token=++renderToken;
-    select.value=im.imageId;
-
-    // Selected image is decoded first. This is the only image that blocks
-    // the hero render.
-    await showMaster(im);
-    if(token!==renderToken)return;
-
-    await renderPieceGrid(im);
-    if(token!==renderToken)return;
-
-    // Start all remaining WebPs together after hero is ready.
-    preloadAllMasters();
-  }
-
-  const current=cfg.images.find(im=>im.imageId===requestedImage)||cfg.images[0];
-  render(current);
-
-  select.onchange=()=>{
-    BR.play('tap');
-    const im=cfg.images.find(x=>x.imageId===select.value)||cfg.images[0];
-    render(im);
-  };
-
-  if(handoff){
-    const points=Number(handoff.points??handoff.points_awarded??handoff.reward?.points??0);
-    if(points>0&&!handoff.duplicate){
-      reward.textContent='+'+points.toLocaleString();
-      BR.playPointsCountUp(points);
-    }
-
-    const rewardedImage=
-      handoff.image_id
-      ||handoff.image
-      ||handoff.reward?.image_id
-      ||handoff.reward?.image;
-
-    if(rewardedImage){
-      const im=cfg.images.find(x=>x.imageId===rewardedImage);
-      if(im){
-        select.value=im.imageId;
-        render(im);
-        if(BR.count('collection01',im.imageId)===9){
-          BR.playCompletionSound();
-          BR.flash();
-        }
-      }
-    }
-  }
-
-  document.getElementById('back').onclick=()=>BR.goAfter('screen05.html','back',180);
-  document.getElementById('myRewards').onclick=()=>BR.goAfter('screen04.html','confirm',180);
-  document.getElementById('scanMore').onclick=()=>BR.goAfter('screen05.html','scan',180);
-
-  BR.track('collection_view',{image_id:select.value});
+const cfg=await BR.fetchCollection('collection01'),hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs'),reward=document.getElementById('reward'),select=document.getElementById('select'),master=document.getElementById('master'),load=document.getElementById('load');
+const params=new URLSearchParams(location.search);let handoff=null;try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
+const requestedImage=params.get('image')||handoff?.image_id||handoff?.image||handoff?.reward?.image_id||handoff?.reward?.image||BR.state?.lastReward?.image_id||'image01';
+try{await BR.syncPlayer()}catch{}
+const cache=new Map();
+function urlFor(im){return './'+String(im.masterFile||'').replace(/^\.?\//,'').replace(/\.png$/i,'.webp')+'?v=20260930-20.7.1'}
+function crop(el,p){el.style.backgroundSize='300% 300%';el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`}
+function setGrid(im){hero.innerHTML='';const els=[];for(let n=1;n<=9;n++){const p=im.pieces[n-1],c=document.createElement('div');c.className='hero-piece';crop(c,p);c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));hero.appendChild(c);els.push(c)}return els}
+function loadImage(im,priority='low'){const u=urlFor(im);if(cache.has(u))return cache.get(u);const p=new Promise(resolve=>{const x=new Image();x.decoding='async';try{x.fetchPriority=priority}catch{}x.onload=async()=>{try{await x.decode()}catch{}resolve(x)};x.onerror=()=>resolve(null);x.src=u});cache.set(u,p);return p}
+async function show(im){load.hidden=false;load.textContent='LOADING';master.classList.remove('ready');master.removeAttribute('src');const x=await loadImage(im,'high');if(!x){load.textContent='IMAGE UNAVAILABLE';hero.innerHTML='';return false}master.src=x.src;try{await master.decode()}catch{}master.classList.add('ready');load.hidden=true;const els=setGrid(im);const bg=`url("${x.src}")`;els.forEach(e=>e.style.backgroundImage=bg);return true}
+const pos=[[2.62,71.07,18.24,11.83],[22.12,71.07,17.92,11.83],[41.19,71.07,17.92,11.83],[60.17,71.07,17.82,11.83],[79.35,71.07,18.24,11.83],[2.62,83.38,18.24,12.07],[22.12,83.38,17.92,12.07],[41.19,83.38,17.92,12.07],[60.17,83.38,17.92,12.07],[79.35,83.38,18.24,12.07]];
+const jobs=[];
+cfg.images.forEach((im,idx)=>{const b=document.createElement('button');b.type='button';b.className='collection-thumb';b.style.cssText=`left:${pos[idx][0]}%;top:${pos[idx][1]}%;width:${pos[idx][2]}%;height:${pos[idx][3]}%`;const grid=document.createElement('div');grid.className='thumb-grid';for(let n=1;n<=9;n++){const p=im.pieces[n-1],c=document.createElement('span');c.className='thumb-piece';crop(c,p);c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));grid.appendChild(c)}b.appendChild(grid);const badge=document.createElement('span');badge.className='thumb-index';badge.textContent=idx+1;b.appendChild(badge);const count=document.createElement('span');count.className='thumb-count';count.textContent=BR.count('collection01',im.imageId);b.appendChild(count);b.onclick=()=>{BR.play('tap');select.value=im.imageId;show(im)};thumbs.appendChild(b);jobs.push({im,pieces:[...grid.children]})});
+async function preloadOthers(selected){await Promise.all(cfg.images.filter(im=>im.imageId!==selected.imageId).map(im=>loadImage(im,'low')));jobs.forEach(j=>{const p=cache.get(urlFor(j.im));if(p)p.then(x=>{if(x)j.pieces.forEach(e=>e.style.backgroundImage=`url("${x.src}")`)})})}
+const initial=cfg.images.find(im=>im.imageId===requestedImage)||cfg.images[0];select.value=initial.imageId;await show(initial);preloadOthers(initial);
+select.onchange=()=>{BR.play('tap');const im=cfg.images.find(x=>x.imageId===select.value)||cfg.images[0];show(im)};
+if(handoff){const points=Number(handoff.points??handoff.points_awarded??handoff.reward?.points??0);if(points>0&&!handoff.duplicate){reward.textContent='+'+points.toLocaleString();BR.playPointsCountUp(points)}const ri=handoff.image_id||handoff.image||handoff.reward?.image_id||handoff.reward?.image;if(ri){const im=cfg.images.find(x=>x.imageId===ri);if(im){select.value=im.imageId;await show(im);if(BR.count('collection01',im.imageId)===9){BR.playCompletionSound();BR.flash()}}}}
+back.onclick=()=>BR.goAfter('screen05.html','back',180);myRewards.onclick=()=>BR.goAfter('screen04.html','confirm',180);scanMore.onclick=()=>BR.goAfter('screen05.html','scan',180);BR.track('collection_view',{image_id:select.value});
 })();
 </script>
 </body>
