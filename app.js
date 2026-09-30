@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261001-21.2';
+  const VERSION = '20261001-21.3';
   const STORAGE = 'barameel.world.player.v20.4';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -100,7 +100,6 @@
     const end=Math.max(.05,(span-120)/1000);
     tone(root*2.5,.11,'triangle',.09+.05*ratio,end);
     tone(root*3,.14,'sine',.075+.06*ratio,end+.075);
-    if(['EPIC','LEGENDARY','MYTHIC'].includes(spec.rarity)) playJackpot(spec.rarity,end+.16);
     return spec;
   }
   function playJackpot(rarity='EPIC',delay=.15){
@@ -190,7 +189,7 @@
   async function fetchCollection(id='collection01'){
     const key='barameel.collection.'+id+'.v21.2';
     try{const c=sessionStorage.getItem(key);if(c)return JSON.parse(c);}catch{}
-    const r=await fetch(`./assets/collections/${id}/collection.json?v=20261001-21.2`,{cache:'no-store'});
+    const r=await fetch(`./assets/collections/${id}/collection.json?v=20261001-21.3`,{cache:'no-store'});
     if(!r.ok)throw Error('COLLECTION_UNAVAILABLE');
     const d=await r.json();try{sessionStorage.setItem(key,JSON.stringify(d));}catch{}return d;
   }
