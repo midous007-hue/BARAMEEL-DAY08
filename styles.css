@@ -1,7 +1,7 @@
 /* BARAMEEL — V20.8 DESIGN PRECISION
    Geometry is normalized to the approved artwork bounds.
 */
-@import url('https://fonts.googleapis.com/css2?family=Righteous&family=Roboto+Condensed:wght@700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Righteous&family=Roboto+Condensed:wght@700;900&display=swap');
 :root{--teal:#0e2a3d;--yellow:#f0c830;--orange:#c2571a;--cream:#f5e9dc;--red:#d92f25;--ink:#071a20}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#061f27;color:#fff;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif}
@@ -106,7 +106,7 @@ button,input,select{font:inherit}
 .collection-back{position:absolute;z-index:70;left:2.5%;top:1.0%;width:12.0%;height:7.0%;border:0;background:transparent;padding:0;cursor:pointer;touch-action:manipulation}
 /* The artwork already contains the arrow and circle. The transparent hotspot follows it exactly. */
 .collection-select{position:absolute;z-index:56;left:50.0%;top:26.35%;width:38.5%;height:4.35%;border:0;background:transparent;color:transparent;font-size:0;text-align:center;text-align-last:center;text-transform:uppercase;outline:none;appearance:none;padding:0;line-height:1;cursor:pointer}
-.collection-name{position:absolute;z-index:55;left:52.2%;top:26.45%;width:31.0%;height:4.0%;display:flex;align-items:center;justify-content:center;color:#f7e8bd;font-family:'Righteous','Arial Black',Impact,sans-serif;font-size:clamp(12px,3.25vw,28px);font-weight:400;letter-spacing:.035em;line-height:1;text-transform:uppercase;text-align:center;text-shadow:2px 2px 0 #071a20,0 0 4px rgba(247,189,39,.24);pointer-events:none;white-space:nowrap}
+ .collection-name{position:absolute;z-index:55;left:52.35%;top:26.55%;width:30.7%;height:3.65%;display:flex;align-items:center;justify-content:center;color:#f7e8bd;font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:clamp(11px,2.62vw,23px);font-weight:400;letter-spacing:.045em;line-height:1;text-transform:uppercase;text-align:center;text-shadow:1.5px 1.5px 0 #071a20,0 0 3px rgba(247,189,39,.30);pointer-events:none;white-space:nowrap;transform:translateY(-1%)}
 .collection-select option{color:#071a20;background:var(--cream)}
 .hero-grid{position:absolute;z-index:20;left:47.90%;top:31.90%;width:47.65%;height:23.35%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);column-gap:1.55%;row-gap:1.45%;padding:0;overflow:hidden;pointer-events:none}
 .hero-piece{min-width:0;min-height:0;background-repeat:no-repeat;background-color:transparent;background-clip:padding-box}
@@ -118,24 +118,27 @@ button,input,select{font:inherit}
 .points-badge.revealing{animation:pointsPop .46s cubic-bezier(.16,.9,.2,1) both}
 @keyframes pointsPop{0%{opacity:.15;transform:scale(.68) rotate(-4deg)}65%{opacity:1;transform:scale(1.08) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 .points-badge.common{filter:drop-shadow(0 4px 0 rgba(0,0,0,.42)) drop-shadow(0 0 5px rgba(247,189,39,.18))}.points-badge.uncommon{filter:drop-shadow(0 4px 0 rgba(0,0,0,.42)) drop-shadow(0 0 7px rgba(247,189,39,.28))}.points-badge.rare{filter:drop-shadow(0 4px 0 rgba(0,0,0,.42)) drop-shadow(0 0 10px rgba(247,189,39,.38))}.points-badge.epic{filter:drop-shadow(0 4px 0 rgba(0,0,0,.42)) drop-shadow(0 0 13px rgba(247,189,39,.50))}.points-badge.legendary{filter:drop-shadow(0 4px 0 rgba(0,0,0,.42)) drop-shadow(0 0 18px rgba(247,189,39,.66))}.points-badge.mythic{filter:drop-shadow(0 4px 0 rgba(0,0,0,.42)) drop-shadow(0 0 24px rgba(247,189,39,.84))}
-.reward-flash{position:absolute;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;overflow:hidden;mix-blend-mode:screen;}
-.reward-flash-image{width:min(72%,620px);max-height:26%;height:auto;object-fit:contain;filter:brightness(1.08) contrast(1.06) drop-shadow(0 0 18px rgba(255,208,48,.55));transform:translateY(-2%) scale(.72) rotate(-2deg);opacity:0;}
-.reward-flash.on{animation:rewardFlashFade .92s ease-out both}
-.reward-flash.on .reward-flash-image{animation:rewardMirrorFlash .92s cubic-bezier(.16,.82,.18,1) both}
-@keyframes rewardFlashFade{0%{opacity:0}12%{opacity:.92}34%{opacity:.72}55%{opacity:.38}100%{opacity:0}}
-@keyframes rewardMirrorFlash{0%{opacity:0;transform:translateY(-4%) scale(.72) rotate(-3deg);filter:brightness(1) contrast(1) drop-shadow(0 0 0 rgba(255,208,48,0))}16%{opacity:1;transform:translateY(-2%) scale(1.04) rotate(1deg);filter:brightness(1.45) contrast(1.12) drop-shadow(0 0 26px rgba(255,208,48,.82))}32%{opacity:.94;transform:translateY(-2%) scale(1) rotate(0)}62%{opacity:.46;transform:translateY(-3%) scale(1.015) rotate(-.5deg)}100%{opacity:0;transform:translateY(-2%) scale(1.08) rotate(1deg);filter:brightness(1.15) contrast(1.04) drop-shadow(0 0 8px rgba(255,208,48,.2))}}
+ .reward-flash{position:absolute;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;overflow:hidden;background:radial-gradient(ellipse 48% 34% at 50% 48%,rgba(255,238,126,.18) 0%,rgba(255,191,28,.10) 34%,rgba(0,0,0,0) 72%);isolation:isolate}
+.reward-flash-image{position:relative;z-index:3;width:min(84%,760px);max-height:31%;height:auto;object-fit:contain;opacity:0;filter:drop-shadow(0 8px 0 rgba(0,0,0,.45)) drop-shadow(0 0 18px rgba(255,208,48,.48));transform:translateY(-1%) scale(.72) rotate(-2deg)}
+.reward-flash-glow{position:absolute;z-index:1;width:min(78%,700px);height:30%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,221,72,.52) 0%,rgba(255,126,20,.20) 42%,rgba(255,255,255,0) 74%);filter:blur(18px);opacity:0;transform:scale(.55)}
+.reward-flash-sheen{position:absolute;z-index:4;left:-22%;top:-35%;width:17%;height:170%;opacity:0;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.12),rgba(255,255,255,.88),rgba(255,255,255,.12),rgba(255,255,255,0));transform:skewX(-18deg) rotate(10deg);filter:blur(1px)}
+.reward-flash.on{animation:rewardFlashFade 3s ease-out both}
+.reward-flash.on .reward-flash-image{animation:rewardCardReveal 3s cubic-bezier(.16,.82,.18,1) both}
+.reward-flash.on .reward-flash-glow{animation:rewardGlow 3s ease-out both}
+.reward-flash.on .reward-flash-sheen{animation:rewardSheen 2.35s ease-in-out .28s both}
+@keyframes rewardFlashFade{0%{opacity:0}7%{opacity:1}22%{opacity:1}72%{opacity:.98}100%{opacity:0}}
+@keyframes rewardCardReveal{0%{opacity:0;transform:translateY(4%) scale(.70) rotate(-3deg);filter:drop-shadow(0 4px 0 rgba(0,0,0,.20)) drop-shadow(0 0 0 rgba(255,208,48,0)) brightness(1)}10%{opacity:1;transform:translateY(-1%) scale(1.04) rotate(1deg);filter:drop-shadow(0 8px 0 rgba(0,0,0,.45)) drop-shadow(0 0 34px rgba(255,208,48,.95)) brightness(1.10)}23%{opacity:1;transform:translateY(-1%) scale(1) rotate(0);filter:drop-shadow(0 8px 0 rgba(0,0,0,.45)) drop-shadow(0 0 22px rgba(255,208,48,.68)) brightness(1.02)}70%{opacity:1;transform:translateY(-1%) scale(1) rotate(0);filter:drop-shadow(0 8px 0 rgba(0,0,0,.45)) drop-shadow(0 0 20px rgba(255,208,48,.58)) brightness(1)}100%{opacity:0;transform:translateY(-1%) scale(1.045) rotate(1deg);filter:drop-shadow(0 8px 0 rgba(0,0,0,.35)) drop-shadow(0 0 8px rgba(255,208,48,.22)) brightness(1.02)}}
+@keyframes rewardGlow{0%{opacity:0;transform:scale(.55)}10%{opacity:.9;transform:scale(1.04)}28%{opacity:.38;transform:scale(1)}70%{opacity:.28;transform:scale(1.02)}100%{opacity:0;transform:scale(1.10)}}
+@keyframes rewardSheen{0%{opacity:0;left:-22%}18%{opacity:.85}55%{opacity:.70;left:104%}100%{opacity:0;left:122%}}
+/* Legacy CSS jackpot shape is kept hidden; the supplied JACKPOT artwork is now the single visual flash. */
+.jackpot-flash{display:none!important}
+.jackpot-word{display:none!important}
 
-.jackpot-flash{position:absolute;z-index:85;left:61.5%;top:56.6%;width:27.0%;height:9.1%;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transform:scale(.62) rotate(-5deg);}
-.jackpot-flash::before{content:'';position:absolute;inset:-4%;background:#d92f25;clip-path:polygon(50% 0%,61% 17%,79% 9%,82% 28%,100% 35%,87% 50%,100% 66%,81% 71%,78% 92%,60% 83%,50% 100%,39% 83%,21% 92%,18% 72%,0% 66%,13% 50%,0% 35%,19% 28%,21% 9%,39% 17%);}
-.jackpot-flash::after{content:'';position:absolute;inset:0;background:#ffe14a;clip-path:polygon(50% 0%,61% 17%,79% 9%,82% 28%,100% 35%,87% 50%,100% 66%,81% 71%,78% 92%,60% 83%,50% 100%,39% 83%,21% 92%,18% 72%,0% 66%,13% 50%,0% 35%,19% 28%,21% 9%,39% 17%);}
-.jackpot-flash.on{animation:jackpotBurst 1.15s cubic-bezier(.16,.85,.2,1) both}
-.jackpot-word{position:relative;z-index:2;color:#071a20;font-family:'Righteous','Arial Black',Impact,sans-serif;font-size:clamp(14px,4.8vw,39px);font-weight:400;line-height:.92;text-align:center;text-transform:uppercase;text-shadow:1px 2px 0 rgba(255,247,210,.75);padding:0 4%;white-space:nowrap}
-@keyframes jackpotBurst{0%{opacity:0;transform:scale(.55) rotate(-8deg)}18%{opacity:1;transform:scale(1.12) rotate(2deg)}38%{opacity:1;transform:scale(1) rotate(0)}78%{opacity:1;transform:scale(1) rotate(0)}100%{opacity:0;transform:scale(.82) rotate(4deg)}}
 .collection-thumbs{position:absolute;inset:0;z-index:35;pointer-events:none}
 .collection-thumb{position:absolute;border:0;background:transparent;padding:0;overflow:hidden;pointer-events:auto;cursor:pointer;min-width:0;min-height:0}
 .thumb-grid{position:absolute;left:4.70%;top:17.10%;width:89.40%;height:75.00%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);column-gap:3px;row-gap:2px;padding:0;overflow:hidden;z-index:2}
 .thumb-piece{min-width:0;min-height:0;background-repeat:no-repeat;background-color:transparent;background-clip:padding-box}
-.collection-thumb::before{content:attr(data-num);position:absolute;z-index:5;left:2.2%;top:1.4%;width:24.0%;aspect-ratio:1/1;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f6c51b;color:#071a20;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:clamp(11px,2.65vw,23px);font-weight:900;line-height:1;border:2px solid #071a20;box-shadow:0 2px 0 rgba(0,0,0,.55),0 0 0 1px #f6c51b;text-shadow:none;pointer-events:none}
+ .collection-thumb::before{content:attr(data-num);position:absolute;z-index:5;left:2.2%;top:1.4%;width:24.0%;aspect-ratio:1/1;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f6c51b;color:#fff;font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:clamp(9px,2.02vw,18px);font-weight:400;line-height:1;letter-spacing:.015em;border:2px solid #071a20;box-shadow:0 2px 0 rgba(0,0,0,.55),0 0 0 1px #f6c51b,0 0 8px rgba(246,197,27,.28);text-shadow:1px 2px 0 #071a20;pointer-events:none}
 /* No /9 or collected-count text: the supplied artwork intentionally owns the card footer. */
 .collection-thumb:active{transform:scale(.985)}
 /* Exact transparent hotspots for the new artwork. */

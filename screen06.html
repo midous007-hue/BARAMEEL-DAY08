@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — ALEXANDRIA</title>
-<link rel="stylesheet" href="./styles.css?v=20261001-21.5"><script src="./config.js?v=20261001-21.5"></script>
+<link rel="stylesheet" href="./styles.css?v=20261001-21.6"><script src="./config.js?v=20261001-21.5"></script>
 <style>#imagePreload{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}</style>
 </head>
 <body>
@@ -13,7 +13,7 @@
   <select id="select" class="collection-select" aria-label="Select collection"><option value="collection01">ALEXANDRIA</option></select><div id="collectionName" class="collection-name" aria-hidden="true">ALEXANDRIA</div>
   <div id="heroGrid" class="hero-grid"></div>
   <div id="pointsBadge" class="points-badge common"><span id="pointsNumber" class="points-number">0</span></div>
-  <div id="rewardFlash" class="reward-flash" aria-hidden="true"><img id="rewardFlashImage" class="reward-flash-image" alt=""></div>
+  <div id="rewardFlash" class="reward-flash" aria-hidden="true"><div class="reward-flash-glow"></div><img id="rewardFlashImage" class="reward-flash-image" alt=""><div class="reward-flash-sheen"></div></div>
   <div id="jackpotFlash" class="jackpot-flash" aria-live="polite"><span id="jackpotWord" class="jackpot-word">JACKPOT</span></div>
   <div id="thumbs" class="collection-thumbs"></div>
   <button id="myRewards" class="hotspot" aria-label="My Rewards"></button>
@@ -41,7 +41,7 @@
   const completeFlash=document.getElementById('completeFlash');
   const cfg=await BR.fetchCollection('collection01');
   collectionName.textContent=String(cfg.displayName||'ALEXANDRIA').toUpperCase();
-  const rewardFlashAssets={SUPER:'./assets/rewards/reward-super.webp?v=20261001-21.4',AMAZING:'./assets/rewards/reward-amazing.webp?v=20261001-21.4',SPECTACULAR:'./assets/rewards/reward-spectacular.webp?v=20261001-21.4'};
+  const rewardFlashAssets={SUPER:'./assets/rewards/reward-super.webp?v=20261001-21.6',AMAZING:'./assets/rewards/reward-amazing.webp?v=20261001-21.6',SPECTACULAR:'./assets/rewards/reward-spectacular.webp?v=20261001-21.6',JACKPOT:'./assets/rewards/reward-jackpot.webp?v=20261001-21.6'};
   Object.values(rewardFlashAssets).forEach(src=>{const i=new Image();i.decoding='async';i.src=src});
   let handoff=null;try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
   const params=new URLSearchParams(location.search);
@@ -103,15 +103,18 @@
   function showRewardFlash(rarity,points){
     const word=rewardFlashFor(rarity,points);
     if(word==='JACKPOT'){
-      jackpotWord.textContent='JACKPOT';
-      jackpotFlash.classList.remove('on');void jackpotFlash.offsetWidth;jackpotFlash.classList.add('on');
+      rewardFlashImage.src=rewardFlashAssets.JACKPOT;
+      rewardFlashImage.alt='JACKPOT';
+      jackpotFlash.classList.remove('on');
+      rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
+      setTimeout(()=>rewardFlash.classList.remove('on'),3000);
       return;
     }
     const src=rewardFlashAssets[word];
     if(!src)return;
     rewardFlashImage.src=src;
     rewardFlashImage.alt=word;
-    rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');setTimeout(()=>rewardFlash.classList.remove('on'), word==='SUPER'?720:word==='AMAZING'?860:980);
+    rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');setTimeout(()=>rewardFlash.classList.remove('on'),3000);
   }
   async function revealReward(points,rarity){
     const safePoints=Math.max(10000,Number(points)||10000);
