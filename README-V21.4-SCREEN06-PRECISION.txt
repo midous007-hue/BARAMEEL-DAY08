@@ -9,3 +9,5 @@ Fixes in this build:
 - Inner 3x3 thumbnail grid is tightened to the actual printed cells so artwork stays behind the numbered yellow circles and inside the gold frame.
 - No /9 or extra footer text is added.
 - Supabase / Universal QR / Auto Ticket / Player state architecture is unchanged.
+
+V21.4.1 interaction hotfix: fixed Screen06 JavaScript TDZ initialization bug that prevented all controls from responding. No backend/schema changes.

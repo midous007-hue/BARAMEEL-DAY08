@@ -26,12 +26,23 @@
 <script src="./barameel-v205-fix.js?v=20261001-21.4"></script>
 <script>
 (async()=>{
+  // Resolve all DOM references before any access. This prevents the TDZ ReferenceError
+  // that previously stopped the entire Screen 06 interaction layer from initializing.
+  const collectionName=document.getElementById('collectionName');
+  const rewardFlash=document.getElementById('rewardFlash');
+  const rewardFlashImage=document.getElementById('rewardFlashImage');
+  const hero=document.getElementById('heroGrid');
+  const thumbs=document.getElementById('thumbs');
+  const pointsBadge=document.getElementById('pointsBadge');
+  const pointsNumber=document.getElementById('pointsNumber');
+  const jackpotFlash=document.getElementById('jackpotFlash');
+  const jackpotWord=document.getElementById('jackpotWord');
+  const select=document.getElementById('select');
+  const completeFlash=document.getElementById('completeFlash');
   const cfg=await BR.fetchCollection('collection01');
   collectionName.textContent=String(cfg.displayName||'ALEXANDRIA').toUpperCase();
-  const rewardFlash=document.getElementById('rewardFlash'),rewardFlashImage=document.getElementById('rewardFlashImage');
   const rewardFlashAssets={SUPER:'./assets/rewards/reward-super.webp?v=20261001-21.4',AMAZING:'./assets/rewards/reward-amazing.webp?v=20261001-21.4',SPECTACULAR:'./assets/rewards/reward-spectacular.webp?v=20261001-21.4'};
   Object.values(rewardFlashAssets).forEach(src=>{const i=new Image();i.decoding='async';i.src=src});
-  const hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs'),pointsBadge=document.getElementById('pointsBadge'),pointsNumber=document.getElementById('pointsNumber'),jackpotFlash=document.getElementById('jackpotFlash'),jackpotWord=document.getElementById('jackpotWord'),select=document.getElementById('select'),collectionName=document.getElementById('collectionName'),completeFlash=document.getElementById('completeFlash');
   let handoff=null;try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
   const params=new URLSearchParams(location.search);
   const requestedImage=params.get('image')||handoff?.image_id||handoff?.image||handoff?.reward?.image_id||handoff?.reward?.image||BR.state?.lastReward?.image_id||'image01';
