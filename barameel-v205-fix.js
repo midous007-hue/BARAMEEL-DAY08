@@ -13,7 +13,8 @@
       const piece_number=Number(raw.piece_number??raw.piece??raw.pieceNumber);
       if(collection_id&&image_id&&Number.isFinite(piece_number)&&piece_number>0){
         return {...raw,collection_id:String(collection_id),image_id:String(image_id),piece_number,
-          points:Number(raw.points??raw.points_awarded??result?.points_awarded??result?.points??0)};
+          points:Number(raw.points??raw.points_awarded??result?.points_awarded??result?.points??0),
+          rarity:String(raw.rarity??result?.rarity??'COMMON').toUpperCase()};
       }
     }
     return null;
@@ -27,7 +28,7 @@
       collected[c]={...(collected[c]||{})};
       collected[c][i]=Array.from(new Set([...(collected[c][i]||[]).map(Number),p])).filter(Number.isFinite).sort((a,b)=>a-b);
       window.BR.mergePlayer({collected,lastReward:reward});
-      return {...result,reward,collection_id:c,image_id:i,piece_number:p};
+      return {...result,reward,collection_id:c,image_id:i,piece_number:p,points:reward.points,rarity:reward.rarity};
     }
     return result;
   };

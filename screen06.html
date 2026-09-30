@@ -1,131 +1,82 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — ALEXANDRIA</title>
-<link rel="stylesheet" href="./styles.css?v=20260930-20.7.2">
-<script src="./config.js?v=20260930-20.7.2"></script>
-<style>
-/* WebP performance layer: invisible preload/decode only. The visible artwork
-   remains the original 3x3 crop grid; no full-master overlay is painted. */
-#imagePreload{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}
-</style>
+<link rel="stylesheet" href="./styles.css?v=20260930-20.8"><script src="./config.js?v=20260930-20.8"></script>
+<style>#imagePreload{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}</style>
 </head>
 <body>
 <main class="stage collection-stage">
-<img class="base" src="./assets/screen06-puzzle.webp" alt="ALEXANDRIA Collection">
-<button id="back" class="hotspot" style="left:2%;top:2%;width:20%;height:7%" aria-label="Back"></button>
-<select id="select" class="collection-select" aria-label="Select collection"><option value="collection01">ALEXANDRIA</option></select>
-<div id="heroGrid" class="hero-grid"></div>
-<div id="reward" class="reward-text"></div>
-<div id="thumbs" class="collection-thumbs"></div>
-<button id="myRewards" class="hotspot" style="left:7%;top:81%;width:41%;height:9%" aria-label="My Rewards"></button>
-<button id="scanMore" class="hotspot" style="left:52%;top:81%;width:41%;height:9%" aria-label="Scan More"></button>
-<div id="completeFlash" class="barameel-flash"></div>
-<div id="imagePreload"></div>
+  <img class="base" src="./assets/screen06-puzzle.webp" alt="ALEXANDRIA Collection">
+  <button id="back" class="collection-back" aria-label="Back"></button>
+  <select id="select" class="collection-select" aria-label="Select collection"><option value="collection01">ALEXANDRIA</option></select>
+  <div id="heroGrid" class="hero-grid"></div>
+  <div id="reward" class="reward-text" aria-live="polite"></div>
+  <div id="thumbs" class="collection-thumbs"></div>
+  <button id="myRewards" class="hotspot" style="left:44.5%;top:62.8%;width:24.8%;height:5.2%" aria-label="My Rewards"></button>
+  <button id="scanMore" class="hotspot" style="left:70.0%;top:62.8%;width:25.0%;height:5.2%" aria-label="Scan More"></button>
+  <div id="completeFlash" class="complete-flash"></div>
+  <div id="imagePreload"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20260930-20.4"></script>
-<script src="./barameel-v205-fix.js?v=20260930-20.6.1"></script>
+<script src="./app.js?v=20260930-20.8"></script>
+<script src="./barameel-v205-fix.js?v=20260930-20.8"></script>
 <script>
 (async()=>{
   const cfg=await BR.fetchCollection('collection01');
-  const hero=document.getElementById('heroGrid');
-  const thumbs=document.getElementById('thumbs');
-  const reward=document.getElementById('reward');
-  const select=document.getElementById('select');
-  const preloadBox=document.getElementById('imagePreload');
+  const hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs'),reward=document.getElementById('reward'),select=document.getElementById('select'),completeFlash=document.getElementById('completeFlash');
+  let handoff=null;try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
   const params=new URLSearchParams(location.search);
-  let handoff=null; try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
   const requestedImage=params.get('image')||handoff?.image_id||handoff?.image||handoff?.reward?.image_id||handoff?.reward?.image||BR.state?.lastReward?.image_id||'image01';
   const cache=new Map();
-
   try{await BR.syncPlayer()}catch{}
-
-  function url(file){
-    if(!file)return '';
-    let s=String(file).replace(/^\.\//,'');
-    if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s)) s=s.replace(/\.png$/i,'.webp');
-    return './'+s+'?v=20260930-20.7.2';
-  }
-  function load(file,priority='low'){
-    const u=url(file); if(!u)return Promise.resolve(null);
-    if(cache.has(u))return cache.get(u);
-    const p=new Promise(resolve=>{
-      const img=new Image(); img.decoding='async'; img.loading='eager';
-      try{img.fetchPriority=priority}catch{}
-      img.onload=async()=>{try{await img.decode()}catch{} resolve(img)};
-      img.onerror=()=>resolve(null); img.src=u;
-    });
-    cache.set(u,p); return p;
-  }
-  function crop(el,p){
-    el.style.backgroundSize='300% 300%';
-    el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`;
-  }
-  async function paintMaster(im){
-    const img=await load(im.masterFile,'high');
-    if(!img)return false;
-    const bg=`url("${img.src}")`;
-    for(let n=1;n<=9;n++){
-      const p=im.pieces[n-1], c=hero.children[n-1];
-      if(c){ c.style.backgroundImage=bg; c.style.backgroundSize='300% 300%'; c.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`; }
-    }
-    return true;
-  }
+  function url(file){if(!file)return '';let s=String(file).replace(/^\.\//,'');if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s))s=s.replace(/\.png$/i,'.webp');return './'+s+'?v=20260930-20.8'}
+  function load(file,priority='low'){const u=url(file);if(!u)return Promise.resolve(null);if(cache.has(u))return cache.get(u);const p=new Promise(resolve=>{const img=new Image();img.decoding='async';img.loading='eager';try{img.fetchPriority=priority}catch{}img.onload=async()=>{try{await img.decode()}catch{}resolve(img)};img.onerror=()=>resolve(null);img.src=u});cache.set(u,p);return p}
+  function crop(el,p){el.style.backgroundSize='300% 300%';el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`}
+  function rarityFor(im,n){return String(im.pieces[n-1]?.rarity||'COMMON').toUpperCase()}
+  function piecePointsFor(im,n){return Number(im.pieces[n-1]?.points||BR.RARITY?.[rarityFor(im,n)]?.points||10000)}
+  function isComplete(im){return BR.count('collection01',im.imageId)>=9}
+  async function paintMaster(im){const img=await load(im.masterFile,'high');if(!img)return false;const bg=`url("${img.src}")`;if(isComplete(im)){hero.style.backgroundImage=bg;hero.style.backgroundSize='100% 100%';hero.style.backgroundPosition='center';return true}for(let n=1;n<=9;n++){const p=im.pieces[n-1],c=hero.children[n-1];if(c){c.style.backgroundImage=bg;c.style.backgroundSize='300% 300%';c.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`}}return true}
   function renderHero(im){
-    hero.innerHTML='';
-    for(let n=1;n<=9;n++){
-      const p=im.pieces[n-1], c=document.createElement('div');
-      c.className='hero-piece';
-      crop(c,p);
-      c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));
-      c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));
-      hero.appendChild(c);
-    }
+    hero.classList.remove('completed');hero.style.backgroundImage='';hero.innerHTML='';
+    if(isComplete(im)){hero.classList.add('completed');paintMaster(im);return}
+    for(let n=1;n<=9;n++){const p=im.pieces[n-1],c=document.createElement('div');c.className='hero-piece';crop(c,p);c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));hero.appendChild(c)}
     paintMaster(im);
   }
   const pos=[
-    [2.62,71.07,18.24,11.83],[22.12,71.07,17.92,11.83],[41.19,71.07,17.92,11.83],
-    [60.17,71.07,17.82,11.83],[79.35,71.07,18.24,11.83],
-    [2.62,83.38,18.24,12.07],[22.12,83.38,17.92,12.07],[41.19,83.38,17.92,12.07],
-    [60.17,83.38,17.92,12.07],[79.35,83.38,18.24,12.07]
+    [2.62,69.25,18.24,11.83],[22.12,69.25,17.92,11.83],[41.19,69.25,17.92,11.83],[60.17,69.25,17.82,11.83],[79.35,69.25,18.24,11.83],
+    [2.62,81.25,18.24,12.07],[22.12,81.25,17.92,12.07],[41.19,81.25,17.92,12.07],[60.17,81.25,17.92,12.07],[79.35,81.25,18.24,12.07]
   ];
   const jobs=[];
   cfg.images.forEach((im,idx)=>{
-    const b=document.createElement('button'); b.type='button'; b.className='collection-thumb';
-    b.style.cssText=`left:${pos[idx][0]}%;top:${pos[idx][1]}%;width:${pos[idx][2]}%;height:${pos[idx][3]}%`;
-    const grid=document.createElement('div'); grid.className='thumb-grid';
-    for(let n=1;n<=9;n++){
-      const p=im.pieces[n-1], c=document.createElement('span'); c.className='thumb-piece'; crop(c,p);
-      c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));
-      c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));
-      grid.appendChild(c);
-    }
+    const b=document.createElement('button');b.type='button';b.className='collection-thumb';b.style.cssText=`left:${pos[idx][0]}%;top:${pos[idx][1]}%;width:${pos[idx][2]}%;height:${pos[idx][3]}%`;
+    const grid=document.createElement('div');grid.className='thumb-grid';
+    for(let n=1;n<=9;n++){const p=im.pieces[n-1],c=document.createElement('span');c.className='thumb-piece';crop(c,p);c.classList.toggle('is-missing',!BR.hasPiece('collection01',im.imageId,n));c.classList.toggle('is-collected',BR.hasPiece('collection01',im.imageId,n));grid.appendChild(c)}
     b.appendChild(grid);
-    const badge=document.createElement('span'); badge.className='thumb-index'; badge.textContent=idx+1; b.appendChild(badge);
-    const count=document.createElement('span'); count.className='thumb-count'; count.textContent=BR.count('collection01',im.imageId); b.appendChild(count);
+    const count=document.createElement('span');count.className='thumb-count';count.textContent=BR.count('collection01',im.imageId);b.appendChild(count);
     b.onclick=()=>{BR.play('tap');select.value=im.imageId;render(im)};
-    thumbs.appendChild(b); jobs.push({im,pieces:[...grid.children]});
+    thumbs.appendChild(b);jobs.push({im,pieces:[...grid.children]});
   });
-  function applyThumbs(im,img){
-    if(!img)return;
-    const u=`url("${img.src}")`; const job=jobs.find(x=>x.im.imageId===im.imageId); if(job)job.pieces.forEach(el=>el.style.backgroundImage=u);
+  function applyThumbs(im,img){if(!img)return;const u=`url("${img.src}")`;const job=jobs.find(x=>x.im.imageId===im.imageId);if(job)job.pieces.forEach(el=>el.style.backgroundImage=u)}
+  async function preloadAll(){const loaded=await Promise.all(cfg.images.map(im=>load(im.masterFile,'low')));loaded.forEach((img,i)=>applyThumbs(cfg.images[i],img))}
+  function render(im){select.value=im.imageId;renderHero(im);load(im.masterFile,'high').then(img=>applyThumbs(im,img));preloadAll()}
+  function animateNumber(target,duration){const start=0;const t0=performance.now();return new Promise(resolve=>{function step(now){const p=Math.min(1,(now-t0)/duration);const eased=1-Math.pow(1-p,3);reward.textContent='+'+Math.round(start+(target-start)*eased).toLocaleString();if(p<1)requestAnimationFrame(step);else{reward.textContent='+'+target.toLocaleString();resolve()}}requestAnimationFrame(step)})}
+  function revealReward(points,rarity){
+    const spec=BR.rewardSpec?BR.rewardSpec(rarity,points):{duration:1400,rarity:'COMMON',points};
+    const key=String(spec.rarity||'COMMON').toLowerCase();reward.className='reward-text '+key+' revealing';
+    BR.playRewardReveal?BR.playRewardReveal(points,spec.rarity):BR.playPointsCountUp(points,spec.rarity);
+    animateNumber(points,Number(spec.duration)||1400).then(()=>{reward.classList.remove('revealing')});
+    if(spec.rarity==='LEGENDARY'||spec.rarity==='MYTHIC'){completeFlash.classList.remove('on');void completeFlash.offsetWidth;completeFlash.classList.add('on')}
   }
-  async function preloadAll(){
-    const loaded=await Promise.all(cfg.images.map(im=>load(im.masterFile,'low')));
-    loaded.forEach((img,i)=>applyThumbs(cfg.images[i],img));
-  }
-  function render(im){select.value=im.imageId;renderHero(im);load(im.masterFile,'high').then(img=>applyThumbs(im,img));preloadAll();}
   const current=cfg.images.find(im=>im.imageId===requestedImage)||cfg.images[0];
-  render(current);
-  select.onchange=()=>{BR.play('tap');const im=cfg.images.find(x=>x.imageId===select.value)||cfg.images[0];render(im)};
+  render(current);select.onchange=()=>{BR.play('tap');const im=cfg.images.find(x=>x.imageId===select.value)||cfg.images[0];render(im)};
   if(handoff){
     const points=Number(handoff.points??handoff.points_awarded??handoff.reward?.points??0);
-    if(points>0&&!handoff.duplicate){reward.textContent='+'+points.toLocaleString();BR.playPointsCountUp(points);}
+    const rarity=String(handoff.rarity||handoff.reward?.rarity||'COMMON').toUpperCase();
+    if(points>0&&!handoff.duplicate)revealReward(points,rarity);
     const rewardedImage=handoff.image_id||handoff.image||handoff.reward?.image_id||handoff.reward?.image;
-    if(rewardedImage){const im=cfg.images.find(x=>x.imageId===rewardedImage);if(im){select.value=im.imageId;render(im);if(BR.count('collection01',im.imageId)===9){BR.playCompletionSound();BR.flash();}}}
+    if(rewardedImage){const im=cfg.images.find(x=>x.imageId===rewardedImage);if(im){select.value=im.imageId;render(im);if(isComplete(im)){BR.playCompletionSound();completeFlash.classList.add('on');BR.flash()}}}
   }
   document.getElementById('back').onclick=()=>BR.goAfter('screen05.html','back',180);
   document.getElementById('myRewards').onclick=()=>BR.goAfter('screen04.html','confirm',180);

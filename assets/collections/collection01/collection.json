@@ -12,37 +12,37 @@
   "rarityEconomy": [
     {
       "rarity": "COMMON",
-      "points": 20000,
+      "points": 10000,
       "tierTotalQty": 7000,
       "tierTotalPercent": 70.0
     },
     {
       "rarity": "UNCOMMON",
-      "points": 40000,
+      "points": 20000,
       "tierTotalQty": 2000,
       "tierTotalPercent": 20.0
     },
     {
       "rarity": "RARE",
-      "points": 60000,
+      "points": 40000,
       "tierTotalQty": 800,
       "tierTotalPercent": 8.0
     },
     {
       "rarity": "EPIC",
-      "points": 100000,
+      "points": 60000,
       "tierTotalQty": 150,
       "tierTotalPercent": 1.5
     },
     {
       "rarity": "LEGENDARY",
-      "points": 150000,
+      "points": 80000,
       "tierTotalQty": 30,
       "tierTotalPercent": 0.3
     },
     {
       "rarity": "MYTHIC",
-      "points": 200000,
+      "points": 100000,
       "tierTotalQty": 20,
       "tierTotalPercent": 0.2
     }
@@ -62,7 +62,7 @@
           "row": 1,
           "column": 1,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 75,
           "print_share_percent": 0.75,
           "piece_source": "master crop"
@@ -73,7 +73,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 75,
           "print_share_percent": 0.75,
           "piece_source": "master crop"
@@ -84,7 +84,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -95,7 +95,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 58,
           "print_share_percent": 0.58,
           "piece_source": "master crop"
@@ -106,7 +106,7 @@
           "row": 2,
           "column": 2,
           "rarity": "EPIC",
-          "points": 100000,
+          "points": 60000,
           "print_qty_per_10000": 38,
           "print_share_percent": 0.38,
           "piece_source": "master crop"
@@ -117,7 +117,7 @@
           "row": 2,
           "column": 3,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 58,
           "print_share_percent": 0.58,
           "piece_source": "master crop"
@@ -128,7 +128,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -139,7 +139,7 @@
           "row": 3,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -150,7 +150,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -171,7 +171,7 @@
           "row": 1,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -182,7 +182,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -193,7 +193,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -204,7 +204,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -215,7 +215,7 @@
           "row": 2,
           "column": 2,
           "rarity": "EPIC",
-          "points": 100000,
+          "points": 60000,
           "print_qty_per_10000": 38,
           "print_share_percent": 0.38,
           "piece_source": "master crop"
@@ -226,7 +226,7 @@
           "row": 2,
           "column": 3,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -237,7 +237,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -248,7 +248,7 @@
           "row": 3,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -259,7 +259,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -280,7 +280,7 @@
           "row": 1,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -291,7 +291,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -302,7 +302,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -313,7 +313,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -324,7 +324,7 @@
           "row": 2,
           "column": 2,
           "rarity": "MYTHIC",
-          "points": 200000,
+          "points": 100000,
           "print_qty_per_10000": 20,
           "print_share_percent": 0.2,
           "piece_source": "master crop"
@@ -335,7 +335,7 @@
           "row": 2,
           "column": 3,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -346,7 +346,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -357,7 +357,7 @@
           "row": 3,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -368,7 +368,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -389,7 +389,7 @@
           "row": 1,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -400,7 +400,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -411,7 +411,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -422,7 +422,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -433,7 +433,7 @@
           "row": 2,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -444,7 +444,7 @@
           "row": 2,
           "column": 3,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -455,7 +455,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -466,7 +466,7 @@
           "row": 3,
           "column": 2,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -477,7 +477,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -498,7 +498,7 @@
           "row": 1,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -509,7 +509,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -520,7 +520,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -531,7 +531,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -542,7 +542,7 @@
           "row": 2,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -553,7 +553,7 @@
           "row": 2,
           "column": 3,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -564,7 +564,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -575,7 +575,7 @@
           "row": 3,
           "column": 2,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -586,7 +586,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -607,7 +607,7 @@
           "row": 1,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -618,7 +618,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -629,7 +629,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -640,7 +640,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -651,7 +651,7 @@
           "row": 2,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -662,7 +662,7 @@
           "row": 2,
           "column": 3,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -673,7 +673,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -684,7 +684,7 @@
           "row": 3,
           "column": 2,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -695,7 +695,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -716,7 +716,7 @@
           "row": 1,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -727,7 +727,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -738,7 +738,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -749,7 +749,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -760,7 +760,7 @@
           "row": 2,
           "column": 2,
           "rarity": "EPIC",
-          "points": 100000,
+          "points": 60000,
           "print_qty_per_10000": 37,
           "print_share_percent": 0.37,
           "piece_source": "master crop"
@@ -771,7 +771,7 @@
           "row": 2,
           "column": 3,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -782,7 +782,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -793,7 +793,7 @@
           "row": 3,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -804,7 +804,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -825,7 +825,7 @@
           "row": 1,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -836,7 +836,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -847,7 +847,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -858,7 +858,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -869,7 +869,7 @@
           "row": 2,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -880,7 +880,7 @@
           "row": 2,
           "column": 3,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -891,7 +891,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -902,7 +902,7 @@
           "row": 3,
           "column": 2,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 163,
           "print_share_percent": 1.63,
           "piece_source": "master crop"
@@ -913,7 +913,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 162,
           "print_share_percent": 1.62,
           "piece_source": "master crop"
@@ -934,7 +934,7 @@
           "row": 1,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 162,
           "print_share_percent": 1.62,
           "piece_source": "master crop"
@@ -945,7 +945,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -956,7 +956,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 162,
           "print_share_percent": 1.62,
           "piece_source": "master crop"
@@ -967,7 +967,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -978,7 +978,7 @@
           "row": 2,
           "column": 2,
           "rarity": "LEGENDARY",
-          "points": 150000,
+          "points": 80000,
           "print_qty_per_10000": 30,
           "print_share_percent": 0.3,
           "piece_source": "master crop"
@@ -989,7 +989,7 @@
           "row": 2,
           "column": 3,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -1000,7 +1000,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 162,
           "print_share_percent": 1.62,
           "piece_source": "master crop"
@@ -1011,7 +1011,7 @@
           "row": 3,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -1022,7 +1022,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 162,
           "print_share_percent": 1.62,
           "piece_source": "master crop"
@@ -1043,7 +1043,7 @@
           "row": 1,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 162,
           "print_share_percent": 1.62,
           "piece_source": "master crop"
@@ -1054,7 +1054,7 @@
           "row": 1,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -1065,7 +1065,7 @@
           "row": 1,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 162,
           "print_share_percent": 1.62,
           "piece_source": "master crop"
@@ -1076,7 +1076,7 @@
           "row": 2,
           "column": 1,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -1087,7 +1087,7 @@
           "row": 2,
           "column": 2,
           "rarity": "EPIC",
-          "points": 100000,
+          "points": 60000,
           "print_qty_per_10000": 37,
           "print_share_percent": 0.37,
           "piece_source": "master crop"
@@ -1098,7 +1098,7 @@
           "row": 2,
           "column": 3,
           "rarity": "RARE",
-          "points": 60000,
+          "points": 40000,
           "print_qty_per_10000": 57,
           "print_share_percent": 0.57,
           "piece_source": "master crop"
@@ -1109,7 +1109,7 @@
           "row": 3,
           "column": 1,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 162,
           "print_share_percent": 1.62,
           "piece_source": "master crop"
@@ -1120,7 +1120,7 @@
           "row": 3,
           "column": 2,
           "rarity": "UNCOMMON",
-          "points": 40000,
+          "points": 20000,
           "print_qty_per_10000": 74,
           "print_share_percent": 0.74,
           "piece_source": "master crop"
@@ -1131,7 +1131,7 @@
           "row": 3,
           "column": 3,
           "rarity": "COMMON",
-          "points": 20000,
+          "points": 10000,
           "print_qty_per_10000": 162,
           "print_share_percent": 1.62,
           "piece_source": "master crop"
@@ -1145,12 +1145,13 @@
     "thumbnailGallery": "10 images; undiscovered images are faded/desaturated; discovered images are full color; each shows collectedCount/9.",
     "pieceGrid": "3x3; piece positions are fixed by piece_number. Collected pieces fill their exact cell.",
     "completedImage": "At 9/9, replace the 3x3 piece grid with the full master image after a golden completion effect.",
-    "lastReward": "Shows the points awarded by the latest newly collected QR piece, with arcade-style count-up/reward animation.",
+    "lastReward": "Shows the newly awarded piece points with an arcade-style count-up; reward value follows piece rarity from 10,000 to 100,000.",
     "dashboardPoints": "Add the newly awarded points to the player's total points balance.",
     "duplicateScan": "Do not add points or duplicate the piece when the same piece has already been collected.",
     "marks": "Do not change marks when collecting a puzzle piece; marks are reserved for the later redemption system.",
     "weeklyPoints": "Track points earned during the current week separately from lifetime total points.",
-    "checkpoints": "Track checkpoint count separately from points and marks."
+    "checkpoints": "Track checkpoint count separately from points and marks.",
+    "rarityPoints": "COMMON 10,000 • UNCOMMON 20,000 • RARE 40,000 • EPIC 60,000 • LEGENDARY 80,000 • MYTHIC 100,000."
   },
   "pieceRendering": "client-side-3x3-crop-from-master"
 }
