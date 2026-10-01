@@ -1,4 +1,4 @@
-/* BARAMEEL — V21.14 GEOMETRY FIX
+/* BARAMEEL — V21.15 GEOMETRY + SPLASH ASSET FIX
    Geometry is normalized to the approved artwork bounds.
 */
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Righteous&family=Roboto+Condensed:wght@700;900&display=swap');
@@ -7,7 +7,8 @@
 html,body{margin:0;min-height:100%;background:#061f27;color:#fff;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif}
 body{overflow-x:hidden}
 button,input,select{font:inherit}
-.world-stage,.world-splash-stage{position:relative;aspect-ratio:953/1651;width:min(100vw,calc(100dvh*953/1651));height:min(100dvh,calc(100vw*1651/953));margin:0 auto;background:#061f27;overflow:hidden;--px:0px;--py:0px}
+.world-splash-stage{position:relative;aspect-ratio:952/1652;width:min(100vw,calc(100dvh*952/1652));height:min(100dvh,calc(100vw*1652/952));margin:0 auto;background:#061f27;overflow:hidden;--px:0px;--py:0px}
+.world-stage{position:relative;aspect-ratio:953/1651;width:min(100vw,calc(100dvh*953/1651));height:min(100dvh,calc(100vw*1651/953));margin:0 auto;background:#061f27;overflow:hidden;--px:0px;--py:0px}
 .world-stage .world-art,.world-splash-stage .world-splash-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
 .stage{position:relative;overflow:hidden;margin:0 auto;background:#061f27;isolation:isolate;width:min(100vw,calc(100dvh*720/1280));height:min(100dvh,calc(100vw*1280/720));aspect-ratio:720/1280}
 .world-splash-hotspot{position:absolute;inset:0;z-index:40;border:0;background:transparent;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -133,7 +134,8 @@ button,input,select{font:inherit}
 .runner-card-hotspot{position:absolute;border:0;background:transparent;touch-action:manipulation}
 
 /* PROGRESS */
-.scan-stage,.rewards-stage{position:relative;width:min(100vw,calc(100dvh*720/1280));height:min(100dvh,calc(100vw*1280/720));margin:auto;aspect-ratio:720/1280;background:var(--teal);overflow:hidden}
+.rewards-stage{position:relative;width:min(100vw,calc(100dvh*720/1280));height:min(100dvh,calc(100vw*1280/720));margin:auto;aspect-ratio:720/1280;background:var(--teal);overflow:hidden}
+.scan-stage{position:relative;width:min(100vw,calc(100dvh*953/1651));height:min(100dvh,calc(100vw*1651/953));margin:auto;aspect-ratio:953/1651;background:var(--teal);overflow:hidden}
 .scan-art,.rewards-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
 .progress-data{position:absolute;inset:0;z-index:20;pointer-events:none}
 .progress-value{position:absolute;display:flex;align-items:center;justify-content:center;font-family:'Righteous','Arial Black',Impact,sans-serif;font-weight:400;line-height:1;white-space:nowrap;color:#071a20}
