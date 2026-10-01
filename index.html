@@ -7,16 +7,18 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <title>BARAMEEL WORLD</title>
-<link rel="stylesheet" href="./styles.css?v=20261001-21.10">
-<script src="./config.js?v=20261001-21.10"></script>
+<link rel="stylesheet" href="./styles.css?v=20261001-21.11">
+<script src="./config.js?v=20261001-21.11"></script>
 </head>
 <body>
 <main class="world-splash-stage" id="splashStage" aria-label="BARAMEEL WORLD loading">
-  <img class="world-splash-art" src="./assets/barameel-world-splash.webp?v=20261001-21.10" alt="BARAMEEL WORLD" fetchpriority="high">
+  <img class="world-splash-art" src="./assets/barameel-world-splash.webp?v=20261001-21.11" alt="BARAMEEL WORLD" fetchpriority="high">
 
   <!-- Living-world atmosphere: intentionally subtle so Brona remains unchanged. -->
   <div class="splash-world-glow" aria-hidden="true"></div>
   <div class="splash-parallax-light" aria-hidden="true"></div>
+  <div class="splash-scan-beam" aria-hidden="true"></div>
+  <div class="splash-energy-ring" aria-hidden="true"></div>
   <div class="splash-activation-flash" aria-hidden="true"></div>
   <div class="splash-logo-shine" aria-hidden="true"></div>
   <div class="splash-lens-shine" aria-hidden="true"></div>
@@ -40,7 +42,7 @@
    Ticket, Supabase or game logic.
 */
 (() => {
-  const VERSION = '21.10';
+  const VERSION = '21.11';
   const stage = document.getElementById('splashStage');
   const fill = document.getElementById('loadingFill');
   const label = document.getElementById('loadingLabel');
@@ -196,6 +198,6 @@
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261001-21.10"></script>
+<script src="./app.js?v=20261001-21.11"></script>
 </body>
 </html>
