@@ -1,6 +1,169 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#0e2a3d"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><title>BARAMEEL WORLD</title><link rel="stylesheet" href="./styles.css?v=20261001-21.0"><script src="./config.js?v=20261001-21.0"></script></head><body><main class="world-splash-stage"><img class="world-splash-art" src="./assets/barameel-world-splash.webp?v=20261001-21.0" alt="BARAMEEL WORLD" fetchpriority="high"><button id="enter" class="world-splash-hotspot" aria-label="Enter Barameel World"></button></main><script>
-// Splash navigation is intentionally independent of app.js/Supabase so a backend/network delay can never trap the player here.
-const enterWorld=()=>{try{sessionStorage.setItem('barameelSplashSeen','1')}catch{};location.replace('./world.html?v=21.0')};
-window.setTimeout(enterWorld,1700);
-document.getElementById('enter').addEventListener('click',enterWorld,{passive:true});
-</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261001-21.0"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0e2a3d">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>BARAMEEL WORLD</title>
+<link rel="stylesheet" href="./styles.css?v=20261001-21.8">
+<script src="./config.js?v=20261001-21.8"></script>
+</head>
+<body>
+<main class="world-splash-stage" id="splashStage" aria-label="BARAMEEL WORLD loading">
+  <img class="world-splash-art" src="./assets/barameel-world-splash.webp?v=20261001-21.8" alt="BARAMEEL WORLD" fetchpriority="high">
+
+  <!-- Living-world atmosphere: intentionally subtle so Brona remains unchanged. -->
+  <div class="splash-world-glow" aria-hidden="true"></div>
+  <div class="splash-logo-shine" aria-hidden="true"></div>
+  <div class="splash-lens-shine" aria-hidden="true"></div>
+  <div class="splash-grain" aria-hidden="true"></div>
+
+  <section class="world-loading" aria-live="polite" aria-label="Loading Barameel World">
+    <div class="world-loading-track">
+      <div class="world-loading-fill" id="loadingFill"></div>
+      <div class="world-loading-sheen" aria-hidden="true"></div>
+    </div>
+    <div class="world-loading-label" id="loadingLabel">LOADING THE WORLD...</div>
+  </section>
+
+  <button id="enter" class="world-splash-hotspot" aria-label="Enter Barameel World"></button>
+</main>
+
+<script>
+/* BARAMEEL WORLD SPLASH — V21.8 / SCREEN 01
+   Visual artwork is untouched. This layer adds motion, real progress cues,
+   audio/haptic feedback and the world-entry transition without touching QR,
+   Ticket, Supabase or game logic.
+*/
+(() => {
+  const VERSION = '21.8';
+  const stage = document.getElementById('splashStage');
+  const fill = document.getElementById('loadingFill');
+  const label = document.getElementById('loadingLabel');
+  const enter = document.getElementById('enter');
+  const splashArt = stage.querySelector('.world-splash-art');
+  let finished = false;
+  let audioUnlocked = false;
+  let audioCtx = null;
+
+  const clamp = n => Math.max(0, Math.min(100, n));
+  const setProgress = (value) => { fill.style.width = clamp(value) + '%'; };
+
+  function haptic(kind = 'light') {
+    if (!navigator.vibrate) return;
+    const patterns = {
+      light: 8,
+      ready: [10, 35, 18],
+      enter: [12, 28, 24]
+    };
+    try { navigator.vibrate(patterns[kind] || patterns.light); } catch {}
+  }
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      audioUnlocked = true;
+      // Tiny silent oscillator unlocks the audio path without altering the artwork.
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      g.gain.value = 0.0001;
+      o.connect(g).connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime + 0.015);
+    } catch {}
+  }
+
+  function arcadeTone(type) {
+    if (!audioUnlocked || !audioCtx) return;
+    try {
+      const now = audioCtx.currentTime;
+      const notes = type === 'ready' ? [220, 330, 440, 660] : [196, 294];
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = i % 2 ? 'square' : 'sine';
+        osc.frequency.setValueAtTime(freq, now + i * 0.065);
+        gain.gain.setValueAtTime(0.0001, now + i * 0.065);
+        gain.gain.exponentialRampToValueAtTime(0.055, now + i * 0.065 + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.065 + 0.11);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(now + i * 0.065);
+        osc.stop(now + i * 0.065 + 0.12);
+      });
+    } catch {}
+  }
+
+  function activateAudioAndFeedback() {
+    unlockAudio();
+    arcadeTone('tap');
+    haptic('light');
+  }
+
+  async function warmAsset(url) {
+    try {
+      const response = await fetch(url, { cache: 'force-cache' });
+      if (!response.ok) return false;
+      const blob = await response.blob();
+      return !!blob.size;
+    } catch { return false; }
+  }
+
+  function enterWorld() {
+    if (finished) return;
+    finished = true;
+    unlockAudio();
+    arcadeTone('ready');
+    haptic('enter');
+    label.textContent = 'WORLD READY';
+    setProgress(100);
+    stage.classList.add('world-ready');
+    try { sessionStorage.setItem('barameelSplashSeen', '1'); } catch {}
+    window.setTimeout(() => location.replace('./world.html?v=' + VERSION), 520);
+  }
+
+  // Any first touch unlocks audio on browsers that block autoplay.
+  window.addEventListener('pointerdown', activateAudioAndFeedback, { once: true, passive: true });
+  enter.addEventListener('click', enterWorld, { passive: true });
+
+  // Minimum cinematic duration: the splash must feel intentional even when cached.
+  const start = performance.now();
+  const MIN_DURATION = 3000;
+
+  (async () => {
+    setProgress(8);
+    await new Promise(r => requestAnimationFrame(r));
+    setProgress(18);
+
+    const tasks = [
+      splashArt.decode ? splashArt.decode().catch(() => {}) : Promise.resolve(),
+      warmAsset('./assets/barameel-world.webp?v=' + VERSION),
+      warmAsset('./audio/confirm.wav?v=' + VERSION)
+    ];
+
+    let done = 0;
+    tasks.forEach(p => p.finally(() => {
+      done += 1;
+      setProgress(18 + done * 22);
+    }));
+
+    await Promise.allSettled(tasks);
+    setProgress(86);
+
+    const remaining = Math.max(0, MIN_DURATION - (performance.now() - start));
+    await new Promise(r => setTimeout(r, remaining));
+
+    setProgress(100);
+    label.textContent = 'WORLD READY';
+    arcadeTone('ready');
+    haptic('ready');
+    window.setTimeout(enterWorld, 420);
+  })();
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261001-21.8"></script>
+</body>
+</html>
