@@ -57,9 +57,8 @@
   }
   function pulse(section){
     stage.dataset.active=section;
-    const fx=stage.querySelector('.fx-'+section);
-    if(fx){fx.classList.remove('is-active'); void fx.offsetWidth; fx.classList.add('is-active');}
-    try{if(navigator.vibrate) navigator.vibrate([8,24,12]);}catch{}
+    links.forEach(link=>link.classList.toggle('is-active', link.dataset.section===section));
+    try{if(navigator.vibrate) navigator.vibrate([10,26,16]);}catch{}
   }
   links.forEach(a=>{
     a.addEventListener('pointerdown',()=>{ const s=a.dataset.section; pulse(s); audio(s); if(window.BR) BR.play('tap'); },{passive:true});
@@ -77,8 +76,8 @@
   stage.addEventListener('pointermove',e=>{
     const r=stage.getBoundingClientRect();
     const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
-    stage.style.setProperty('--mx',(x*0.8).toFixed(3)+'%');
-    stage.style.setProperty('--my',(y*0.6).toFixed(3)+'%');
+    stage.style.setProperty('--mx',(x*2.2).toFixed(3)+'%');
+    stage.style.setProperty('--my',(y*1.7).toFixed(3)+'%');
   },{passive:true});
   stage.addEventListener('pointerleave',()=>{stage.style.setProperty('--mx','0%');stage.style.setProperty('--my','0%')},{passive:true});
   BR.track('world_view');
