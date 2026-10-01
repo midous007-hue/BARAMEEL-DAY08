@@ -255,3 +255,36 @@ button,input,select{font:inherit}
 .world-hub-stage .hub-link[data-section]:active{transform:scale(.975);filter:brightness(1.18)}
 @keyframes card-lock{0%{transform:scale(.97);opacity:0}22%{opacity:1}55%{transform:scale(1.025)}100%{transform:scale(1);opacity:1}}
 @keyframes card-shine{0%{transform:translateX(-110%);opacity:0}18%{opacity:1}65%{transform:translateX(110%);opacity:1}100%{transform:translateX(120%);opacity:0}}
+
+/* V21.11 FINAL WORLD FIX — old free-position FX are disabled.
+   The visible lock-on effect lives directly on the exact hotspot element,
+   so its border/shine can never drift away from the clickable card. */
+.world-hub-stage .world-card-fx{display:none!important}
+.world-hub-stage .hub-link[data-section]{z-index:30}
+.world-hub-stage .hub-link[data-section]::before{
+  transition:opacity .12s ease,box-shadow .12s ease,border-color .12s ease;
+}
+.world-hub-stage .hub-link[data-section]:hover::before{
+  opacity:.55;
+}
+.world-hub-stage .hub-link[data-section].is-active::before{
+  animation:card-lock .46s cubic-bezier(.16,.86,.2,1) both;
+}
+.world-hub-stage .hub-link[data-section].is-active::after{
+  animation:card-shine .58s ease-out both;
+}
+.world-hub-stage .hub-link[data-section].is-active{
+  animation:hub-card-impact .34s cubic-bezier(.16,.86,.2,1) both;
+}
+@keyframes hub-card-impact{
+  0%{filter:brightness(1);transform:scale(1)}
+  32%{filter:brightness(1.28);transform:scale(.982)}
+  68%{filter:brightness(1.10);transform:scale(1.012)}
+  100%{filter:brightness(1);transform:scale(1)}
+}
+/* Stronger World ambient movement without changing its coordinate system. */
+.world-hub-stage .world-ambient-glow{animation:world-ambient-strong 4.8s ease-in-out infinite}
+@keyframes world-ambient-strong{
+  0%,100%{opacity:.32;transform:translate3d(-1%,0,0) scale(.98)}
+  50%{opacity:.9;transform:translate3d(1%,-.5%,0) scale(1.035)}
+}
