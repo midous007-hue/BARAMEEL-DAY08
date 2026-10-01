@@ -7,7 +7,8 @@
 html,body{margin:0;min-height:100%;background:#061f27;color:#fff;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif}
 body{overflow-x:hidden}
 button,input,select{font:inherit}
-.stage,.world-stage, .world-splash-stage{aspect-ratio:953/1651;width:min(100vw,calc(100dvh*953/1651));height:min(100dvh,calc(100vw*1651/953));background:#061f27;--px:0px;--py:0px}
+.world-stage,.world-splash-stage{aspect-ratio:953/1651;width:min(100vw,calc(100dvh*953/1651));height:min(100dvh,calc(100vw*1651/953));background:#061f27;--px:0px;--py:0px}
+.stage{position:relative;overflow:hidden;margin:0 auto;background:#061f27;isolation:isolate;width:min(100vw,calc(100dvh*720/1280));height:min(100dvh,calc(100vw*1280/720));aspect-ratio:720/1280}
 .world-splash-hotspot{position:absolute;inset:0;z-index:40;border:0;background:transparent;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .world-splash-stage .world-splash-art{transform-origin:center center;transform:translate3d(var(--px),var(--py),0) scale(1.022);animation:splash-art-breathe 5.8s ease-in-out infinite alternate;will-change:transform;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
 .splash-world-glow{position:absolute;inset:-8%;z-index:2;pointer-events:none;background:radial-gradient(circle at 50% 39%,rgba(255,213,76,.13),transparent 33%),radial-gradient(circle at 50% 74%,rgba(18,183,208,.10),transparent 42%);mix-blend-mode:screen;animation:splash-glow 3.8s ease-in-out infinite}
