@@ -7,15 +7,17 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <title>BARAMEEL WORLD</title>
-<link rel="stylesheet" href="./styles.css?v=20261001-21.8">
-<script src="./config.js?v=20261001-21.8"></script>
+<link rel="stylesheet" href="./styles.css?v=20261001-21.10">
+<script src="./config.js?v=20261001-21.10"></script>
 </head>
 <body>
 <main class="world-splash-stage" id="splashStage" aria-label="BARAMEEL WORLD loading">
-  <img class="world-splash-art" src="./assets/barameel-world-splash.webp?v=20261001-21.8" alt="BARAMEEL WORLD" fetchpriority="high">
+  <img class="world-splash-art" src="./assets/barameel-world-splash.webp?v=20261001-21.10" alt="BARAMEEL WORLD" fetchpriority="high">
 
   <!-- Living-world atmosphere: intentionally subtle so Brona remains unchanged. -->
   <div class="splash-world-glow" aria-hidden="true"></div>
+  <div class="splash-parallax-light" aria-hidden="true"></div>
+  <div class="splash-activation-flash" aria-hidden="true"></div>
   <div class="splash-logo-shine" aria-hidden="true"></div>
   <div class="splash-lens-shine" aria-hidden="true"></div>
   <div class="splash-grain" aria-hidden="true"></div>
@@ -38,11 +40,12 @@
    Ticket, Supabase or game logic.
 */
 (() => {
-  const VERSION = '21.8';
+  const VERSION = '21.10';
   const stage = document.getElementById('splashStage');
   const fill = document.getElementById('loadingFill');
   const label = document.getElementById('loadingLabel');
   const enter = document.getElementById('enter');
+  const parallaxLight = stage.querySelector('.splash-parallax-light');
   const splashArt = stage.querySelector('.world-splash-art');
   let finished = false;
   let audioUnlocked = false;
@@ -124,6 +127,35 @@
     window.setTimeout(() => location.replace('./world.html?v=' + VERSION), 520);
   }
 
+  // REAL SPLASH PARALLAX: touch/mouse moves the environment/light layer,
+  // while Brona's artwork remains visually intact.
+  let raf = 0;
+  let px = 0, py = 0;
+  function updateParallax(x, y) {
+    px = Math.max(-1, Math.min(1, x));
+    py = Math.max(-1, Math.min(1, y));
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      stage.style.setProperty('--splash-x', (px * 9).toFixed(2) + 'px');
+      stage.style.setProperty('--splash-y', (py * 9).toFixed(2) + 'px');
+      stage.style.setProperty('--light-x', (50 + px * 16).toFixed(2) + '%');
+      stage.style.setProperty('--light-y', (42 + py * 14).toFixed(2) + '%');
+      stage.style.setProperty('--lens-x', (px * 12).toFixed(2) + '%');
+    });
+  }
+  stage.addEventListener('pointermove', e => {
+    const r = stage.getBoundingClientRect();
+    updateParallax(((e.clientX-r.left)/r.width-.5)*2, ((e.clientY-r.top)/r.height-.5)*2);
+  }, {passive:true});
+  stage.addEventListener('pointerleave', () => updateParallax(0,0), {passive:true});
+  stage.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    if (!t) return;
+    const r = stage.getBoundingClientRect();
+    updateParallax(((t.clientX-r.left)/r.width-.5)*2, ((t.clientY-r.top)/r.height-.5)*2);
+  }, {passive:true});
+
   // Any first touch unlocks audio on browsers that block autoplay.
   window.addEventListener('pointerdown', activateAudioAndFeedback, { once: true, passive: true });
   enter.addEventListener('click', enterWorld, { passive: true });
@@ -164,6 +196,6 @@
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261001-21.8"></script>
+<script src="./app.js?v=20261001-21.10"></script>
 </body>
 </html>
