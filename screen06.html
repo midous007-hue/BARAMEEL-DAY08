@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — ALEXANDRIA</title>
-<link rel="stylesheet" href="./styles.css?v=20261001-21.6"><script src="./config.js?v=20261001-21.5"></script>
+<link rel="stylesheet" href="./styles.css?v=20261001-21.7"><script src="./config.js?v=20261001-21.7"></script>
 <style>#imagePreload{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}</style>
 </head>
 <body>
@@ -22,8 +22,8 @@
   <div id="imagePreload"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261001-21.5"></script>
-<script src="./barameel-v205-fix.js?v=20261001-21.5"></script>
+<script src="./app.js?v=20261001-21.7"></script>
+<script src="./barameel-v205-fix.js?v=20261001-21.7"></script>
 <script>
 (async()=>{
   // Resolve all DOM references before any access. This prevents the TDZ ReferenceError
@@ -41,7 +41,7 @@
   const completeFlash=document.getElementById('completeFlash');
   const cfg=await BR.fetchCollection('collection01');
   collectionName.textContent=String(cfg.displayName||'ALEXANDRIA').toUpperCase();
-  const rewardFlashAssets={SUPER:'./assets/rewards/reward-super.webp?v=20261001-21.6',AMAZING:'./assets/rewards/reward-amazing.webp?v=20261001-21.6',SPECTACULAR:'./assets/rewards/reward-spectacular.webp?v=20261001-21.6',JACKPOT:'./assets/rewards/reward-jackpot.webp?v=20261001-21.6'};
+  const rewardFlashAssets={SUPER:'./assets/rewards/reward-super.webp',AMAZING:'./assets/rewards/reward-amazing.webp',SPECTACULAR:'./assets/rewards/reward-spectacular.webp',JACKPOT:'./assets/rewards/reward-jackpot.webp'};
   Object.values(rewardFlashAssets).forEach(src=>{const i=new Image();i.decoding='async';i.src=src});
   let handoff=null;try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
   const params=new URLSearchParams(location.search);
@@ -102,19 +102,16 @@
   }
   function showRewardFlash(rarity,points){
     const word=rewardFlashFor(rarity,points);
-    if(word==='JACKPOT'){
-      rewardFlashImage.src=rewardFlashAssets.JACKPOT;
-      rewardFlashImage.alt='JACKPOT';
-      jackpotFlash.classList.remove('on');
-      rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
-      setTimeout(()=>rewardFlash.classList.remove('on'),3000);
-      return;
-    }
     const src=rewardFlashAssets[word];
     if(!src)return;
-    rewardFlashImage.src=src;
     rewardFlashImage.alt=word;
-    rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');setTimeout(()=>rewardFlash.classList.remove('on'),3000);
+    rewardFlashImage.dataset.word=word;
+    rewardFlashImage.src=src;
+    rewardFlash.style.setProperty('--flash-art', `url(\"${src}\")`);
+    rewardFlash.classList.remove('on');
+    void rewardFlash.offsetWidth;
+    rewardFlash.classList.add('on');
+    setTimeout(()=>rewardFlash.classList.remove('on'),3000);
   }
   async function revealReward(points,rarity){
     const safePoints=Math.max(10000,Number(points)||10000);
