@@ -2,7 +2,7 @@
 :root{--navy:#071b2b;--gold:#f4c52f;--cream:#f6e7ce;--red:#ef2d24;--cyan:#19b9d2}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#06131e;overflow:hidden}body{font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;color:#fff;isolation:isolate}
 .flow-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071b2b}
-.flow-stage.art-955{width:min(100vw,calc(100dvh*955/1647));height:min(100dvh,calc(100vw*1647/955));aspect-ratio:955/1647}
+.flow-stage.art-955{width:min(100vw,calc(100dvh*955/1647));height:min(100dvh,calc(100vw*1647/955));aspect-ratio:955/1647}.flow-stage.art-952{width:min(100vw,calc(100dvh*952/1652));height:min(100dvh,calc(100vw*1652/952));aspect-ratio:952/1652}.flow-stage.art-948x1660{width:min(100vw,calc(100dvh*948/1660));height:min(100dvh,calc(100vw*1660/948));aspect-ratio:948/1660}
 .flow-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;user-select:none;-webkit-user-drag:none}
 .flow-hit{position:absolute;border:0;background:transparent;padding:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;z-index:30}
 .flow-input{position:absolute;z-index:25;border:0;background:transparent;color:#f7d75a;outline:0;text-align:center;font-family:'Roboto Condensed',Arial,sans-serif;font-size:clamp(18px,4.8vw,42px);font-weight:900;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 2px 0 #000,0 0 10px rgba(244,197,47,.35)}
