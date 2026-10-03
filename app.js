@@ -142,7 +142,9 @@
     return {...spec,points:Number(points)||spec.points,rarity:key||'REWARD'};
   }
   function go(url){location.href=url;}
-  function goAfter(url,sound='tap',delay=180){play(sound);setTimeout(()=>go(url),delay);}
+  function haptic(kind='tap'){try{const p={tap:[12],confirm:[18,34,22],scan:[16,28,18,42],reward:[24,42,24,58],jackpot:[30,55,30,75,45,90],error:[28,48,28]}[kind]||[12];navigator.vibrate?.(p)}catch{}}
+  function markRunHowItWorksSeen(){patchState({runHowItWorksSeen:true})}
+  function goAfter(url,sound='tap',delay=180){haptic(sound);play(sound);setTimeout(()=>go(url),delay);}
   function idle(fn){if('requestIdleCallback' in window)requestIdleCallback(fn,{timeout:900});else setTimeout(fn,80);}
   function preload(src){const i=new Image();i.decoding='async';i.src=src;return i;}
   function preloadAll(xs){xs.forEach(preload);}
