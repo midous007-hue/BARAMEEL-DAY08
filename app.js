@@ -41,7 +41,7 @@
     if(audioCtx) return audioCtx;
     const C=window.AudioContext||window.webkitAudioContext; if(!C) return null;
     audioCtx=new C();
-    const g=audioCtx.createGain(); g.gain.value=.64; g.connect(audioCtx.destination); audioCtx.master=g;
+    const g=audioCtx.createGain(); g.gain.value=.95; g.connect(audioCtx.destination); audioCtx.master=g;
     return audioCtx;
   }
   function unlockAudio(){const c=audio();if(!c)return;if(c.state==='suspended')c.resume().catch(()=>{});}
@@ -56,11 +56,11 @@
       o.connect(g).connect(c.master);o.start(t);o.stop(t+d+.02);
     }catch{}
   }
-  function playArcadeTap(){unlockAudio();tone(740,.055,'square',.095);tone(1040,.065,'triangle',.075,.045)}
-  function playArcadeConfirm(){unlockAudio();[523,659,784,1047].forEach((f,i)=>tone(f,.065,i===3?'triangle':'square',.115,i*.055))}
+  function playArcadeTap(){unlockAudio();tone(740,.055,'square',.16);tone(1040,.065,'triangle',.12,.045)}
+  function playArcadeConfirm(){unlockAudio();[523,659,784,1047].forEach((f,i)=>tone(f,.065,i===3?'triangle':'square',.18,i*.055))}
   function playArcadeBack(){unlockAudio();tone(659,.065,'square',.10);tone(523,.075,'square',.09,.065);tone(392,.10,'triangle',.075,.135)}
-  function playArcadeScan(){unlockAudio();[660,880,1175,1568].forEach((f,i)=>tone(f,.052,'square',.095,i*.052))}
-  function playArcadeError(){unlockAudio();tone(247,.085,'square',.12);tone(196,.095,'triangle',.105,.085);tone(147,.12,'square',.085,.18)}
+  function playArcadeScan(){unlockAudio();[660,880,1175,1568].forEach((f,i)=>tone(f,.052,'square',.16,i*.052))}
+  function playArcadeError(){unlockAudio();tone(247,.085,'square',.18);tone(196,.095,'triangle',.16,.085);tone(147,.12,'square',.13,.18)}
   function prime(){
     if(bank.completion)return;
     const a=new Audio(SOUND_FILES.completion);a.preload='auto';a.playsInline=true;bank.completion=a;
@@ -74,7 +74,7 @@
     if(k==='select'){playArcadeTap();return}
     if(k==='completion'){
       unlockAudio();prime();const a=bank.completion;
-      try{a.currentTime=0;a.volume=.72;const q=a.play();q?.catch(()=>{});return}catch{}
+      try{a.currentTime=0;a.volume=.9;const q=a.play();q?.catch(()=>{});return}catch{}
     }
     playArcadeTap();
   }
@@ -95,7 +95,7 @@
     const span=Math.max(760,Math.min(2200,spec.duration));
     for(let i=0;i<steps;i++){
       const p=i/Math.max(1,steps-1),f=root*(1.0+1.65*p+0.15*ratio*p);
-      tone(f, i===steps-1 ? .075 : .045, i%4===3?'triangle':'square', .038+.020*ratio, (span*p)/1000);
+      tone(f, i===steps-1 ? .075 : .045, i%4===3?'triangle':'square', .06+.028*ratio, (span*p)/1000);
     }
     const end=Math.max(.05,(span-120)/1000);
     tone(root*2.5,.11,'triangle',.09+.05*ratio,end);
