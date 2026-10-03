@@ -150,7 +150,7 @@
   }
   document.getElementById('back').onclick=()=>BR.goAfter('screen05.html','back',180);
   document.getElementById('myRewards').onclick=()=>BR.goAfter('screen04.html','confirm',180);
-  document.getElementById('scanMore').onclick=()=>BR.goAfter('route-map.html','scan',260);
+  document.getElementById('scanMore').onclick=()=>{sessionStorage.setItem('barameelRouteReturn','screen06.html');BR.goAfter('route-map.html','scan',260)};
   BR.track('collection_view',{image_id:select.value});
 })();
 </script>
