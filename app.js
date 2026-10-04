@@ -1,4 +1,4 @@
-/* BARAMEEL WORLD — V21.1 INTERACTION FIX BUILD
+/* BARAMEEL WORLD — V23.1 INTERACTION FIX BUILD
    Presentation/scanner client only. Production game state stays server-side.
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
@@ -226,8 +226,21 @@
     if(!r.ok)throw Error('COLLECTION_UNAVAILABLE');
     const d=await r.json();try{sessionStorage.setItem(key,JSON.stringify(d));}catch{}return d;
   }
+  function normalizeReward(result){
+    const candidates=[result?.reward,result?.data?.reward,result?.reward_result,result?.data,result];
+    for(const raw of candidates){
+      if(!raw||typeof raw!=='object') continue;
+      const collection_id=raw.collection_id??raw.collection??raw.collectionId;
+      const image_id=raw.image_id??raw.image??raw.imageId;
+      const piece_number=Number(raw.piece_number??raw.piece??raw.pieceNumber);
+      if(collection_id&&image_id&&Number.isFinite(piece_number)&&piece_number>0){
+        return {...raw,collection_id:String(collection_id),image_id:String(image_id),piece_number,points:Number(raw.points??raw.points_awarded??result?.points_awarded??result?.points??0),rarity:String(raw.rarity??result?.rarity??'COMMON').toUpperCase()};
+      }
+    }
+    return null;
+  }
   function parseUniversalQR(raw){const s=decodeURIComponent(String(raw||'')).trim();if(/^BARAMEEL[-_:]?UNIVERSAL$/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};if(/(?:^|[?&])qr=BARAMEEL-UNIVERSAL(?:&|$)/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};return null;}
 
-  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,duoLink,fetchCollection,parseUniversalQR,saveState,ensureAuth,API_BASE};
+  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,duoLink,fetchCollection,parseUniversalQR,saveState,ensureAuth,API_BASE};
   idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
 })();
