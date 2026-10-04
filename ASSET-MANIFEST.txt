@@ -18,12 +18,12 @@ Do not add QR files for individual pieces, images, collections, or checkpoints.
 
 RUNNER ART — UPLOAD ONLY IF YOU HAVE THE FINAL APPROVED ART
 ------------------------------------------------------------
-assets/screen02-rookie.png
-assets/screen02-skater.png
-assets/screen02-brona.png
-assets/screen02-racer.png
-assets/screen02-chiller.png
-assets/screen02-dreamer.png
+assets/screen02-rookie.webp
+assets/screen02-skater.webp
+assets/screen02-brona.webp
+assets/screen02-racer.webp
+assets/screen02-chiller.webp
+assets/screen02-dreamer.webp
 
 assets/screen03-rookie.png
 assets/screen03-skater.png
