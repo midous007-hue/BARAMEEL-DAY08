@@ -242,5 +242,6 @@
   function parseUniversalQR(raw){const s=decodeURIComponent(String(raw||'')).trim();if(/^BARAMEEL[-_:]?UNIVERSAL$/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};if(/(?:^|[?&])qr=BARAMEEL-UNIVERSAL(?:&|$)/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};return null;}
 
   window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,duoLink,fetchCollection,parseUniversalQR,saveState,ensureAuth,API_BASE};
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v='+VERSION,{updateViaCache:'none'}).catch(()=>{});}
   idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
 })();
