@@ -170,7 +170,7 @@ button,input,select{font:inherit}
 .scanner-corners i:nth-child(1){left:1%;top:1%;border-width:4px 0 0 4px}.scanner-corners i:nth-child(2){right:1%;top:1%;border-width:4px 4px 0 0}.scanner-corners i:nth-child(3){left:1%;bottom:1%;border-width:0 0 4px 4px}.scanner-corners i:nth-child(4){right:1%;bottom:1%;border-width:0 4px 4px 0}
 .scanner-line{position:absolute;left:8%;right:8%;top:50%;height:3px;background:var(--yellow);box-shadow:0 0 10px rgba(240,200,48,.85);transform:translateY(-50%);animation:scanline 1.8s ease-in-out infinite alternate;z-index:5;pointer-events:none}
 @keyframes scanline{from{top:18%}to{top:82%}}
-.scan-message{position:absolute;left:34%;top:89.0%;width:61%;min-height:5.2%;z-index:80;display:flex;align-items:center;justify-content:center;padding:1.0% 3%;text-align:center;font-family:'Righteous','Arial Black',Impact,sans-serif;font-size:clamp(8px,2.35vw,17px);line-height:1.1;color:var(--cream);background:rgba(7,26,32,.94);border:3px solid var(--yellow);border-radius:14px;box-shadow:0 4px 0 rgba(0,0,0,.35),0 0 0 1px rgba(217,47,37,.9);opacity:0;transform:translateY(7px) scale(.98);transition:opacity .18s ease,transform .18s ease;pointer-events:none}
+.scan-message{position:absolute;left:34%;top:89.0%;width:61%;min-height:5.2%;z-index:80;display:flex;align-items:center;justify-content:center;padding:1.0% 3%;text-align:center;font-family:'Righteous','Arial Black',Impact,sans-serif;font-size:clamp(12px,2.9vw,18px);line-height:1.1;color:var(--cream);background:rgba(7,26,32,.94);border:3px solid var(--yellow);border-radius:14px;box-shadow:0 4px 0 rgba(0,0,0,.35),0 0 0 1px rgba(217,47,37,.9);opacity:0;transform:translateY(7px) scale(.98);transition:opacity .18s ease,transform .18s ease;pointer-events:none}
 .scan-message.show{opacity:1;transform:none}
 .scan-message.error{border-color:#f05a42;box-shadow:0 4px 0 rgba(0,0,0,.35),0 0 0 1px #7d1e17}
 .scan-message.success{border-color:var(--yellow);box-shadow:0 4px 0 rgba(0,0,0,.35),0 0 18px rgba(240,200,48,.35)}
@@ -288,3 +288,6 @@ button,input,select{font:inherit}
   0%,100%{opacity:.32;transform:translate3d(-1%,0,0) scale(.98)}
   50%{opacity:.9;transform:translate3d(1%,-.5%,0) scale(1.035)}
 }
+
+/* V23.1 accessibility without changing artwork geometry. */
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f4c52f;outline-offset:3px}
