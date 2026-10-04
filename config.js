@@ -4,3 +4,6 @@
 window.BARAMEEL_SUPABASE_URL = 'https://gwsbvhgkrcoksygmxdvm.supabase.co';
 window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_n9G1Yj3-2Yf_kuN-1pa0_A_29TwxjUW';
 window.BARAMEEL_API_BASE = 'https://gwsbvhgkrcoksygmxdvm.supabase.co/functions/v1';
+
+/* Route data stays empty until the real checkpoint/destination dataset is supplied. */
+window.BARAMEEL_ROUTE_CONFIG = {destination:null, checkpoints:[]};
