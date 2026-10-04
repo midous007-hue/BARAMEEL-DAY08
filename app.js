@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261001-21.4';
+  const VERSION = '20261004-23.1';
   const STORAGE = 'barameel.world.player.v20.4';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -13,11 +13,27 @@
   const RUNNERS = ['rookie','skater','brona','racer','chiller','dreamer'];
   const RUNNER_NAMES = {rookie:'THE ROOKIE',skater:'THE SKATER',brona:'BRONA',racer:'THE RACER',chiller:'THE CHILLER',dreamer:'THE DREAMER'};
   const DEFAULTS = {playerId:null,playerCode:null,nickname:'',runner:'brona',points:0,weeklyPoints:0,rank:null,playerCount:0,checkpoints:[],collected:{collection01:{}},totalScans:0,lastReward:null,runHowItWorksSeen:false,lastSeen:null};
+  const memoryStorage = Object.create(null);
+  const safeStorage = {
+    get(key){ try{return window.localStorage.getItem(key)}catch{return Object.prototype.hasOwnProperty.call(memoryStorage,key)?memoryStorage[key]:null} },
+    set(key,value){ try{window.localStorage.setItem(key,value);return true}catch{memoryStorage[key]=String(value);return false} },
+    remove(key){ try{window.localStorage.removeItem(key)}catch{} delete memoryStorage[key] }
+  };
+  const safeSession = {
+    get(key){ try{return window.sessionStorage.getItem(key)}catch{return null} },
+    set(key,value){ try{window.sessionStorage.setItem(key,value);return true}catch{return false} },
+    remove(key){ try{window.sessionStorage.removeItem(key)}catch{} }
+  };
+  function makeId(prefix='id'){
+    try{if(window.crypto?.randomUUID)return prefix+'-'+window.crypto.randomUUID()}catch{}
+    try{const a=new Uint8Array(16);window.crypto?.getRandomValues?.(a);if(a.length){return prefix+'-'+Array.from(a,b=>b.toString(16).padStart(2,'0')).join('')}}catch{}
+    return prefix+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12);
+  }
   let state = loadState();
-  if (!state.playerId) { state.playerId = crypto.randomUUID(); saveState(); }
+  if (!state.playerId) { state.playerId = makeId('player'); saveState(); }
 
-  function loadState(){ try { return {...DEFAULTS, ...JSON.parse(localStorage.getItem(STORAGE)||'{}')}; } catch { return {...DEFAULTS}; } }
-  function saveState(){ state.lastSeen = Date.now(); localStorage.setItem(STORAGE, JSON.stringify(state)); }
+  function loadState(){ try { return {...DEFAULTS, ...JSON.parse(safeStorage.get(STORAGE)||'{}')}; } catch { return {...DEFAULTS}; } }
+  function saveState(){ state.lastSeen = Date.now(); safeStorage.set(STORAGE, JSON.stringify(state)); }
   function patchState(p){ state = {...state,...p}; saveState(); return state; }
   function setNickname(v){ patchState({nickname:String(v||'').trim().slice(0,24)}); }
   function setRunner(v){ if(RUNNERS.includes(v)) patchState({runner:v}); }
@@ -164,22 +180,37 @@
     }catch(e){console.error('[BARAMEEL AUTH]',e);return null;}})();
     return authPromise;
   }
+  function friendlyError(code=''){
+    const c=String(code||'').toUpperCase();
+    const map={
+      NETWORK_ERROR:'CHECK YOUR CONNECTION AND TRY AGAIN.',
+      AUTH_UNAVAILABLE:'WE COULDN’T CONNECT YOU. TRY AGAIN.',
+      BACKEND_NOT_CONFIGURED:'BARAMEEL RUN IS TEMPORARILY UNAVAILABLE.',
+      UNAVAILABLE_AUTH:'WE COULDN’T CONNECT YOU. TRY AGAIN.',
+      EXPIRED_TICKET:'THIS SCAN EXPIRED. TRY AGAIN.',
+      SCAN_TICKET_REQUIRED:'READYING YOUR SCAN. TRY AGAIN.',
+      HTTP_500:'SOMETHING WENT WRONG. TRY AGAIN.',
+      HTTP_502:'SOMETHING WENT WRONG. TRY AGAIN.',
+      HTTP_503:'BARAMEEL RUN IS BUSY. TRY AGAIN.'
+    };
+    return map[c]||'SOMETHING WENT WRONG. TRY AGAIN.';
+  }
   async function api(path,body,method='POST'){
-    if(!API_BASE)return {ok:false,code:'BACKEND_NOT_CONFIGURED',error:'BACKEND_NOT_CONFIGURED'};
+    if(!API_BASE)return {ok:false,code:'BACKEND_NOT_CONFIGURED',error:'BACKEND_NOT_CONFIGURED',message:friendlyError('BACKEND_NOT_CONFIGURED')};
     const session=await ensureAuth();
-    if(!session?.access_token)return {ok:false,code:'AUTH_UNAVAILABLE',error:'AUTH_UNAVAILABLE'};
+    if(!session?.access_token)return {ok:false,code:'AUTH_UNAVAILABLE',error:'AUTH_UNAVAILABLE',message:friendlyError('AUTH_UNAVAILABLE')};
     try{
       const r=await fetch(API_BASE+path,{method,headers:{'content-type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},body:body?JSON.stringify(body):undefined,cache:'no-store'});
       const data=await r.json().catch(()=>({}));
-      if(!r.ok){console.error('[BARAMEEL API]',path,r.status,data);return {ok:false,...data,error:data.error||`HTTP_${r.status}`};}
+      if(!r.ok){console.error('[BARAMEEL API]',path,r.status,data);const code=data.code||data.error||`HTTP_${r.status}`;return {ok:false,...data,code,error:data.error||code,message:data.message||friendlyError(code)};}
       return data;
-    }catch(e){console.error('[BARAMEEL API]',path,e);return {ok:false,code:'NETWORK_ERROR',error:'NETWORK_ERROR'};}
+    }catch(e){console.error('[BARAMEEL API]',path,e);return {ok:false,code:'NETWORK_ERROR',error:'NETWORK_ERROR',message:friendlyError('NETWORK_ERROR')};}
   }
   async function track(event,meta={}){return api('/analytics',{event_name:event,payload:{...meta,path:location.pathname,ts:Date.now()}});}
   async function syncPlayer(){const r=await api('/player',{nickname:state.nickname,runner:state.runner});if(r?.player)mergePlayer(r.player);return r;}
   async function scanUniversal({ticketId=null}){
     if(!ticketId)return {ok:false,code:'SCAN_TICKET_REQUIRED',error:'SCAN_TICKET_REQUIRED'};
-    const r=await api('/scan',{qr:'BARAMEEL-UNIVERSAL',ticket_id:ticketId,idempotency_key:'scan-'+crypto.randomUUID()});
+    const r=await api('/scan',{qr:'BARAMEEL-UNIVERSAL',ticket_id:ticketId,idempotency_key:makeId('scan')});
     if(r?.player)mergePlayer(r.player);
     if(r?.reward){
       const reward=r.reward,c=reward.collection_id||reward.collection||'collection01',i=reward.image_id||reward.image||'image01',piece=Number(reward.piece_number||reward.piece||0);
@@ -187,7 +218,7 @@
     }
     return r;
   }
-  async function duoLink(otherPlayerCode){const r=await api('/duo-link',{player_id:state.playerId,other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:'duo-'+crypto.randomUUID()});if(r?.player)mergePlayer(r.player);return r;}
+  async function duoLink(otherPlayerCode){const r=await api('/duo-link',{player_id:state.playerId,other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:makeId('duo')});if(r?.player)mergePlayer(r.player);return r;}
   async function fetchCollection(id='collection01'){
     const key='barameel.collection.'+id+'.v21.2';
     try{const c=sessionStorage.getItem(key);if(c)return JSON.parse(c);}catch{}
@@ -197,6 +228,6 @@
   }
   function parseUniversalQR(raw){const s=decodeURIComponent(String(raw||'')).trim();if(/^BARAMEEL[-_:]?UNIVERSAL$/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};if(/(?:^|[?&])qr=BARAMEEL-UNIVERSAL(?:&|$)/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};return null;}
 
-  window.BR={VERSION,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,duoLink,fetchCollection,parseUniversalQR,saveState,ensureAuth,API_BASE};
+  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,duoLink,fetchCollection,parseUniversalQR,saveState,ensureAuth,API_BASE};
   idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
 })();
