@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — ALEXANDRIA</title>
-<link rel="stylesheet" href="./styles.css?v=20261001-21.7"><script src="./config.js?v=20261001-21.7"></script>
+<link rel="stylesheet" href="./styles.css?v=20261004-23.1"><script src="./config.js?v=20261004-23.1"></script>
 <style>#imagePreload{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}</style>
 </head>
 <body>
@@ -22,8 +22,8 @@
   <div id="imagePreload"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261003-22.2"></script>
-<script src="./barameel-v205-fix.js?v=20261001-21.7"></script>
+<script src="./app.js?v=20261004-23.1"></script>
+<script src="./barameel-v205-fix.js?v=20261004-23.1"></script>
 <script>
 (async()=>{
   // Resolve all DOM references before any access. This prevents the TDZ ReferenceError
@@ -43,12 +43,12 @@
   collectionName.textContent=String(cfg.displayName||'ALEXANDRIA').toUpperCase();
   const rewardFlashAssets={SUPER:'./assets/rewards/reward-super.webp',AMAZING:'./assets/rewards/reward-amazing.webp',SPECTACULAR:'./assets/rewards/reward-spectacular.webp',JACKPOT:'./assets/rewards/reward-jackpot.webp'};
   Object.values(rewardFlashAssets).forEach(src=>{const i=new Image();i.decoding='async';i.src=src});
-  let handoff=null;try{handoff=JSON.parse(sessionStorage.getItem('barameelLastScan')||'null')}catch{}
+  let handoff=null;try{handoff=JSON.parse(BR.safeSession.get('barameelLastScan')||'null')}catch{}
   const params=new URLSearchParams(location.search);
   const requestedImage=params.get('image')||handoff?.image_id||handoff?.image||handoff?.reward?.image_id||handoff?.reward?.image||BR.state?.lastReward?.image_id||'image01';
   const cache=new Map();
   try{await BR.syncPlayer()}catch{}
-  function url(file){if(!file)return '';let s=String(file).replace(/^\.\//,'');if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s))s=s.replace(/\.png$/i,'.webp');return './'+s+'?v=20261001-21.4'}
+  function url(file){if(!file)return '';let s=String(file).replace(/^\.\//,'');if(/\.png$/i.test(s)&&/\/masters\/image\d{2}-master\.png$/i.test(s))s=s.replace(/\.png$/i,'.webp');return './'+s+'?v=20261004-23.1'}
   function load(file,priority='low'){const u=url(file);if(!u)return Promise.resolve(null);if(cache.has(u))return cache.get(u);const p=new Promise(resolve=>{const img=new Image();img.decoding='async';img.loading='eager';try{img.fetchPriority=priority}catch{}img.onload=async()=>{try{await img.decode()}catch{}resolve(img)};img.onerror=()=>resolve(null);img.src=u});cache.set(u,p);return p}
   function crop(el,p){el.style.backgroundSize='300% 300%';el.style.backgroundPosition=`${(p.column-1)*50}% ${(p.row-1)*50}%`;el.style.backgroundRepeat='no-repeat'}
   function rarityFor(im,n){return String(im.pieces[n-1]?.rarity||'COMMON').toUpperCase()}
@@ -114,7 +114,7 @@
     setTimeout(()=>rewardFlash.classList.remove('on'),3000);
   }
   async function revealReward(points,rarity){
-    const safePoints=Math.max(10000,Number(points)||10000);
+    const safePoints=Number(points)||0;if(safePoints<=0)return;
     const spec=BR.rewardSpec?BR.rewardSpec(rarity,safePoints):{duration:1400,rarity:String(rarity||'COMMON').toUpperCase(),points:safePoints};
     const key=String(spec.rarity||'COMMON').toLowerCase();
     pointsBadge.className='points-badge '+key+' revealing';
@@ -134,7 +134,7 @@
     const im=cfg.images.find(x=>x.imageId===imageId);
     const meta=im?.pieces?.[pieceNumber-1];
     const serverPoints=Number(h.points??h.points_awarded??h.reward?.points??0);
-    const points=(serverPoints>=10000?serverPoints:Number(meta?.points||BR.RARITY?.[String(meta?.rarity||h.rarity||'COMMON').toUpperCase()]?.points||10000));
+    const points=serverPoints>0?serverPoints:0;
     const rarity=String(h.rarity||h.reward?.rarity||meta?.rarity||'COMMON').toUpperCase();
     return {...h,image_id:imageId,piece_number:pieceNumber,points,rarity};
   }
@@ -146,7 +146,7 @@
     const rarity=String(handoff?.rarity||'COMMON').toUpperCase();
     if(points>0&&!handoff.duplicate)revealReward(points,rarity);
     const rewardedImage=handoff?.image_id;
-    if(rewardedImage){const im=cfg.images.find(x=>x.imageId===rewardedImage);if(im){select.value=im.imageId;render(im);if(isComplete(im)){BR.playCompletionSound();completeFlash.classList.add('on');BR.flash()}}}
+    if(rewardedImage){const im=cfg.images.find(x=>x.imageId===rewardedImage);if(im){select.value=im.imageId;render(im);if(isComplete(im)){BR.playCompletionSound();completeFlash.classList.add('on');BR.flash()}}}BR.safeSession.remove('barameelLastScan');
   }
   document.getElementById('back').onclick=()=>BR.goAfter('screen05.html','back',180);
   document.getElementById('myRewards').onclick=()=>BR.goAfter('screen04.html','confirm',180);
