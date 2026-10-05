@@ -1,1 +1,48 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><link rel="stylesheet" href="./barameel-flow.css?v=20261004-23.1"><script src="./config.js?v=20261004-23.1"></script></head><body><main class="flow-stage art-955"><img class="flow-art" src="./assets/your-barameel-drop.webp" alt="BARAMEEL RUN" fetchpriority="high"><div class="arcade-shine"></div><button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button><button id="reveal" class="flow-hit" style="left:13%;top:88%;width:74%;height:7%" aria-label="Reveal my drop"></button><div id="drop" class="flow-data flow-number" style="left:28%;top:76%;width:48%;text-align:center"></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261004-23.1"></script><script src="./barameel-flow.js?v=20261004-23.1"></script><script>document.getElementById('back').onclick=()=>BARAMEEL_FLOW.go('receipt-code.html','back');document.getElementById('reveal').onclick=()=>{document.getElementById('drop').textContent='REVEALING…';BARAMEEL_FLOW.fx('jackpot');setTimeout(()=>{document.getElementById('drop').textContent='YOUR REWARD';BARAMEEL_FLOW.go('rewarded-added.html','jackpot',850)},900)};</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>BARAMEEL RUN — YOUR DROP</title>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.2">
+<script src="./config.js?v=20261005-23.2"></script>
+<style>
+#dropLabel{position:absolute;left:25%;top:72.8%;width:51%;height:8.8%;z-index:25;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(16px,4vw,30px)/1 'Bebas Neue',Impact,sans-serif;text-align:center;text-transform:uppercase;text-shadow:2px 2px 0 #071b2b;pointer-events:none}
+#dropMeta{position:absolute;left:28%;top:80.6%;width:45%;height:3.5%;z-index:25;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(9px,2.4vw,17px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;pointer-events:none;opacity:.92}
+</style>
+</head>
+<body>
+<main class="flow-stage art-955">
+<img class="flow-art" src="./assets/your-barameel-drop.webp?v=20261005-23.2" alt="YOUR BARAMEEL DROP" fetchpriority="high">
+<div class="arcade-shine"></div>
+<div id="dropLabel" aria-live="polite">YOUR REWARD</div>
+<div id="dropMeta"></div>
+<button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back to Reward Box"></button>
+<button id="reveal" class="flow-hit" style="left:13%;top:88%;width:74%;height:7%" aria-label="Reveal my drop"></button>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261005-23.2"></script>
+<script>
+(() => {
+  const label=document.getElementById('dropLabel'),meta=document.getElementById('dropMeta'),button=document.getElementById('reveal');
+  let reward=null;try{reward=JSON.parse(BR.safeSession.get('barameelReceiptReward')||'null')}catch{}
+  if(!reward){label.textContent='REWARD UNAVAILABLE';button.disabled=true;return}
+  const type=String(reward.reward_type||'REWARD').toUpperCase();
+  const text=String(reward.reward_label||type).toUpperCase();
+  label.textContent=text;
+  const pts=Number(reward.points_awarded||0);
+  const product=reward.product_code?String(reward.product_code).replace(/[_-]+/g,' ').toUpperCase():'';
+  meta.textContent=pts>0?'+'+pts.toLocaleString()+' POINTS':product||type;
+  BR.play('receipt');BR.haptic('reward');BR.track('reward_drop_view',{reward_type:type});
+  button.onclick=()=>{
+    label.textContent='CLAIMING YOUR REWARD…';
+    meta.textContent='';
+    BR.play('reward');BR.haptic('reward');BR.flash();
+    BR.safeSession.set('barameelRunCompleteReturn','your-barameel-drop.html');
+    window.setTimeout(()=>BR.go('rewarded-added.html','reward',520),520);
+  };
+  document.getElementById('back').onclick=()=>BR.goAfter('reveal-barameel-box.html','back',180);
+})();
+</script>
+</body>
+</html>

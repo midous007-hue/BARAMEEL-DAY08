@@ -1,129 +1,166 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<link rel="stylesheet" href="./barameel-flow.css?v=20261004-23.1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#071b2b">
+<title>BARAMEEL RUN — CHECKPOINT RUN</title>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.2">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="./config.js?v=20261004-23.1"></script>
+<script src="./config.js?v=20261005-23.2"></script>
 <style>
-#routeMap{position:absolute;left:31.5%;top:21.5%;width:63%;height:36.5%;z-index:20;overflow:hidden;border-radius:22px;background:#071b2b}
-#routeMap .leaflet-control-attribution{font-size:8px}
-#routeMapStatus{position:absolute;left:34%;top:59.8%;width:59%;z-index:24;color:#f6e7ce;text-align:center;font:900 clamp(11px,2.7vw,24px)/1.1 'Roboto Condensed',Arial,sans-serif;pointer-events:none;text-transform:uppercase;text-shadow:0 2px 0 #071b2b}
-#targetTitle{position:absolute;left:57%;top:62.4%;width:35%;z-index:24;color:#f6e7ce;font:900 clamp(13px,3.2vw,28px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;pointer-events:none;text-transform:uppercase}
-#targetMeta{position:absolute;left:57%;top:67.2%;width:35%;z-index:24;color:#f6e7ce;font:700 clamp(10px,2.4vw,20px)/1.1 'Roboto Condensed',Arial,sans-serif;text-align:center;pointer-events:none;opacity:.9}
-#routeProgress{position:absolute;left:37%;top:76.2%;width:53%;height:4px;z-index:24;background:rgba(246,231,206,.28);border-radius:99px;overflow:hidden;pointer-events:none}
-#routeProgressFill{height:100%;width:0;background:#ef2d24;border-radius:99px;transition:width .5s ease}
-#routeAction{left:30.8%;top:86.8%;width:64.7%;height:6.4%;z-index:30}
-#routeActionLabel{position:absolute;inset:0;display:grid;place-items:center;color:#071b2b;font:900 clamp(15px,4vw,34px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;pointer-events:none}
+#routeMap{position:absolute;left:32.9%;top:28.0%;width:59.9%;height:19.7%;z-index:20;overflow:hidden;border-radius:4.0%;isolation:isolate;background:#071b2b;box-shadow:inset 0 0 0 3px rgba(246,231,206,.9),inset 0 0 0 6px rgba(244,197,47,.28),0 6px 14px rgba(0,0,0,.4)}
+#routeMap .leaflet-container{width:100%;height:100%;background:#071b2b;filter:saturate(.76) contrast(.94) brightness(.9) sepia(.08)}
+#routeMap .leaflet-tile-pane{opacity:.94}
+#routeMap .leaflet-control-attribution{font-size:7px;line-height:1.1;background:rgba(7,27,43,.74)!important;color:#f6e7ce!important}
+#routeMap .leaflet-control-attribution a{color:#f6e7ce!important}
+#routeMap .leaflet-tooltip{font:900 10px/1 'Roboto Condensed',Arial,sans-serif;color:#071b2b;background:#f6e7ce;border:2px solid #f4c52f;box-shadow:0 2px 0 #071b2b}
+.route-field{position:absolute;z-index:24;display:flex;align-items:center;justify-content:center;color:#071b2b;font:900 clamp(11px,2.6vw,21px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2%;pointer-events:none}
+#currentLocation{left:46.7%;top:53.9%;width:47.0%;height:4.2%}
+#nextCheckpoint{left:46.7%;top:61.3%;width:47.0%;height:4.2%}
+#distanceNext{left:46.7%;top:68.6%;width:47.0%;height:4.2%}
+#routeProgress{position:absolute;left:34.1%;top:79.4%;width:58.1%;height:2.55%;z-index:25;background:rgba(246,231,206,.20);border-radius:99px;overflow:hidden;pointer-events:none}
+#routeProgressFill{height:100%;width:0;background:#ef2d24;border-radius:99px;transition:width .45s ease}
+#routeStatus{position:absolute;left:32.8%;top:75.0%;width:60.0%;height:4.0%;z-index:24;color:#f6e7ce;font:900 clamp(9px,2.2vw,17px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;text-shadow:0 2px 0 #071b2b;pointer-events:none}
+#routeAction{left:30.2%;top:86.3%;width:64.9%;height:7.4%;z-index:30}
+#routeAction:disabled{pointer-events:none;opacity:.55}
+#routeActionLabel{position:absolute;inset:0;display:grid;place-items:center;color:#071b2b;font:900 clamp(14px,3.8vw,31px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;pointer-events:none}
+.route-error{color:#ff9a8f!important}
 @media(prefers-reduced-motion:reduce){#routeProgressFill{transition:none}}
 </style>
 </head>
 <body>
-<main class="flow-stage art-948x1660">
-<img class="flow-art" src="./assets/route-map.webp?v=20261004-23.1" alt="BARAMEEL RUN LIVE ROUTE" fetchpriority="high">
-<div id="routeMap" aria-label="Interactive live route map"></div>
-<div id="routeMapStatus" aria-live="polite">LOCATING YOUR ROUTE…</div>
-<div id="targetTitle">ROUTE LOADING</div>
-<div id="targetMeta"></div>
+<main class="flow-stage art-948x1659">
+<img class="flow-art" src="./assets/route-map.webp?v=20261005-23.2" alt="BARAMEEL RUN CHECKPOINT RUN" fetchpriority="high">
+<div id="routeMap" aria-label="Live checkpoint map"></div>
+<div id="currentLocation" class="route-field">LOCATING…</div>
+<div id="nextCheckpoint" class="route-field">LOADING…</div>
+<div id="distanceNext" class="route-field">—</div>
+<div id="routeStatus" aria-live="polite">PREPARING LIVE ROUTE</div>
 <div id="routeProgress" aria-hidden="true"><div id="routeProgressFill"></div></div>
-<button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button>
-<button id="routeAction" class="flow-hit" aria-label="Route action"><span id="routeActionLabel">EXPLORE ROUTE</span></button>
+<button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back to My Run"></button>
+<button id="routeAction" class="flow-hit" disabled aria-label="Checkpoint action"><span id="routeActionLabel">LOADING ROUTE</span></button>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="./app.js?v=20261004-23.1"></script>
-<script src="./barameel-flow.js?v=20261004-23.1"></script>
+<script src="./app.js?v=20261005-23.2"></script>
 <script>
-(()=> {
-  const back=document.getElementById('back');
-  const action=document.getElementById('routeAction');
-  const actionLabel=document.getElementById('routeActionLabel');
-  const status=document.getElementById('routeMapStatus');
-  const title=document.getElementById('targetTitle');
-  const meta=document.getElementById('targetMeta');
-  const fill=document.getElementById('routeProgressFill');
+(async()=>{
+  const status=document.getElementById('routeStatus'),current=document.getElementById('currentLocation');
+  const next=document.getElementById('nextCheckpoint'),distance=document.getElementById('distanceNext');
+  const fill=document.getElementById('routeProgressFill'),action=document.getElementById('routeAction'),label=document.getElementById('routeActionLabel');
   const cfg=window.BARAMEEL_ROUTE_CONFIG||{};
-  const destination=cfg.destination && Number.isFinite(Number(cfg.destination.lat)) && Number.isFinite(Number(cfg.destination.lng))
-    ? {lat:Number(cfg.destination.lat),lng:Number(cfg.destination.lng),name:String(cfg.destination.name||'BARAMEEL')} : null;
-  const checkpoints=Array.isArray(cfg.checkpoints) ? cfg.checkpoints.filter(x=>Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))).map(x=>({
-    ...x,lat:Number(x.lat),lng:Number(x.lng),id:String(x.id||''),name:String(x.name||'CHECKPOINT')
-  })) : [];
-  const discovered=new Set((BR.state?.checkpoints||[]).map(String));
+  const destination=cfg.destination&&Number.isFinite(Number(cfg.destination.lat))&&Number.isFinite(Number(cfg.destination.lng))
+    ? {lat:Number(cfg.destination.lat),lng:Number(cfg.destination.lng),name:String(cfg.destination.name||'BARAMEEL'),radius_meters:Math.max(20,Number(cfg.destination.radius_meters||120))}
+    : null;
+  const checkpoints=Array.isArray(cfg.checkpoints)
+    ? cfg.checkpoints.filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))).map(x=>({id:String(x.id||''),name:String(x.name||'CHECKPOINT'),lat:Number(x.lat),lng:Number(x.lng)}))
+    : [];
 
-  function setAction(label,enabled=true){
-    actionLabel.textContent=label;
-    action.disabled=!enabled;
-    action.style.opacity=enabled?'1':'.55';
+  function haversine(a,b){
+    const R=6371000,rad=Math.PI/180;
+    const dLat=(b.lat-a.lat)*rad,dLng=(b.lng-a.lng)*rad;
+    const x=Math.sin(dLat/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLng/2)**2;
+    return 2*R*Math.asin(Math.min(1,Math.sqrt(x)));
   }
-  function marker(lat,lng,type,label){
-    const color=type==='player'?'#ef2d24':type==='barameel'?'#f4c52f':'#071b2b';
-    const m=L.circleMarker([lat,lng],{radius:9,color:'#f6e7ce',weight:3,fillColor:color,fillOpacity:1});
-    m.addTo(map).bindTooltip(label,{direction:'top',offset:[0,-10]});
+  function formatDistance(m){return m<1000?Math.max(1,Math.round(m))+' M':(m/1000).toFixed(m<10000?1:0)+' KM'}
+  function setAction(text,enabled){
+    label.textContent=text;action.disabled=!enabled;
+  }
+
+  const discovered=new Set((BR.state?.checkpoints||[]).map(String));
+  let map=null,watchId=null,playerMarker=null,markers=[];
+
+  function marker(lat,lng,type,text){
+    const fillColor=type==='player'?'#ef2d24':type==='barameel'?'#f4c52f':type==='found'?'#f4c52f':'#071b2b';
+    const m=L.circleMarker([lat,lng],{radius:type==='player'?8:7,color:'#f6e7ce',weight:3,fillColor,fillOpacity:1});
+    m.addTo(map).bindTooltip(text,{direction:'top',offset:[0,-10]});
     return m;
   }
-  let map=null;
-  function start(pos){
-    map=L.map('routeMap',{zoomControl:false,attributionControl:true}).setView([pos.lat,pos.lng],15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
-    marker(pos.lat,pos.lng,'player','YOU ARE HERE');
 
-    if(destination){
-      marker(destination.lat,destination.lng,'barameel',destination.name);
-      L.polyline([[pos.lat,pos.lng],[destination.lat,destination.lng]],{color:'#ef2d24',weight:5,dashArray:'10 10',opacity:.9}).addTo(map);
-    }
-
-    checkpoints.forEach(cp=>marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CHECKPOINT FOUND':'CHECKPOINT'));
-
-    const available=checkpoints.filter(cp=>!discovered.has(cp.id));
-    if(available.length){
-      available.sort((x,y)=>((x.lat-pos.lat)**2+(x.lng-pos.lng)**2)-((y.lat-pos.lat)**2+(y.lng-pos.lng)**2));
-      title.textContent=available[0].name;
-      meta.textContent='CHECKPOINT AVAILABLE';
-      setAction('GO TO CHECKPOINT');
-    }else if(destination){
-      title.textContent=destination.name;
-      meta.textContent='FINAL DESTINATION';
-      setAction('HEAD TO BARAMEEL');
+  function renderMap(pos){
+    if(!map){
+      map=L.map('routeMap',{zoomControl:false,attributionControl:true,scrollWheelZoom:false,doubleClickZoom:false,touchZoom:false}).setView([pos.lat,pos.lng],15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+      playerMarker=marker(pos.lat,pos.lng,'player','YOU ARE HERE');
+      if(destination){
+        marker(destination.lat,destination.lng,'barameel',destination.name);
+        L.polyline([[pos.lat,pos.lng],[destination.lat,destination.lng]],{color:'#ef2d24',weight:4,dashArray:'8 9',opacity:.72}).addTo(map);
+      }
+      checkpoints.forEach(cp=>markers.push({cp,marker:marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CLEARED':'CHECKPOINT')}));
     }else{
-      title.textContent='ROUTE DATA NOT ACTIVE';
-      meta.textContent='CHECKPOINTS WILL APPEAR HERE WHEN THE ROUTE IS LIVE';
-      setAction('BACK TO PROGRESS');
+      playerMarker.setLatLng([pos.lat,pos.lng]);
     }
-
-    const total=checkpoints.length;
-    const done=checkpoints.filter(cp=>discovered.has(cp.id)).length;
-    fill.style.width=total ? Math.min(100,(done/total)*100)+'%' : '0%';
-    status.textContent=destination||checkpoints.length ? 'LIVE ROUTE READY' : 'LIVE MAP READY';
-
-    action.onclick=()=>{
-      if(available.length||destination) BARAMEEL_FLOW.go('checkpoint-scanner.html','scan');
-      else BARAMEEL_FLOW.go('screen06.html','back');
-    };
   }
 
-  if(!navigator.geolocation){
-    status.textContent='LOCATION UNAVAILABLE';
-    title.textContent='ROUTE UNAVAILABLE';
-    meta.textContent='LOCATION IS REQUIRED';
-    setAction('BACK TO PROGRESS');
-  }else{
+  function refresh(pos){
+    renderMap(pos);
+    current.textContent='LIVE • '+pos.lat.toFixed(5)+', '+pos.lng.toFixed(5);
+
+    const available=checkpoints.filter(cp=>!discovered.has(cp.id)).map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>a.distance-b.distance);
+    const total=checkpoints.length,done=checkpoints.filter(cp=>discovered.has(cp.id)).length;
+    const progress=total?Math.min(100,Math.round(done/total*100)):0;
+    fill.style.width=progress+'%';
+    BR.mergePlayer({routeProgress:progress,routeDistance:available[0]?.distance??null,nextCheckpoint:available[0]?.id??null});
+    if(available.length){
+      next.textContent=available[0].name;
+      distance.textContent=formatDistance(available[0].distance);
+      status.textContent='NEXT CHECKPOINT READY';
+      status.classList.remove('route-error');
+      setAction('GO TO CHECKPOINT',true);
+      action.onclick=()=>BR.goAfter('checkpoint-scanner.html','scan',220);
+      return;
+    }
+
+    next.textContent=destination?destination.name:'ROUTE COMPLETE';
+    if(destination){
+      const d=haversine(pos,destination);
+      distance.textContent=formatDistance(d);
+      if(d<=destination.radius_meters){
+        status.textContent='BARAMEEL FINAL ZONE REACHED';
+        setAction('ARRIVE AT BARAMEEL',true);
+        action.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
+      }else{
+        status.textContent='ALL CHECKPOINTS CLEARED • HEAD TO BARAMEEL';
+        setAction('REFRESH LOCATION',true);
+        action.onclick=()=>{BR.play('tap');BR.haptic('tap');requestLocation()};
+      }
+    }else{
+      distance.textContent='—';
+      status.textContent='CHECKPOINT RUN COMPLETE';
+      setAction('VIEW RUN COMPLETE',true);
+      action.onclick=()=>BR.goAfter('run-complete.html','confirm',220);
+    }
+  }
+
+  function routeError(message){
+    status.textContent=message;status.classList.add('route-error');
+    current.textContent='LOCATION UNAVAILABLE';next.textContent='—';distance.textContent='—';fill.style.width='0%';
+    setAction('TRY AGAIN',true);action.onclick=()=>requestLocation();
+  }
+
+  function requestLocation(){
+    if(!navigator.geolocation){routeError('LOCATION NOT SUPPORTED');return;}
+    status.textContent='LOCATING YOUR ROUTE…';
     navigator.geolocation.getCurrentPosition(
-      p=>start({lat:p.coords.latitude,lng:p.coords.longitude}),
-      ()=>{
-        status.textContent='LOCATION ACCESS NEEDED FOR LIVE ROUTE';
-        title.textContent='ENABLE LOCATION';
-        meta.textContent='YOUR POSITION IS REQUIRED';
-        setAction('TRY AGAIN');
-        action.onclick=()=>location.reload();
-      },
-      {enableHighAccuracy:true,timeout:10000,maximumAge:15000}
+      p=>refresh({lat:p.coords.latitude,lng:p.coords.longitude}),
+      ()=>routeError('LOCATION ACCESS NEEDED FOR CHECKPOINT RUN'),
+      {enableHighAccuracy:true,timeout:12000,maximumAge:10000}
     );
   }
 
-  back.onclick=()=>{
-    const target=BR.safeSession.get('barameelRouteReturn')||'screen06.html';
-    BARAMEEL_FLOW.go(target,'back');
-  };
+  if(!checkpoints.length&&!destination){
+    current.textContent='LIVE ROUTE NOT CONFIGURED';next.textContent='—';distance.textContent='—';
+    status.textContent='CHECKPOINT DATA NOT ACTIVE YET';status.classList.add('route-error');
+    fill.style.width='0%';setAction('BACK TO MY RUN',true);action.onclick=()=>BR.goAfter('screen04.html','back',180);
+  }else{
+    requestLocation();
+  }
+
+  document.getElementById('back').onclick=()=>BR.goAfter('screen04.html','back',180);
+  window.addEventListener('pagehide',()=>{if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId)});
+  BR.track('checkpoint_route_view');
 })();
 </script>
-</body></html>
+</body>
+</html>

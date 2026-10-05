@@ -13,3 +13,13 @@
 .flow-data{position:absolute;z-index:24;color:#f6e7ce;font-family:'Bebas Neue',Impact,sans-serif;text-shadow:0 2px 0 #071b2b;pointer-events:none}.flow-number{font-size:clamp(22px,6vw,54px);font-weight:900}.flow-small{font-family:'Roboto Condensed',sans-serif;font-size:clamp(12px,3vw,25px);font-weight:900}
 @media(prefers-reduced-motion:reduce){.arcade-shine,.flow-art{animation:none!important}}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+/* V23.2 exact artwork geometry */
+.flow-stage.art-948x1659{width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659}
+.flow-stage.art-941x1672{width:min(100vw,calc(100dvh*941/1672));height:min(100dvh,calc(100vw*1672/941));aspect-ratio:941/1672}
+.flow-data.dynamic-field{display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flow-field-status{font-size:clamp(13px,3.1vw,27px);font-weight:900}
+
+.haptic-pulse{animation:barameel-flow-haptic .14s ease-out both}
+@keyframes barameel-flow-haptic{0%{filter:brightness(1)}45%{filter:brightness(1.07)}100%{filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){.haptic-pulse{animation:none!important}}

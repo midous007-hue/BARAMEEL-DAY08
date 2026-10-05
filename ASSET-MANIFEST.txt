@@ -1,47 +1,78 @@
-BARAMEEL WORLD V15 — CURRENT ASSET MANIFEST
+BARAMEEL RUN — V23.2 ASSET MANIFEST
 
-ALREADY INCLUDED — DO NOT DUPLICATE
-------------------------------------
-assets/barameel-world-splash.webp
-assets/barameel-world.webp
-assets/screen01-start.webp
-assets/screen04-rewards.webp
-assets/screen05-scanner.webp
-assets/screen06-puzzle.webp
+ONE UNIVERSAL QR
+----------------
 assets/barameel-universal-qr.png
 
-ONE QR ONLY
------------
-The file above is the only gameplay QR asset.
-It encodes: BARAMEEL-UNIVERSAL
-Do not add QR files for individual pieces, images, collections, or checkpoints.
-
-RUNNER ART — UPLOAD ONLY IF YOU HAVE THE FINAL APPROVED ART
-------------------------------------------------------------
+CORE RUN ARTWORK
+----------------
+assets/screen01-start.webp
 assets/screen02-rookie.webp
 assets/screen02-skater.webp
 assets/screen02-brona.webp
 assets/screen02-racer.webp
 assets/screen02-chiller.webp
 assets/screen02-dreamer.webp
-
 assets/screen03-rookie.webp
 assets/screen03-skater.webp
 assets/screen03-brona.webp
 assets/screen03-racer.webp
 assets/screen03-chiller.webp
 assets/screen03-dreamer.webp
+assets/my-run-dashboard.webp
+assets/screen05-scanner.webp
+assets/screen06-puzzle.webp
+assets/route-map.webp
+assets/checkpoint-scanner.webp
+assets/checkpoint-found.webp
+assets/barameel-final-zone.webp
+assets/run-complete.webp
 
-WORLD EXPERIENCE ART — NOT YET REQUIRED
----------------------------------------
-Do NOT upload Duo Link, Menu, Post, or My Barameel artwork yet.
-Those screens have not been visually finalized.
-When each artwork is approved, its exact filename will be added to this manifest first.
+RECEIPT / REWARD ARTWORK
+------------------------
+assets/receipt-code.webp
+assets/verifying-code.webp
+assets/reveal-barameel-box.webp
+assets/your-barameel-drop.webp
+assets/rewarded-added.webp
+assets/barameel-reward-result.webp
+assets/new-collection-piece.webp
+assets/new-piece-found.webp
 
-COLLECTION ART
---------------
-Current collection path:
-assets/collections/collection01/masters/
+WORLD / SHARED ARTWORK
+----------------------
+assets/barameel-world-splash.webp
+assets/barameel-world.webp
+assets/how-it-works.webp
+assets/leaderboard.webp
+assets/marks-wallet.webp
+assets/what-are-barameel-marks.webp
 
-Keep the 10 master images. Do not create a QR folder inside the collection.
-The pieces are selected by the server-side reward engine, not by printed QR codes.
+COLLECTION CATALOG
+------------------
+assets/collections/index.json
+assets/collections/collection01/collection.json
+assets/collections/collection01/masters/image01-master.webp
+assets/collections/collection01/masters/image02-master.webp
+assets/collections/collection01/masters/image03-master.webp
+assets/collections/collection01/masters/image04-master.webp
+assets/collections/collection01/masters/image05-master.webp
+assets/collections/collection01/masters/image06-master.webp
+assets/collections/collection01/masters/image07-master.webp
+assets/collections/collection01/masters/image08-master.webp
+assets/collections/collection01/masters/image09-master.webp
+assets/collections/collection01/masters/image10-master.webp
+
+REWARD FX ARTWORK
+-----------------
+assets/rewards/reward-super.webp
+assets/rewards/reward-amazing.webp
+assets/rewards/reward-spectacular.webp
+assets/rewards/reward-jackpot.webp
+
+RULES
+-----
+Do not add duplicate QR assets.
+Do not add images outside assets/.
+Collection master images are not piece-specific QR assets.
+Each configured Collection must contain exactly 10 master images.

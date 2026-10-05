@@ -1,1 +1,42 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><link rel="stylesheet" href="./barameel-flow.css?v=20261004-23.1"><script src="./config.js?v=20261004-23.1"></script></head><body><main class="flow-stage"><img class="flow-art" src="./assets/checkpoint-found.webp" alt="BARAMEEL RUN" fetchpriority="high"><div class="arcade-shine"></div><button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button><div id="checkpointPoints" class="flow-data flow-number" style="left:43%;top:55%;width:45%;text-align:center">—</div><div class="flow-data flow-small" style="left:45%;top:70%;width:45%;text-align:center">CHECKPOINT BONUS</div><button id="continue" class="flow-hit" style="left:29%;top:88.3%;width:62%;height:6.5%" aria-label="Continue"></button></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261004-23.1"></script><script src="./barameel-flow.js?v=20261004-23.1"></script><script>document.getElementById('back').onclick=()=>BARAMEEL_FLOW.go('route-map.html','back');document.getElementById('continue').onclick=()=>BARAMEEL_FLOW.go('route-map.html','confirm');BARAMEEL_FLOW.fx('reward');</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>BARAMEEL RUN — CHECKPOINT CLEARED</title>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.2">
+<script src="./config.js?v=20261005-23.2"></script>
+<style>
+.checkpoint-value{position:absolute;z-index:25;display:flex;align-items:center;justify-content:center;color:#071b2b;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+#checkpointName{left:43.0%;top:53.8%;width:49.0%;height:5.0%;font-size:clamp(12px,2.9vw,22px)}
+#checkpointPoints{left:47.0%;top:68.0%;width:45.0%;height:6.5%;font-family:'Bebas Neue','Roboto Condensed',Arial,sans-serif;font-size:clamp(21px,6vw,46px);color:#f4c52f;text-shadow:2px 2px 0 #071b2b}
+</style>
+</head>
+<body>
+<main class="flow-stage art-948x1659">
+<img class="flow-art" src="./assets/checkpoint-found.webp?v=20261005-23.2" alt="CHECKPOINT CLEARED" fetchpriority="high">
+<div id="checkpointName" class="checkpoint-value">CHECKPOINT</div>
+<div id="checkpointPoints" class="checkpoint-value">0</div>
+<button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back to Route"></button>
+<button id="continue" class="flow-hit" style="left:7%;top:84.5%;width:86%;height:8%" aria-label="Next Checkpoint"></button>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261005-23.2"></script>
+<script>
+(() => {
+  let result=null;try{result=JSON.parse(BR.safeSession.get('barameelCheckpointResult')||'null')}catch{}
+  if(!result?.ok){
+    document.getElementById('checkpointName').textContent='CHECKPOINT RESULT UNAVAILABLE';
+    document.getElementById('checkpointPoints').textContent='—';
+    document.getElementById('continue').onclick=()=>BR.goAfter('route-map.html','back',180);
+    return;
+  }
+  document.getElementById('checkpointName').textContent=String(result.checkpoint_name||result.name||result.checkpoint_id||'CHECKPOINT').toUpperCase();
+  document.getElementById('checkpointPoints').textContent='+'+Number(result.points_awarded||0).toLocaleString();
+  BR.haptic('reward');BR.play('confirm');BR.flash();BR.track('checkpoint_cleared',{checkpoint_id:result.checkpoint_id,points:result.points_awarded});
+  document.getElementById('continue').onclick=()=>{BR.safeSession.remove('barameelCheckpointResult');BR.goAfter('route-map.html','confirm',220)};
+  document.getElementById('back').onclick=()=>{BR.safeSession.remove('barameelCheckpointResult');BR.goAfter('route-map.html','back',180)};
+})();
+</script>
+</body>
+</html>

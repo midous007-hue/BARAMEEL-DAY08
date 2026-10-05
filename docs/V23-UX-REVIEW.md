@@ -1,65 +1,63 @@
-# BARAMEEL RUN V23 UX Review — clean-development
+# BARAMEEL RUN V23.2 — CURRENT UX / FLOW REVIEW
 
-## Player-first rules
-Every screen must answer:
-1. WHERE AM I?
-2. WHAT JUST HAPPENED?
-3. WHY AM I HERE?
-4. WHAT DO I DO NOW?
-5. WHAT HAPPENS AFTER I TAP?
-6. CAN I GO BACK, AND WHERE WILL BACK TAKE ME?
-7. WHAT IS LIVE DATA versus fixed artwork?
-8. What is the current run state and what is the final goal?
+## Locked player journey
 
-## Locked journey
-WORLD -> HOW IT WORKS (first run only) -> START FLASH (once per run start) -> NICKNAME -> CHOOSE RUNNER -> CONFIRM -> MY PROGRESS -> BARAMEEL QR -> REWARD -> LIVE ROUTE -> CHECKPOINT SCAN -> CHECKPOINT FOUND -> conditional PIECE -> ROUTE -> repeat/explore -> FINAL ZONE -> BARAMEEL FINISH -> RECEIPT CODE -> VERIFY -> DROP -> RUN COMPLETE -> LIVE TOP 20 -> MARKS.
+BARAMEEL WORLD → HOW IT WORKS (first run only) → START FLASH (once per run start) → NICKNAME → CHOOSE RUNNER → CONFIRM → MY RUN
 
-## V23 fixes applied
-- Service worker cache bumped to v23 and flow pages included to prevent stale START FLASH behavior.
-- START FLASH is guarded: it only runs after HOW IT WORKS has been seen and only once per browser session/run start.
-- LIVE ROUTE now uses a real interactive map layer with browser location and configuration-driven destination/checkpoints. No static geographic route is hard-coded in the UI.
-- Route map treats checkpoints as discoverable points rather than a forced fixed sequence.
-- Checkpoint scanner no longer auto-succeeds after a timer. It waits for a checkpoint QR with the test format BARAMEEL-CHECKPOINT-<ID>.
-- RUN COMPLETE Back now returns to the actual parent screen recorded by the flow instead of forcing the player back into the route.
-- Receipt no-code path records its parent before RUN COMPLETE.
+From MY RUN, the experience intentionally splits into two independent paths:
 
-## Production blockers still intentionally not invented
-- BARAMEEL destination coordinates are not present in config.js.
-- Production checkpoint dataset/schema and server-side checkpoint validation endpoint are not present in the current repository.
-- Therefore the live route engine is configuration-ready, but destination/checkpoint data must be supplied before claiming production-ready geographic routing.
-- The checkpoint scanner currently gates the UI on a checkpoint QR format for flow testing; server-side validation must be added before production rewards are granted.
+### COLLECTION HUNT
 
-## Artwork audit from the uploaded V23 candidate pack
-Approved for the current flow layer:
-- how-it-works.webp
-- start-flash-screen.webp
-- checkpoint-found.webp
-- checkpoint-scanner.webp
-- leaderboard.webp
-- new-collection-piece.webp
-- new-piece-found.webp
-- reveal-barameel-box.webp
-- verifying-code.webp
-- what-are-barameel-marks.webp
-- your-barameel-drop.webp
+MY RUN → COLLECTION HUNT → BARAMEEL UNIVERSAL QR → server reward → collection piece/configured reward → collection progress
 
-Hold for artwork revision before using as final:
-- route-map.webp — blank map viewport is correct, but the fixed five checkpoint/progress circles must be removed because checkpoint count is dynamic.
-- collections.webp — contains static 0/10 dynamic progress.
-- screen04-rewards.webp.webp — contains sample live player values; must be empty.
-- receipt-code.webp — contains ENTER CODE HERE placeholder inside the artwork; remove placeholder content while keeping a clean integrated code area.
-- rewarded-added.webp — contains static +5,000; must be empty.
-- run-complete.webp — contains static collection images/progress and must be dynamic/empty.
-- marks-wallet.webp — contains a dynamic date placeholder; remove it.
-- checkpoint-reached.webp — not part of the locked current core flow; do not wire it until its role is explicitly approved.
+The Collection path stays collection-focused. It does not route to the city map or checkpoint scanner.
 
-## Motion rule
-Motion must be short, purposeful and state-driven:
-- tap: small feedback
-- confirm: stronger confirmation
-- scan: scanning motion only while camera is active
-- reward: reveal/shine only when reward is actually received
-- jackpot: rare, reserved for true high-value outcomes
-- navigation: quick transition, no long loading illusion
-- respect prefers-reduced-motion
-- never use animation to imply a reward or success before the backend/result actually confirms it.
+Screen 06 is a reusable master Collection Puzzle screen. ALEXANDRIA is one collection in the catalog. Each configured collection contains 10 different master images, and each image has its own 3×3 piece definition.
+
+### CHECKPOINT RUN
+
+MY RUN → CHECKPOINT RUN → LIVE ROUTE MAP → move → checkpoint → CHECKPOINT QR → server validation → checkpoint points → next checkpoint → … → BARAMEEL FINAL ZONE
+
+The route map uses the production configuration when supplied and does not invent checkpoint coordinates in the client. The map viewport is an interactive layer integrated inside the artwork's existing map frame.
+
+### SHARED PROGRESSION
+
+Collection-path points and checkpoint-path points feed one server-side player balance:
+
+COLLECTION PATH POINTS + CHECKPOINT PATH POINTS → ONE PLAYER POINT BALANCE
+
+That shared balance drives rank and Marks eligibility.
+
+### BARAMEEL VISIT / RECEIPT BRIDGE
+
+The receipt is not a third gameplay path.
+
+BARAMEEL FINAL ZONE → PURCHASE → RECEIPT CODE → server validation → VERIFY → BARAMEEL REWARD DROP → REWARD CLAIMED → downstream completion
+
+Receipt rewards are server-defined. The UI must not hard-code one reward type or a fixed reward amount.
+
+## V23.2 interaction fixes
+
+- START FLASH no longer repeats immediately after HOW IT WORKS.
+- START FLASH is shown once for each explicit new run start.
+- WORLD card glow repeats briefly on selection and stays clipped to each card hotspot geometry.
+- Screen 04 is now the MY RUN branch dashboard.
+- Universal QR scanner uses its own artwork frame and keeps the camera/video inside it.
+- Screen 06 supports multiple collections through assets/collections/index.json.
+- Scan More from Screen 06 stays in the Collection path.
+- Checkpoint scanner is separate from the Universal QR scanner and sends only server-confirmed success to CHECKPOINT FOUND.
+- Checkpoint result data is placed into the approved checkpoint result fields.
+- Route map is rendered inside the artwork map viewport, with no hard-coded checkpoint markers.
+- Receipt input is placed inside the receipt-code frame and receipt verification has a dedicated thermal-printer style audio cue.
+- Run Complete summarizes the Checkpoint Run only; it is not a global game-complete screen.
+- Existing approved arcade sounds remain in place. Jackpot audio/effects are reserved for genuinely rare high-value outcomes.
+
+## Production gates
+
+The repository now contains the checkpoint server schema/function, but checkpoint_definitions still requires the approved production dataset and the new checkpoint-scan Edge Function/migration must be deployed before checkpoint rewards are considered live.
+
+The Universal QR and receipt reward functions likewise require the compatible Supabase migrations/functions to be deployed.
+
+## Dynamic artwork rule
+
+Dynamic points, ranks, names, distances, collection names, reward labels and status values are injected by code into dedicated artwork fields. Do not bake changing gameplay numbers into the artwork.

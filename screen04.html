@@ -1,1 +1,60 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>BARAMEEL RUN — My Progress</title><link rel="stylesheet" href="./styles.css?v=20261004-23.1"><script src="./config.js?v=20261004-23.1"></script></head><body><main class="rewards-stage"><img id="rewardsArt" class="rewards-art" src="./assets/screen04-rewards.webp" alt="My Progress"><div class="progress-data"><span id="pointsValue" class="progress-value points-value">0</span><span id="rankValue" class="progress-value rank-value">—</span><span id="weeklyValue" class="progress-value weekly-value">0</span><span id="checkpointValue" class="progress-value checkpoint-value">0</span><div id="checkpointDots" class="checkpoint-dots"></div></div><button id="back" class="rewards-back" aria-label="Back"></button><button id="scan" class="rewards-scan-hotspot" aria-label="Scan QR"></button></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261004-23.1"></script><script>(async()=>{await BR.syncPlayer();const s=BR.state;pointsValue.textContent=(Number(s.points)||0).toLocaleString();rankValue.textContent=s.rank?`#${s.rank}`:'—';weeklyValue.textContent=(Number(s.weeklyPoints)||0).toLocaleString();checkpointValue.textContent=(s.checkpoints||[]).length;for(let i=0;i<6;i++){const d=document.createElement('span');d.className='checkpoint-dot'+(i<(s.checkpoints||[]).length?' on':'');checkpointDots.appendChild(d)}back.onclick=()=>BR.goAfter('screen03.html','back',220);scan.onclick=()=>BR.goAfter('screen05.html','scan',180);BR.track('progress_view')})();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0e2a3d">
+<title>BARAMEEL RUN — MY RUN</title>
+<link rel="stylesheet" href="./styles.css?v=20261005-23.2">
+<script src="./config.js?v=20261005-23.2"></script>
+<style>
+.my-run-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#061f27}
+.my-run-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.my-run-hit{position:absolute;z-index:40;border:0;background:transparent;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.my-run-collection{left:2.8%;top:34.6%;width:46.5%;height:41.2%;border-radius:5%}
+.my-run-checkpoint{left:50.6%;top:34.6%;width:46.4%;height:41.2%;border-radius:5%}
+.my-run-back{left:2.5%;top:1.0%;width:12%;height:7%;z-index:50}
+.my-run-value{position:absolute;z-index:35;display:flex;align-items:center;justify-content:center;color:#071a20;font-family:'Righteous','Arial Black',Impact,sans-serif;font-size:clamp(14px,3.9vw,32px);font-weight:400;line-height:1;white-space:nowrap;text-shadow:0 2px 0 rgba(255,255,255,.18);pointer-events:none}
+.my-run-points{left:9.0%;top:86.7%;width:23.5%;height:4.6%}
+.my-run-rank{left:37.2%;top:86.7%;width:25.2%;height:4.6%}
+.my-run-marks{left:69.2%;top:86.7%;width:22.2%;height:4.6%}
+.my-run-hit:active{transform:scale(.988);filter:brightness(1.08)}
+</style>
+</head>
+<body>
+<main class="my-run-stage">
+<img class="my-run-art" src="./assets/my-run-dashboard.webp?v=20261005-23.2" alt="MY RUN">
+<button id="back" class="my-run-hit my-run-back" aria-label="Back"></button>
+<button id="collection" class="my-run-hit my-run-collection" aria-label="Collection Hunt"></button>
+<button id="checkpoint" class="my-run-hit my-run-checkpoint" aria-label="Checkpoint Run"></button>
+<div id="points" class="my-run-value my-run-points">0</div>
+<div id="rank" class="my-run-value my-run-rank">—</div>
+<div id="marks" class="my-run-value my-run-marks">0</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261005-23.2"></script>
+<script>
+(async () => {
+  await BR.syncPlayer();
+  const state = BR.state || {};
+  document.getElementById('points').textContent = Number(state.points || 0).toLocaleString();
+  document.getElementById('rank').textContent = state.rank ? '#' + state.rank : '—';
+  try {
+    const wallet = await BR.api('/wallet', {});
+    if (wallet?.ok) document.getElementById('marks').textContent = Number(wallet.marks ?? wallet.marks_total ?? 0).toLocaleString();
+  } catch {}
+  document.getElementById('back').onclick = () => BR.goAfter('screen03.html', 'back', 180);
+  document.getElementById('collection').onclick = () => {
+    BR.safeSession.set('barameelActivePath', 'collection');
+    BR.goAfter('screen05.html', 'confirm', 240);
+  };
+  document.getElementById('checkpoint').onclick = () => {
+    BR.safeSession.set('checkpointRunStartPoints', String(BR.state?.points || 0));
+    BR.safeSession.set('barameelActivePath', 'checkpoint');
+    BR.goAfter('route-map.html', 'confirm', 240);
+  };
+  BR.track('my_run_view');
+})();
+</script>
+</body>
+</html>

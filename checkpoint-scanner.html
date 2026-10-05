@@ -1,1 +1,128 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><link rel="stylesheet" href="./barameel-flow.css?v=20261004-23.1"><script src="./config.js?v=20261004-23.1"></script><style>#camera{position:absolute;left:57%;top:43%;width:37%;height:24%;z-index:18;overflow:hidden;border-radius:16px;background:#071b2b}#camera video{width:100%;height:100%;object-fit:cover}#scanStatus{position:absolute;left:54%;top:68%;width:41%;z-index:25;color:#f6e7ce;text-align:center;font:900 clamp(10px,2.5vw,21px)/1.1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-shadow:0 2px 0 #071b2b;pointer-events:none}.scan-line{position:absolute;left:8%;right:8%;top:15%;height:3px;background:#ef2d24;box-shadow:0 0 12px #ef2d24;animation:scanline 1.4s linear infinite}@keyframes scanline{from{transform:translateY(0)}to{transform:translateY(420%)}}@media(prefers-reduced-motion:reduce){.scan-line{animation:none}}</style></head><body><main class="flow-stage art-948x1660"><img class="flow-art" src="./assets/checkpoint-scanner.webp?v=20261004-23.1" alt="BARAMEEL RUN CHECKPOINT SCANNER" fetchpriority="high"><div class="arcade-shine"></div><div id="camera"><video id="video" playsinline webkit-playsinline muted autoplay></video><div class="scan-line" aria-hidden="true"></div></div><div id="scanStatus" aria-live="polite">READY TO SCAN</div><button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button><button id="open" class="flow-hit" style="left:7.4%;top:82.7%;width:85.2%;height:10%" aria-label="Open camera and scan"></button><button id="gallery" class="flow-hit" style="left:17%;top:84%;width:23%;height:8%" aria-label="Gallery"></button><button id="flash" class="flow-hit" style="left:73%;top:84%;width:20%;height:8%" aria-label="Flash"></button><canvas id="canvas" hidden></canvas></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261004-23.1"></script><script src="./barameel-flow.js?v=20261004-23.1"></script><script>(()=>{const v=document.getElementById('video'),status=document.getElementById('scanStatus'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true}),open=document.getElementById('open'),back=document.getElementById('back');let stream=null,detector=null,raf=0,locked=false,starting=false;const set=(t,e=false)=>{status.textContent=t;status.style.color=e?'#ff8b84':'#f6e7ce'};const stop=()=>{cancelAnimationFrame(raf);raf=0;stream?.getTracks().forEach(t=>t.stop());stream=null;v.srcObject=null;starting=false};const native=async()=>{if(!('BarcodeDetector'in window))return false;try{const fs=await BarcodeDetector.getSupportedFormats();if(fs.includes('qr_code')){detector=new BarcodeDetector({formats:['qr_code']});return true}}catch{}return false};const parse=raw=>{const s=decodeURIComponent(String(raw||'').trim());const m=s.match(/^BARAMEEL[-_:]?CHECKPOINT[-_:]?([A-Z0-9_-]+)$/i);return m?m[1]:null};async function handle(raw){if(locked)return;const id=parse(raw);if(!id){set('WRONG QR — FIND A CHECKPOINT QR',true);BR.play('error');return}locked=true;stop();try{BR.safeSession.set('barameelCheckpointScan',JSON.stringify({id,ts:Date.now()}))}catch{}set('CHECKPOINT FOUND');BARAMEEL_FLOW.fx('reward');setTimeout(()=>BARAMEEL_FLOW.go('checkpoint-found.html','reward',260),420)}async function loop(){if(!stream||locked)return;try{if(v.readyState>=2){if(detector){const x=await detector.detect(v);if(x?.length)return handle(x[0].rawValue||'')}else if(window.jsQR){const w=640,h=Math.round(640*(v.videoHeight||480)/(v.videoWidth||640));canvas.width=w;canvas.height=h;ctx.drawImage(v,0,0,w,h);const x=window.jsQR(ctx.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});if(x?.data)return handle(x.data)}}}catch{}raf=requestAnimationFrame(loop)}async function start(){if(starting||stream)return;starting=true;set('OPENING CAMERA');if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){set('CAMERA NEEDS HTTPS',true);starting=false;return}try{stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});v.srcObject=stream;await v.play();await native();starting=false;if(!detector&&typeof window.jsQR!=='function'){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';s.onload=()=>{set('SCAN CHECKPOINT QR');loop()};s.onerror=()=>{set('QR READER UNAVAILABLE',true)};document.head.appendChild(s)}else{set('SCAN CHECKPOINT QR');loop()}}catch{starting=false;const ua=navigator.userAgent||'';const inApp=/Instagram|FBAN|FBAV|FB_IAB|musical_ly|BytedanceWebview/i.test(ua);set(inApp?'OPEN IN SAFARI / CHROME TO USE THE CAMERA':'CAMERA ACCESS OFF — ENABLE CAMERA IN BROWSER SETTINGS',true);BR.play('error')}}open.onclick=start;back.onclick=()=>{stop();BARAMEEL_FLOW.go('route-map.html','back')};document.getElementById('gallery').onclick=()=>BARAMEEL_FLOW.fx('tap');document.getElementById('flash').onclick=()=>BARAMEEL_FLOW.fx('tap');window.addEventListener('pagehide',stop)})();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#071b2b">
+<title>BARAMEEL RUN — CHECKPOINT SCANNER</title>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.2">
+<script src="./config.js?v=20261005-23.2"></script>
+<style>
+.checkpoint-camera{position:absolute;left:43.4%;top:46.7%;width:51.8%;height:18.8%;z-index:42;overflow:hidden;pointer-events:none}
+.checkpoint-camera video{position:absolute;left:7.0%;top:8.0%;width:86.0%;height:84.0%;object-fit:cover;border-radius:5px;background:#071b2b}
+.checkpoint-corners{position:absolute;left:7%;top:8%;right:7%;bottom:8%;z-index:5;pointer-events:none}
+.checkpoint-corners i{position:absolute;width:14%;height:15%;border-color:#f4c52f;border-style:solid;filter:drop-shadow(0 0 4px rgba(244,197,47,.75))}
+.checkpoint-corners i:nth-child(1){left:0;top:0;border-width:4px 0 0 4px}
+.checkpoint-corners i:nth-child(2){right:0;top:0;border-width:4px 4px 0 0}
+.checkpoint-corners i:nth-child(3){left:0;bottom:0;border-width:0 0 4px 4px}
+.checkpoint-corners i:nth-child(4){right:0;bottom:0;border-width:0 4px 4px 0}
+.checkpoint-scan-line{position:absolute;left:12%;right:12%;top:50%;height:3px;background:#ef2d24;box-shadow:0 0 12px rgba(239,45,36,.9);animation:checkpointScan 1.5s ease-in-out infinite alternate;z-index:6}
+@keyframes checkpointScan{from{top:22%}to{top:78%}}
+.checkpoint-status{position:absolute;left:43%;top:66.4%;width:52%;height:4.1%;z-index:50;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-align:center;text-shadow:0 2px 0 #071b2b;pointer-events:none}
+.checkpoint-status.error{color:#ff9489}.checkpoint-status.success{color:#f4c52f}
+.checkpoint-scan-hit{position:absolute;left:7.4%;top:82.8%;width:85.2%;height:10%;z-index:70;border:0;background:transparent;touch-action:manipulation;cursor:pointer}
+@media(prefers-reduced-motion:reduce){.checkpoint-scan-line{animation:none}}
+</style>
+</head>
+<body>
+<main class="flow-stage art-948x1659">
+<img class="flow-art" src="./assets/checkpoint-scanner.webp?v=20261005-23.2" alt="SCAN CHECKPOINT QR" fetchpriority="high">
+<div id="camera" class="checkpoint-camera">
+<video id="video" playsinline webkit-playsinline muted autoplay></video>
+<div class="checkpoint-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="checkpoint-scan-line" aria-hidden="true"></div>
+</div>
+<div id="status" class="checkpoint-status" aria-live="polite">READY TO SCAN</div>
+<button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back to Route"></button>
+<button id="open" class="checkpoint-scan-hit" aria-label="Open camera and scan checkpoint QR"></button>
+<canvas id="canvas" hidden></canvas>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261005-23.2"></script>
+<script>
+(() => {
+  const video=document.getElementById('video'),camera=document.getElementById('camera'),status=document.getElementById('status'),canvas=document.getElementById('canvas');
+  const ctx=canvas.getContext('2d',{willReadFrequently:true}),open=document.getElementById('open'),back=document.getElementById('back');
+  let stream=null,detector=null,raf=0,starting=false,locked=false;
+
+  function setStatus(text,type=''){status.textContent=text;status.className='checkpoint-status '+type}
+  function stop(){cancelAnimationFrame(raf);raf=0;stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;camera.classList.remove('active');starting=false}
+  async function native(){
+    if(!('BarcodeDetector' in window))return false;
+    try{const f=await BarcodeDetector.getSupportedFormats();if(f.includes('qr_code')){detector=new BarcodeDetector({formats:['qr_code']});return true}}catch{}
+    return false;
+  }
+  function parse(raw){
+    const s=decodeURIComponent(String(raw||'').trim());
+    const m=s.match(/^BARAMEEL[-_:]?CHECKPOINT[-_:]?([A-Z0-9_-]+)$/i);
+    return m?m[1]:null;
+  }
+  function getPosition(){
+    return new Promise((resolve,reject)=>{
+      if(!navigator.geolocation)return reject(new Error('LOCATION_NOT_SUPPORTED'));
+      navigator.geolocation.getCurrentPosition(
+        p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude}),
+        ()=>reject(new Error('LOCATION_REQUIRED')),
+        {enableHighAccuracy:true,timeout:10000,maximumAge:10000}
+      );
+    });
+  }
+  async function handle(raw){
+    if(locked)return;
+    const id=parse(raw);
+    if(!id){setStatus('WRONG QR — FIND A CHECKPOINT QR','error');BR.play('error');BR.haptic('error');return}
+    locked=true;stop();setStatus('VERIFYING CHECKPOINT');BR.play('scan');BR.haptic('scan');
+    let pos=null;
+    try{pos=await getPosition()}catch(e){setStatus(e.message==='LOCATION_REQUIRED'?'LOCATION ACCESS NEEDED':'LOCATION NOT SUPPORTED','error');BR.play('error');BR.haptic('error');locked=false;return}
+    const result=await BR.scanCheckpoint({checkpointId:id,lat:pos.lat,lng:pos.lng});
+    if(result?.ok){
+      const handoff={...result,checkpoint_id:result.checkpoint_id||id,checkpoint_name:result.checkpoint_name||result.name||id,points_awarded:Number(result.points_awarded??result.points??0)||0};
+      BR.safeSession.set('barameelCheckpointResult',JSON.stringify(handoff));
+      BR.haptic('reward');BR.play('confirm');BR.flash();
+      setStatus('CHECKPOINT CLEARED','success');
+      BR.track('checkpoint_scan_success',{checkpoint_id:id,points:handoff.points_awarded});
+      setTimeout(()=>BR.go('checkpoint-found.html','reward',180),320);
+    }else{
+      const code=result?.code||result?.error||'CHECKPOINT_SCAN_FAILED';
+      setStatus(result?.message||BR.friendlyError(code),'error');BR.play('error');BR.haptic('error');locked=false;
+    }
+  }
+  async function loop(){
+    if(!stream||locked)return;
+    try{
+      if(video.readyState>=2){
+        if(detector){
+          const found=await detector.detect(video);if(found?.length)return handle(found[0].rawValue||'');
+        }else if(window.jsQR){
+          const w=640,h=Math.round(640*(video.videoHeight||480)/(video.videoWidth||640));canvas.width=w;canvas.height=h;ctx.drawImage(video,0,0,w,h);
+          const found=window.jsQR(ctx.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});if(found?.data)return handle(found.data);
+        }
+      }
+    }catch{}
+    raf=requestAnimationFrame(loop);
+  }
+  async function start(){
+    if(starting||stream)return;starting=true;BR.play('scan');BR.haptic('scan');setStatus('OPENING CAMERA');
+    if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){setStatus('CAMERA NEEDS HTTPS','error');BR.play('error');BR.haptic('error');starting=false;return}
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+      camera.classList.add('active');video.srcObject=stream;await video.play();await native();starting=false;
+      setStatus('SCAN CHECKPOINT QR');
+      if(!detector&&typeof window.jsQR!=='function'){
+        const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';s.onload=loop;
+        s.onerror=()=>{setStatus('QR READER UNAVAILABLE','error');BR.play('error');BR.haptic('error')};document.head.appendChild(s);
+      }else loop();
+    }catch{
+      starting=false;
+      const inApp=/Instagram|FBAN|FBAV|FB_IAB|musical_ly|BytedanceWebview/i.test(navigator.userAgent||'');
+      setStatus(inApp?'OPEN IN SAFARI / CHROME TO USE THE CAMERA':'CAMERA ACCESS OFF — ENABLE CAMERA IN BROWSER SETTINGS','error');
+      BR.play('error');BR.haptic('error');
+    }
+  }
+  open.onclick=e=>{e.preventDefault();start()};
+  back.onclick=()=>{stop();BR.goAfter('route-map.html','back',180)};
+  window.addEventListener('pagehide',stop);
+})();
+</script>
+</body>
+</html>

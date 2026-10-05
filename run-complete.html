@@ -1,1 +1,45 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><link rel="stylesheet" href="./barameel-flow.css?v=20261004-23.1"><script src="./config.js?v=20261004-23.1"></script></head><body><main class="flow-stage"><img class="flow-art" src="./assets/run-complete.webp?v=20261004-23.1" alt="BARAMEEL RUN" fetchpriority="high"><div class="arcade-shine"></div><button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button><div id="route" class="flow-data flow-number" style="left:7%;top:59%;width:18%;text-align:center">—</div><div id="check" class="flow-data flow-number" style="left:29%;top:59%;width:18%;text-align:center">—</div><div id="pts" class="flow-data flow-number" style="left:51%;top:59%;width:18%;text-align:center">—</div><div id="marks" class="flow-data flow-number" style="left:73%;top:59%;width:18%;text-align:center">—</div><button id="barameel" class="flow-hit" style="left:7.6%;top:80.8%;width:84.8%;height:9.8%" aria-label="View Leaderboard"></button><button id="keep" class="flow-hit" style="left:21.9%;top:91%;width:56.1%;height:5.2%" aria-label="Back to World"></button></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261004-23.1"></script><script src="./barameel-flow.js?v=20261004-23.1"></script><script>(async()=>{const s=BR.state||{},done=(s.checkpoints||[]).length;const routeProgress=Number.isFinite(Number(s.routeProgress))?Math.max(0,Math.min(100,Number(s.routeProgress))):null;if(routeProgress!==null)document.getElementById('route').textContent=Math.round(routeProgress)+'%';if(Number.isFinite(Number(done)))document.getElementById('check').textContent=done;if(Number.isFinite(Number(s.points)))document.getElementById('pts').textContent=Number(s.points).toLocaleString();try{const r=await BR.api('/wallet',{});if(r?.ok&&Number.isFinite(Number(r.marks??r.marks_total)))document.getElementById('marks').textContent=Number(r.marks??r.marks_total).toLocaleString()}catch{}document.getElementById('back').onclick=()=>{const target=BR.safeSession.get('barameelRunCompleteReturn')||'receipt-code.html';BARAMEEL_FLOW.go(target,'back')};document.getElementById('barameel').onclick=()=>BARAMEEL_FLOW.go('leaderboard.html','confirm');document.getElementById('keep').onclick=()=>BARAMEEL_FLOW.go('world.html','tap');BARAMEEL_FLOW.fx('jackpot')})();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>BARAMEEL RUN — CHECKPOINT COMPLETE</title>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.2">
+<script src="./config.js?v=20261005-23.2"></script>
+<style>
+.summary-value{position:absolute;z-index:25;display:flex;align-items:center;justify-content:center;color:#071b2b;font:900 clamp(15px,4vw,30px)/1 'Bebas Neue',Impact,sans-serif;text-align:center;white-space:nowrap;pointer-events:none;text-shadow:0 1px 0 rgba(255,255,255,.12)}
+#route{left:7.5%;top:57.1%;width:23%;height:6.0%}
+#check{left:38%;top:57.1%;width:22%;height:6.0%}
+#pts{left:68.5%;top:57.1%;width:24%;height:6.0%}
+#continue{left:7.5%;top:79.4%;width:85%;height:10.0%}
+#world{left:22%;top:91.8%;width:56%;height:5.2%}
+</style>
+</head>
+<body>
+<main class="flow-stage art-948x1660">
+<img class="flow-art" src="./assets/run-complete.webp?v=20261005-23.2" alt="CHECKPOINT RUN COMPLETE" fetchpriority="high">
+<div id="route" class="summary-value">—</div>
+<div id="check" class="summary-value">—</div>
+<div id="pts" class="summary-value">—</div>
+<button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button>
+<button id="continue" class="flow-hit" aria-label="View Live Top 20"></button>
+<button id="world" class="flow-hit" aria-label="Back to Barameel World"></button>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261005-23.2"></script>
+<script>
+(async()=>{
+  await BR.syncPlayer().catch(()=>null);
+  const state=BR.state||{},checkpointCount=Array.isArray(state.checkpoints)?state.checkpoints.length:0;const baseline=Number(BR.safeSession.get('checkpointRunStartPoints'));const pointsEarned=Number.isFinite(baseline)?Math.max(0,Number(state.points||0)-baseline):Number(state.points||0);
+  const route=Number.isFinite(Number(state.routeProgress))?Math.round(Number(state.routeProgress))+'%':'—';
+  document.getElementById('route').textContent=route;
+  document.getElementById('check').textContent=String(checkpointCount);
+  document.getElementById('pts').textContent=pointsEarned.toLocaleString();
+  BR.play('reward');BR.haptic('reward');BR.track('checkpoint_run_complete_view',{checkpoints:checkpointCount,points_earned:pointsEarned,total_points:Number(state.points||0)});
+  document.getElementById('back').onclick=()=>{const parent=BR.safeSession.get('barameelRunCompleteReturn')||'route-map.html';BR.goAfter(parent,'back',180)};
+  document.getElementById('continue').onclick=()=>{BR.safeSession.remove('barameelRunCompleteReturn');BR.safeSession.remove('checkpointRunStartPoints');BR.goAfter('leaderboard.html','confirm',220)};
+  document.getElementById('world').onclick=()=>{BR.safeSession.remove('barameelRunCompleteReturn');BR.safeSession.remove('checkpointRunStartPoints');BR.goAfter('world.html','tap',180)};
+})();
+</script>
+</body>
+</html>

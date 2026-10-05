@@ -1,1 +1,52 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><link rel="stylesheet" href="./barameel-flow.css?v=20261004-23.1"><script src="./config.js?v=20261004-23.1"></script></head><body><main class="flow-stage"><img class="flow-art" src="./assets/rewarded-added.webp?v=20261004-23.1" alt="BARAMEEL RUN" fetchpriority="high"><div class="arcade-shine"></div><button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button><div id="points" class="flow-data flow-number" style="left:57%;top:57%;width:32%;text-align:center">0</div><button id="continue" class="flow-hit" style="left:13%;top:89%;width:75%;height:7%" aria-label="Continue"></button></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261004-23.1"></script><script src="./barameel-flow.js?v=20261004-23.1"></script><script>let target=Number(BR.state?.points||0),r=null;try{r=JSON.parse(BR.safeSession.get('barameelReceiptReward')||'null');target=Number(r?.points_awarded||r?.points||target)}catch{}document.getElementById('points').textContent=target.toLocaleString();document.getElementById('back').onclick=()=>BARAMEEL_FLOW.go('receipt-code.html','back');document.getElementById('continue').onclick=()=>{const hasPiece=Number(r?.piece_number||r?.piece||r?.reward?.piece_number||r?.reward?.piece||0)>0;BR.safeSession.set('barameelRunCompleteReturn','rewarded-added.html');BR.safeSession.remove('barameelReceiptReward');BARAMEEL_FLOW.go(hasPiece?'new-collection-piece.html':'run-complete.html','reward')};BARAMEEL_FLOW.fx('reward');</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>BARAMEEL RUN — REWARD CLAIMED</title>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.2">
+<script src="./config.js?v=20261005-23.2"></script>
+<style>
+#rewardTitle{position:absolute;left:15%;top:49.4%;width:70%;height:6.0%;z-index:25;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(16px,4.2vw,31px)/1 'Bebas Neue',Impact,sans-serif;text-align:center;text-transform:uppercase;text-shadow:2px 2px 0 #071b2b;pointer-events:none}
+#rewardValue{position:absolute;left:53%;top:57.0%;width:38%;height:6.7%;z-index:25;display:flex;align-items:center;justify-content:center;color:#f4c52f;font:900 clamp(18px,5vw,39px)/1 'Bebas Neue',Impact,sans-serif;text-align:center;text-transform:uppercase;text-shadow:2px 2px 0 #071b2b;pointer-events:none}
+#rewardDescription{position:absolute;left:13%;top:66.0%;width:78%;height:7.5%;z-index:25;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(11px,2.8vw,20px)/1.05 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;pointer-events:none}
+</style>
+</head>
+<body>
+<main class="flow-stage art-948x1659">
+<img class="flow-art" src="./assets/rewarded-added.webp?v=20261005-23.2" alt="REWARD CLAIMED" fetchpriority="high">
+<div class="arcade-shine"></div>
+<div id="rewardTitle">REWARD CLAIMED</div>
+<div id="rewardValue"></div>
+<div id="rewardDescription"></div>
+<button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back to Reward Drop"></button>
+<button id="continue" class="flow-hit" style="left:13%;top:88.5%;width:74%;height:7%" aria-label="Continue"></button>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261005-23.2"></script>
+<script>
+(() => {
+  let reward=null;try{reward=JSON.parse(BR.safeSession.get('barameelReceiptReward')||'null')}catch{}
+  const title=document.getElementById('rewardTitle'),value=document.getElementById('rewardValue'),description=document.getElementById('rewardDescription');
+  if(reward){
+    title.textContent=String(reward.reward_label||'REWARD CLAIMED').toUpperCase();
+    const points=Number(reward.points_awarded||0),marks=Number(reward.marks_awarded||0);
+    value.textContent=points>0?'+'+points.toLocaleString():marks>0?marks.toLocaleString()+' MARKS':String(reward.product_code||'READY').replace(/[_-]+/g,' ').toUpperCase();
+    const type=String(reward.reward_type||'REWARD').toUpperCase();
+    description.textContent=type==='PRODUCT'?'PHYSICAL REWARD READY AT BARAMEEL':type==='POINTS'?'POINTS ADDED TO YOUR SHARED BALANCE':type==='MARKS'?'MARKS ADDED TO YOUR WALLET':type==='PIECE'?'COLLECTION PIECE REWARD READY':'REWARD CONFIRMED';
+  }else{
+    title.textContent='REWARD RESULT UNAVAILABLE';description.textContent='TRY AGAIN FROM RECEIPT VERIFICATION';
+  }
+  BR.haptic('reward');BR.play('confirm');BR.track('reward_claimed_view',{reward_type:reward?.reward_type||null});
+  document.getElementById('back').onclick=()=>BR.goAfter('your-barameel-drop.html','back',180);
+  document.getElementById('continue').onclick=()=>{
+    const hasPiece=Number(reward?.piece_number||reward?.piece||0)>0;
+    BR.safeSession.set('barameelRunCompleteReturn','rewarded-added.html');
+    if(hasPiece){BR.safeSession.set('barameelLastScan',JSON.stringify({ok:true,type:'piece',collection_id:reward?.collection_id||'collection01',image_id:reward?.image_id||'image01',piece_number:Number(reward?.piece_number||reward?.piece||0),points:Number(reward?.points_awarded||0),rarity:String(reward?.piece_rarity||reward?.rarity||'COMMON').toUpperCase(),source:'receipt'}));BR.goAfter('new-collection-piece.html','reward',220);return}
+    BR.safeSession.remove('barameelReceiptReward');
+    BR.goAfter('run-complete.html','confirm',220);
+  };
+})();
+</script>
+</body>
+</html>

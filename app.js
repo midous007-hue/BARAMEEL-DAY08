@@ -3,8 +3,8 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261004-23.1';
-  const STORAGE = 'barameel.world.player.v20.4';
+  const VERSION = '20261005-23.2';
+  const STORAGE = 'barameel.world.player.v23.2';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
   const SUPABASE_KEY = String(window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY || '');
@@ -12,7 +12,7 @@
   let authPromise = null;
   const RUNNERS = ['rookie','skater','brona','racer','chiller','dreamer'];
   const RUNNER_NAMES = {rookie:'THE ROOKIE',skater:'THE SKATER',brona:'BRONA',racer:'THE RACER',chiller:'THE CHILLER',dreamer:'THE DREAMER'};
-  const DEFAULTS = {playerId:null,playerCode:null,nickname:'',runner:'brona',points:0,weeklyPoints:0,rank:null,playerCount:0,checkpoints:[],collected:{collection01:{}},totalScans:0,lastReward:null,runHowItWorksSeen:false,lastSeen:null};
+  const DEFAULTS = {playerId:null,playerCode:null,nickname:'',runner:'brona',points:0,weeklyPoints:0,rank:null,playerCount:0,checkpoints:[],collected:{collection01:{}},totalScans:0,lastReward:null,runHowItWorksSeen:false,routeProgress:0,routeDistance:null,nextCheckpoint:null,activePath:null,lastSeen:null};
   const memoryStorage = Object.create(null);
   const safeStorage = {
     get(key){ try{return window.localStorage.getItem(key)}catch{return Object.prototype.hasOwnProperty.call(memoryStorage,key)?memoryStorage[key]:null} },
@@ -77,6 +77,27 @@
   function playArcadeBack(){unlockAudio();tone(659,.065,'square',.10);tone(523,.075,'square',.09,.065);tone(392,.10,'triangle',.075,.135)}
   function playArcadeScan(){unlockAudio();[660,880,1175,1568].forEach((f,i)=>tone(f,.052,'square',.16,i*.052))}
   function playArcadeError(){unlockAudio();tone(247,.085,'square',.18);tone(196,.095,'triangle',.16,.085);tone(147,.12,'square',.13,.18)}
+  function playReceiptPrint(){
+    const c=audio();if(!c)return;
+    try{
+      const start=c.currentTime;
+      const motorGain=c.createGain();motorGain.gain.setValueAtTime(.0001,start);motorGain.connect(c.master);
+      const motor=c.createOscillator();motor.type='triangle';motor.frequency.setValueAtTime(82,start);motor.frequency.exponentialRampToValueAtTime(116,start+.62);
+      motorGain.gain.exponentialRampToValueAtTime(.045,start+.03);motorGain.gain.exponentialRampToValueAtTime(.0001,start+.76);
+      motor.connect(motorGain);motor.start(start);motor.stop(start+.8);
+      for(let i=0;i<15;i++){
+        const t=start+.05+i*.045,o=c.createOscillator(),g=c.createGain();
+        o.type='square';o.frequency.value=118+(i%3)*17;
+        g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.032,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+.035);
+        o.connect(g).connect(c.master);o.start(t);o.stop(t+.045);
+      }
+      const buffer=c.createBuffer(1,Math.ceil(c.sampleRate*.22),c.sampleRate),data=buffer.getChannelData(0);
+      for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,.35);
+      const noise=c.createBufferSource(),filter=c.createBiquadFilter(),ng=c.createGain();noise.buffer=buffer;filter.type='bandpass';filter.frequency.value=2600;filter.Q.value=.65;
+      ng.gain.setValueAtTime(.0001,start+.67);ng.gain.exponentialRampToValueAtTime(.075,start+.71);ng.gain.exponentialRampToValueAtTime(.0001,start+.87);
+      noise.connect(filter).connect(ng).connect(c.master);noise.start(start+.67);noise.stop(start+.9);
+    }catch{}
+  }
   function prime(){
     if(bank.completion)return;
     const a=new Audio(SOUND_FILES.completion);a.preload='auto';a.playsInline=true;bank.completion=a;
@@ -87,6 +108,7 @@
     if(k==='back'){playArcadeBack();return}
     if(k==='scan'){playArcadeScan();return}
     if(k==='error'){playArcadeError();return}
+    if(k==='receipt'){playReceiptPrint();return}
     if(k==='select'){playArcadeTap();return}
     if(k==='completion'){
       unlockAudio();prime();const a=bank.completion;
@@ -158,7 +180,7 @@
     return {...spec,points:Number(points)||spec.points,rarity:key||'REWARD'};
   }
   function go(url){location.href=url;}
-  function haptic(kind='tap'){try{const p={tap:[12],confirm:[18,34,22],scan:[16,28,18,42],reward:[24,42,24,58],jackpot:[30,55,30,75,45,90],error:[28,48,28]}[kind]||[12];navigator.vibrate?.(p)}catch{}}
+  function haptic(kind='tap'){try{const p={tap:[12],confirm:[18,34,22],scan:[16,28,18,42],reward:[24,42,24,58],jackpot:[30,55,30,75,45,90],error:[28,48,28]}[kind]||[12];if(typeof navigator.vibrate==='function')navigator.vibrate(p);document.body?.classList.remove('haptic-pulse');void document.body?.offsetWidth;document.body?.classList.add('haptic-pulse');}catch{}}
   function markRunHowItWorksSeen(){patchState({runHowItWorksSeen:true})}
   function goAfter(url,sound='tap',delay=180){haptic(sound);play(sound);setTimeout(()=>go(url),delay);}
   function idle(fn){if('requestIdleCallback' in window)requestIdleCallback(fn,{timeout:900});else setTimeout(fn,80);}
@@ -191,7 +213,7 @@
       SCAN_TICKET_REQUIRED:'READYING YOUR SCAN. TRY AGAIN.',
       HTTP_500:'SOMETHING WENT WRONG. TRY AGAIN.',
       HTTP_502:'SOMETHING WENT WRONG. TRY AGAIN.',
-      HTTP_503:'BARAMEEL RUN IS BUSY. TRY AGAIN.'
+      HTTP_503:'BARAMEEL RUN IS BUSY. TRY AGAIN.',CHECKPOINT_NOT_CONFIGURED:'CHECKPOINT RUN IS NOT ACTIVE YET.',CHECKPOINT_LOCATION_REQUIRED:'LOCATION IS REQUIRED TO CLEAR A CHECKPOINT.',CHECKPOINT_NOT_ACTIVE:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_NOT_FOUND:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_TOO_FAR:'MOVE CLOSER TO THE CHECKPOINT AND TRY AGAIN.',CHECKPOINT_ALREADY_CLAIMED:'YOU ALREADY CLEARED THIS CHECKPOINT.',CHECKPOINT_SCAN_REQUIRED:'SCAN A CHECKPOINT QR FIRST.',RECEIPT_CODE_REQUIRED:'ENTER YOUR RECEIPT CODE.',RECEIPT_CODE_INVALID:'THAT RECEIPT CODE IS NOT VALID.',RECEIPT_CODE_ALREADY_USED:'THAT RECEIPT CODE WAS ALREADY USED.'
     };
     return map[c]||'SOMETHING WENT WRONG. TRY AGAIN.';
   }
@@ -218,13 +240,32 @@
     }
     return r;
   }
+  async function scanCheckpoint({checkpointId,lat=null,lng=null}){
+    const id=String(checkpointId||'').trim();
+    if(!id)return {ok:false,code:'CHECKPOINT_SCAN_REQUIRED',error:'CHECKPOINT_SCAN_REQUIRED'};
+    const r=await api('/checkpoint-scan',{checkpoint_id:id,lat:Number.isFinite(Number(lat))?Number(lat):null,lng:Number.isFinite(Number(lng))?Number(lng):null,idempotency_key:makeId('checkpoint')});
+    if(r?.player)mergePlayer(r.player);
+    if(Array.isArray(r?.checkpoints))mergePlayer({checkpoints:r.checkpoints});
+    return r;
+  }
   async function duoLink(otherPlayerCode){const r=await api('/duo-link',{player_id:state.playerId,other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:makeId('duo')});if(r?.player)mergePlayer(r.player);return r;}
   async function fetchCollection(id='collection01'){
-    const key='barameel.collection.'+id+'.v21.2';
+    const key='barameel.collection.'+id+'.v23.2';
     try{const c=sessionStorage.getItem(key);if(c)return JSON.parse(c);}catch{}
-    const r=await fetch(`./assets/collections/${id}/collection.json?v=20261001-21.4`,{cache:'no-store'});
+    const r=await fetch(`./assets/collections/${id}/collection.json?v=${VERSION}`,{cache:'no-store'});
     if(!r.ok)throw Error('COLLECTION_UNAVAILABLE');
     const d=await r.json();try{sessionStorage.setItem(key,JSON.stringify(d));}catch{}return d;
+  }
+  async function listCollections(){
+    const key='barameel.collections.index.v23.2';
+    try{const cached=sessionStorage.getItem(key);if(cached)return JSON.parse(cached);}catch{}
+    const r=await fetch('./assets/collections/index.json?v='+VERSION,{cache:'no-store'});
+    if(!r.ok)throw Error('COLLECTION_INDEX_UNAVAILABLE');
+    const d=await r.json();
+    if(!Array.isArray(d.collections)||!d.collections.length)throw Error('COLLECTION_INDEX_EMPTY');
+    const normalized=d.collections.filter(x=>x&&x.id).map(x=>({id:String(x.id),displayName:String(x.displayName||x.name||x.id).toUpperCase(),path:String(x.path||('assets/collections/'+x.id+'/collection.json'))}));
+    try{sessionStorage.setItem(key,JSON.stringify(normalized));}catch{}
+    return normalized;
   }
   function normalizeReward(result){
     const candidates=[result?.reward,result?.data?.reward,result?.reward_result,result?.data,result];
@@ -241,7 +282,7 @@
   }
   function parseUniversalQR(raw){const s=decodeURIComponent(String(raw||'')).trim();if(/^BARAMEEL[-_:]?UNIVERSAL$/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};if(/(?:^|[?&])qr=BARAMEEL-UNIVERSAL(?:&|$)/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};return null;}
 
-  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,duoLink,fetchCollection,parseUniversalQR,saveState,ensureAuth,API_BASE};
+  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,scanCheckpoint,duoLink,fetchCollection,listCollections,parseUniversalQR,saveState,ensureAuth,API_BASE};
   if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v='+VERSION,{updateViaCache:'none'}).catch(()=>{});}
   idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
 })();

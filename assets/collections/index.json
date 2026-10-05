@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "collections": [
+    {
+      "id": "collection01",
+      "displayName": "ALEXANDRIA",
+      "path": "assets/collections/collection01/collection.json"
+    }
+  ]
+}

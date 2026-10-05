@@ -1,2 +1,94 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#0e2a3d"><title>BARAMEEL WORLD</title><link rel="stylesheet" href="./styles.css?v=20261004-23.1"><link rel="stylesheet" href="./world-v22.css?v=20261004-23.1"><script src="./config.js?v=20261004-23.1"></script></head><body><main class="world-stage world-hub-stage" id="worldHub" aria-label="BARAMEEL WORLD"><img class="world-art" src="./assets/barameel-world.webp?v=20261004-23.1" alt="BARAMEEL WORLD" fetchpriority="high"><div class="world-ambient-glow" aria-hidden="true"></div><div class="world-scanline" aria-hidden="true"></div><div class="world-grain" aria-hidden="true"></div><div class="world-live-pulse" aria-hidden="true"></div><div class="world-card-fx fx-run" data-section="run" aria-hidden="true"></div><div class="world-card-fx fx-duo" data-section="duo" aria-hidden="true"></div><div class="world-card-fx fx-menu" data-section="menu" aria-hidden="true"></div><div class="world-card-fx fx-post" data-section="post" aria-hidden="true"></div><div class="world-card-fx fx-profile" data-section="profile" aria-hidden="true"></div><nav class="world-nav" aria-label="Barameel World"><a class="hub-link hub-run" data-section="run" href="./how-it-works.html" aria-label="BARAMEEL RUN"></a><a class="hub-link hub-duo" data-section="duo" href="./duo-link.html" aria-label="DUO LINK"></a><a class="hub-link hub-menu" data-section="menu" href="./menu.html" aria-label="BARAMEEL MENU"></a><a class="hub-link hub-post" data-section="post" href="./post.html" aria-label="BARAMEEL POST"></a><a class="hub-link hub-profile" data-section="profile" href="./my-barameel.html" aria-label="MY BARAMEEL"></a><a class="hub-link social-ig" href="#" aria-label="Instagram"></a><a class="hub-link social-tt" href="#" aria-label="TikTok"></a><a class="hub-link social-fb" href="#" aria-label="Facebook"></a><a class="hub-link social-wa" href="#" aria-label="WhatsApp"></a></nav></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261004-23.1"></script><script>(()=>{const stage=document.getElementById('worldHub'),links=[...stage.querySelectorAll('.hub-link[data-section]')],tones={run:[196,294,392],duo:[330,494,659],menu:[247,370,494],post:[294,440,587],profile:[220,330,523]};const runLink=stage.querySelector('.hub-run');if(runLink)runLink.href=BR?.state?.runHowItWorksSeen?'./run.html':'./how-it-works.html';function audio(section){try{window.BR?.play?.('tap')}catch{}}
-function pulse(section){stage.dataset.active=section;links.forEach(l=>l.classList.toggle('is-active',l.dataset.section===section));try{navigator.vibrate?.([20,38,26,55])}catch{}}links.forEach(a=>{a.addEventListener('pointerdown',()=>{const s=a.dataset.section;if(!s)return;pulse(s);audio(s);window.BR?.play?.('tap')},{passive:true});a.addEventListener('click',e=>{const s=a.dataset.section;if(!s){e.preventDefault();return}if(s==='run')a.href=BR?.state?.runHowItWorksSeen?'./run.html':'./how-it-works.html';pulse(s);if(a.dataset.going)return;a.dataset.going='1';document.body.classList.add('world-navigate');setTimeout(()=>location.href=a.href,340);e.preventDefault()})});stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;stage.style.setProperty('--mx',(x*2.2).toFixed(3)+'%');stage.style.setProperty('--my',(y*1.7).toFixed(3)+'%')},{passive:true});stage.addEventListener('pointerleave',()=>{stage.style.setProperty('--mx','0%');stage.style.setProperty('--my','0%')},{passive:true});BR.track('world_view')})();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0e2a3d">
+<title>BARAMEEL WORLD</title>
+<link rel="stylesheet" href="./styles.css?v=20261005-23.2">
+<link rel="stylesheet" href="./world-v22.css?v=20261005-23.2">
+<script src="./config.js?v=20261005-23.2"></script>
+</head>
+<body>
+<main class="world-stage world-hub-stage" id="worldHub" aria-label="BARAMEEL WORLD">
+<img class="world-art" src="./assets/barameel-world.webp?v=20261005-23.2" alt="BARAMEEL WORLD" fetchpriority="high">
+<div class="world-ambient-glow" aria-hidden="true"></div>
+<div class="world-scanline" aria-hidden="true"></div>
+<div class="world-grain" aria-hidden="true"></div>
+<div class="world-live-pulse" aria-hidden="true"></div>
+<nav class="world-nav" aria-label="Barameel World">
+<a class="hub-link hub-run" data-section="run" href="./how-it-works.html" aria-label="BARAMEEL RUN"></a>
+<a class="hub-link hub-duo" data-section="duo" href="./duo-link.html" aria-label="DUO LINK"></a>
+<a class="hub-link hub-menu" data-section="menu" href="./menu.html" aria-label="BARAMEEL MENU"></a>
+<a class="hub-link hub-post" data-section="post" href="./post.html" aria-label="BARAMEEL POST"></a>
+<a class="hub-link hub-profile" data-section="profile" href="./my-barameel.html" aria-label="MY BARAMEEL"></a>
+<a class="hub-link social-ig" href="#" aria-label="Instagram"></a>
+<a class="hub-link social-tt" href="#" aria-label="TikTok"></a>
+<a class="hub-link social-fb" href="#" aria-label="Facebook"></a>
+<a class="hub-link social-wa" href="#" aria-label="WhatsApp"></a>
+</nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261005-23.2"></script>
+<script>
+(() => {
+  const stage = document.getElementById('worldHub');
+  const links = [...stage.querySelectorAll('.hub-link[data-section]')];
+  const run = stage.querySelector('.hub-run');
+
+  function runTarget() {
+    return BR.state?.runHowItWorksSeen ? './run.html' : './how-it-works.html';
+  }
+
+  function prepareRunEntry() {
+    BR.safeSession.set('barameelNewRun', '1');
+    BR.safeSession.set('barameelStartFlashPending', '0');
+    BR.safeSession.set('barameelStartFlashShown', '0');
+  }
+
+  function pulse(section) {
+    stage.dataset.active = section;
+    links.forEach(link => link.classList.toggle('is-active', link.dataset.section === section));
+    BR.haptic('confirm');
+    BR.play('tap');
+  }
+
+  links.forEach(link => {
+    link.addEventListener('pointerdown', () => {
+      if (link.dataset.section === 'run') prepareRunEntry();
+      pulse(link.dataset.section);
+    }, { passive: true });
+
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      const section = link.dataset.section;
+      if (!section || link.dataset.going) return;
+      if (section === 'run') {
+        prepareRunEntry();
+        link.href = runTarget();
+      }
+      pulse(section);
+      link.dataset.going = '1';
+      document.body.classList.add('world-navigate');
+      window.setTimeout(() => location.href = link.href, 320);
+    });
+  });
+
+  stage.addEventListener('pointermove', event => {
+    const rect = stage.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    stage.style.setProperty('--mx', (x * 2.2).toFixed(3) + '%');
+    stage.style.setProperty('--my', (y * 1.7).toFixed(3) + '%');
+  }, { passive: true });
+
+  stage.addEventListener('pointerleave', () => {
+    stage.style.setProperty('--mx', '0%');
+    stage.style.setProperty('--my', '0%');
+  }, { passive: true });
+
+  BR.track('world_view');
+})();
+</script>
+</body>
+</html>

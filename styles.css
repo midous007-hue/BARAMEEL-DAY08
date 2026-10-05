@@ -291,3 +291,25 @@ button,input,select{font:inherit}
 
 /* V23.1 accessibility without changing artwork geometry. */
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f4c52f;outline-offset:3px}
+
+/* V23.2 MASTER-FLOW HARDENING — geometry, haptics/fx alignment and world-card repeat lock. */
+.flow-data.dynamic-field{display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scan-stage,.rewards-stage{width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659}
+.route-map-live{position:absolute;overflow:hidden;border-radius:3.2%;isolation:isolate;box-shadow:inset 0 0 0 3px rgba(246,231,206,.82),inset 0 0 0 6px rgba(244,197,47,.26),0 7px 18px rgba(0,0,0,.38)}
+.route-map-live::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:500;background:radial-gradient(ellipse at center,transparent 53%,rgba(0,0,0,.26) 100%);mix-blend-mode:multiply}
+.route-map-live .leaflet-container{background:#071b2b;filter:saturate(.72) contrast(.92) brightness(.88) sepia(.10)}
+.route-map-live .leaflet-tile-pane{opacity:.92}
+.route-map-live .leaflet-control-attribution{background:rgba(7,27,43,.72)!important;color:#f6e7ce!important;font-size:7px!important;line-height:1.2!important}
+.route-map-live .leaflet-control-attribution a{color:#f6e7ce!important}
+.route-map-live .leaflet-tooltip{font:900 10px/1 'Roboto Condensed',Arial,sans-serif;color:#071b2b;background:#f6e7ce;border:2px solid #f4c52f;box-shadow:0 2px 0 #071b2b}
+.world-hub-stage .hub-link[data-section]{border-radius:5.2%!important}
+.world-hub-stage .hub-profile{border-radius:6.2%!important}
+.world-hub-stage .hub-link[data-section].is-active::before{inset:-.15%!important;border-width:3px!important}
+.world-hub-stage .hub-link[data-section].is-active::after{inset:-1.2%!important;animation:card-shine .58s ease-out 0s 2 both!important}
+.world-hub-stage .hub-link[data-section].is-active::before{animation:card-lock .46s cubic-bezier(.16,.86,.2,1) both,card-glow-loop 1.05s ease-in-out .18s 2 both!important}
+@keyframes card-glow-loop{0%,100%{opacity:.98;filter:brightness(1)}50%{opacity:.66;filter:brightness(1.12)}}
+@media (prefers-reduced-motion:reduce){.world-hub-stage .hub-link[data-section].is-active::before,.world-hub-stage .hub-link[data-section].is-active::after{animation:none!important}}
+
+.haptic-pulse{animation:barameel-haptic-pulse .14s ease-out both}
+@keyframes barameel-haptic-pulse{0%{filter:brightness(1)}45%{filter:brightness(1.07)}100%{filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){.haptic-pulse{animation:none!important}}
