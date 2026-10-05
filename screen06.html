@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261005-23.2">
-<script src="./config.js?v=20261005-23.2"></script>
+<link rel="stylesheet" href="./styles.css?v=20261005-23.3">
+<script src="./config.js?v=20261005-23.3"></script>
 </head>
 <body>
 <main class="stage collection-stage">
-<img class="base" src="./assets/screen06-puzzle.webp?v=20261005-23.2" alt="Collection Puzzle">
+<img class="base" src="./assets/screen06-puzzle.webp?v=20261005-23.3" alt="Collection Puzzle">
 <button id="back" class="collection-back" aria-label="Back to Collection Scan"></button>
 <select id="select" class="collection-select" aria-label="Select collection"></select>
 <div id="collectionName" class="collection-name" aria-hidden="true"></div>
@@ -23,12 +23,15 @@
 <div id="imagePreload"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.2"></script>
+<script src="./app.js?v=20261005-23.3"></script>
 <script>
 (async()=>{
   const nameEl=document.getElementById('collectionName'),select=document.getElementById('select');
   const hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs');
   const pointsBadge=document.getElementById('pointsBadge'),pointsNumber=document.getElementById('pointsNumber');
+  document.getElementById('back').onclick=()=>{const parent=BR.safeSession.get('barameelCollectionParent')||'screen05.html';BR.goAfter(parent,'back',180)};
+  document.getElementById('myRewards').onclick=()=>BR.goAfter('screen04.html','confirm',180);
+  document.getElementById('scanMore').onclick=()=>{BR.safeSession.set('barameelActivePath','collection');BR.safeSession.set('barameelCollectionId',collectionId);BR.safeSession.set('barameelCollectionParent','screen06.html');BR.goAfter('screen05.html','scan',220)};
   const rewardFlash=document.getElementById('rewardFlash'),rewardFlashImage=document.getElementById('rewardFlashImage');
 
   const params=new URLSearchParams(location.search);

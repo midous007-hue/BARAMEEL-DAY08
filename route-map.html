@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.2">
+<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.3">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="./config.js?v=20261005-23.2"></script>
+<script src="./config.js?v=20261005-23.3"></script>
 <style>
 #routeMap{position:absolute;left:32.9%;top:28.0%;width:59.9%;height:19.7%;z-index:20;overflow:hidden;border-radius:4.0%;isolation:isolate;background:#071b2b;box-shadow:inset 0 0 0 3px rgba(246,231,206,.9),inset 0 0 0 6px rgba(244,197,47,.28),0 6px 14px rgba(0,0,0,.4)}
 #routeMap .leaflet-container{width:100%;height:100%;background:#071b2b;filter:saturate(.76) contrast(.94) brightness(.9) sepia(.08)}
@@ -31,7 +31,7 @@
 </head>
 <body>
 <main class="flow-stage art-948x1659">
-<img class="flow-art" src="./assets/route-map.webp?v=20261005-23.2" alt="BARAMEEL RUN CHECKPOINT RUN" fetchpriority="high">
+<img class="flow-art" src="./assets/route-map.webp?v=20261005-23.3" alt="BARAMEEL RUN CHECKPOINT RUN" fetchpriority="high">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="currentLocation" class="route-field">LOCATING…</div>
 <div id="nextCheckpoint" class="route-field">LOADING…</div>
@@ -43,12 +43,13 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="./app.js?v=20261005-23.2"></script>
+<script src="./app.js?v=20261005-23.3"></script>
 <script>
 (async()=>{
   const status=document.getElementById('routeStatus'),current=document.getElementById('currentLocation');
   const next=document.getElementById('nextCheckpoint'),distance=document.getElementById('distanceNext');
   const fill=document.getElementById('routeProgressFill'),action=document.getElementById('routeAction'),label=document.getElementById('routeActionLabel');
+  const routeBack=document.getElementById('back');routeBack.onclick=()=>BR.goAfter('screen04.html','back',180);
   await BR.syncPlayer().catch(()=>null);
   const cfg=window.BARAMEEL_ROUTE_CONFIG||{};
   const destination=cfg.destination&&Number.isFinite(Number(cfg.destination.lat))&&Number.isFinite(Number(cfg.destination.lng))
@@ -158,7 +159,7 @@
     requestLocation();
   }
 
-  document.getElementById('back').onclick=()=>BR.goAfter('screen04.html','back',180);
+
   window.addEventListener('pagehide',()=>{if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId)});
   BR.track('checkpoint_route_view');
 })();

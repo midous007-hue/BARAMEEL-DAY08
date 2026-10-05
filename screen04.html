@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — MY RUN</title>
-<link rel="stylesheet" href="./styles.css?v=20261005-23.2">
-<script src="./config.js?v=20261005-23.2"></script>
+<link rel="stylesheet" href="./styles.css?v=20261005-23.3">
+<script src="./config.js?v=20261005-23.3"></script>
 <style>
 .my-run-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#061f27}
 .my-run-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -23,7 +23,7 @@
 </head>
 <body>
 <main class="my-run-stage">
-<img class="my-run-art" src="./assets/my-run-dashboard.webp?v=20261005-23.2" alt="MY RUN">
+<img class="my-run-art" src="./assets/my-run-dashboard.webp?v=20261005-23.3" alt="MY RUN">
 <button id="back" class="my-run-hit my-run-back" aria-label="Back"></button>
 <button id="collection" class="my-run-hit my-run-collection" aria-label="Collection Hunt"></button>
 <button id="checkpoint" class="my-run-hit my-run-checkpoint" aria-label="Checkpoint Run"></button>
@@ -32,10 +32,11 @@
 <div id="marks" class="my-run-value my-run-marks">0</div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.2"></script>
+<script src="./app.js?v=20261005-23.3"></script>
 <script>
 (async () => {
   await BR.syncPlayer();
+
   const state = BR.state || {};
   document.getElementById('points').textContent = Number(state.points || 0).toLocaleString();
   document.getElementById('rank').textContent = state.rank ? '#' + state.rank : '—';

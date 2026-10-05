@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — COLLECTION QR</title>
-<link rel="stylesheet" href="./styles.css?v=20261005-23.2">
-<script src="./config.js?v=20261005-23.2"></script>
+<link rel="stylesheet" href="./styles.css?v=20261005-23.3">
+<script src="./config.js?v=20261005-23.3"></script>
 <style>
 .scan-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071c28}
 .scan-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -33,7 +33,7 @@
 </head>
 <body>
 <main class="scan-stage">
-<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261005-23.2" alt="COLLECTION HUNT — SCAN BARAMEEL QR" fetchpriority="high">
+<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261005-23.3" alt="COLLECTION HUNT — SCAN BARAMEEL QR" fetchpriority="high">
 <div id="cameraWindow" class="collection-qr-frame">
 <video id="video" playsinline webkit-playsinline muted autoplay></video>
 <div class="scanner-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -46,7 +46,7 @@
 <canvas id="scanCanvas" hidden></canvas>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.2"></script>
+<script src="./app.js?v=20261005-23.3"></script>
 <script>
 (() => {
   const video=document.getElementById('video'),cam=document.getElementById('cameraWindow'),status=document.getElementById('scanStatus');
