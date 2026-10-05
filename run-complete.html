@@ -29,18 +29,20 @@
 <script src="./app.js?v=20261005-23.3"></script>
 <script>
 (async()=>{
-  await BR.syncPlayer().catch(()=>null);
   const backBtn=document.getElementById('back'),continueBtn=document.getElementById('continue'),worldBtn=document.getElementById('world');
   backBtn.onclick=()=>{const parent=BR.safeSession.get('barameelRunCompleteReturn')||'route-map.html';BR.goAfter(parent,'back',180)};
   continueBtn.onclick=()=>{BR.safeSession.remove('barameelRunCompleteReturn');BR.safeSession.remove('checkpointRunStartPoints');BR.goAfter('leaderboard.html','confirm',220)};
   worldBtn.onclick=()=>{BR.safeSession.remove('barameelRunCompleteReturn');BR.safeSession.remove('checkpointRunStartPoints');BR.goAfter('world.html','tap',180)};
-  const state=BR.state||{},checkpointCount=Array.isArray(state.checkpoints)?state.checkpoints.length:0;const baseline=Number(BR.safeSession.get('checkpointRunStartPoints'));const pointsEarned=Number.isFinite(baseline)?Math.max(0,Number(state.points||0)-baseline):Number(state.points||0);
+  await BR.syncPlayer().catch(()=>null);
+  const state=BR.state||{};
+  const checkpointCount=Array.isArray(state.checkpoints)?state.checkpoints.length:0;
+  const baseline=Number(BR.safeSession.get('checkpointRunStartPoints'));
+  const pointsEarned=Number.isFinite(baseline)?Math.max(0,Number(state.points||0)-baseline):Number(state.points||0);
   const route=Number.isFinite(Number(state.routeProgress))?Math.round(Number(state.routeProgress))+'%':'—';
   document.getElementById('route').textContent=route;
   document.getElementById('check').textContent=String(checkpointCount);
   document.getElementById('pts').textContent=pointsEarned.toLocaleString();
   BR.playCompletionSound();BR.haptic('reward');BR.track('checkpoint_run_complete_view',{checkpoints:checkpointCount,points_earned:pointsEarned,total_points:Number(state.points||0)});
-BR.safeSession.remove('checkpointRunStartPoints');BR.goAfter('world.html','tap',180)};
 })();
 </script>
 </body>
