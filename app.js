@@ -237,10 +237,12 @@
     if(!ticketId)return {ok:false,code:'SCAN_TICKET_REQUIRED',error:'SCAN_TICKET_REQUIRED'};
     const r=await api('/scan',{qr:'BARAMEEL-UNIVERSAL',ticket_id:ticketId,idempotency_key:makeId('scan')});
     if(r?.player)mergePlayer(r.player);
-    if(r?.reward){
-      const reward=r.reward,c=reward.collection_id||reward.collection||'collection01',i=reward.image_id||reward.image||'image01',piece=Number(reward.piece_number||reward.piece||0);
+    const reward=r?.reward||normalizeReward(r)||(String(r?.type||'').toLowerCase()==='piece'?r:null);
+    if(reward){
+      const c=reward.collection_id||reward.collection||'collection01',i=reward.image_id||reward.image||'image01',piece=Number(reward.piece_number||reward.piece||0);
       if(c&&i&&piece){const next={...state.collected};next[c]={...(next[c]||{})};next[c][i]=Array.from(new Set([...(next[c][i]||[]).map(Number),piece]));mergePlayer({collected:next,lastReward:reward});}
     }
+    if(Number.isFinite(Number(r?.points_awarded??r?.points))) patchState({points: Number(state.points||0)+Number(r.points_awarded??r.points||0), weeklyPoints:Number(state.weeklyPoints||0)+Number(r.points_awarded??r.points||0)});
     return r;
   }
   async function scanCheckpoint({checkpointId,lat=null,lng=null}){

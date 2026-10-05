@@ -41,6 +41,7 @@
     try{return JSON.parse(BR.safeSession.get('barameelLastScan')||'null')}catch{return null}
   }
 
+  await BR.syncPlayer().catch(()=>null);
   const handoff=getHandoff();
   if(handoff?.collection_id)collectionId=String(handoff.collection_id);
   if(handoff?.image_id)requestedImage=String(handoff.image_id);
@@ -169,13 +170,13 @@
     await new Promise(resolve=>{
       const step=t=>{
         const p=Math.min(1,(t-start)/duration),ease=1-Math.pow(1-p,3);
-        pointsNumber.textContent=Math.round(n*ease).toLocaleString();if(!flashShown&&t-start>=flashAt){flashShown=true;// Reward flash is intentionally triggered during the final ~22% of the counter, not after it.}
+        pointsNumber.textContent=Math.round(n*ease).toLocaleString();
+        if(!flashShown&&t-start>=flashAt){flashShown=true;showReward(n);}
         if(p<1)requestAnimationFrame(step);else{pointsNumber.textContent=n.toLocaleString();resolve();}
       };requestAnimationFrame(step);
     });
     pointsBadge.classList.remove('revealing');
     if(['EPIC','LEGENDARY','MYTHIC'].includes(String(rarity||'').toUpperCase()))BR.playJackpot(rarity,.02);
-    showReward(n);
   }
 
   try{index=await BR.listCollections()}catch(e){index=[{id:'collection01',displayName:'ALEXANDRIA'}]}
