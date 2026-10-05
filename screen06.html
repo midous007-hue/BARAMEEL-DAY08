@@ -71,17 +71,18 @@
     hero.classList.remove('completed');hero.innerHTML='';hero.style.backgroundImage='';
     if(!im)return;
     for(let n=1;n<=9;n++){
+      const collected=pieceCollected(collectionId,im.imageId,n);
       const cell=document.createElement('div');
-      cell.className='hero-piece';
-      cell.classList.toggle('is-missing',!pieceCollected(collectionId,im.imageId,n));
-      cell.classList.toggle('is-collected',pieceCollected(collectionId,im.imageId,n));
+      cell.className='hero-piece '+(collected?'is-collected':'is-missing');
       crop(cell,im.pieces?.[n-1]);
       hero.appendChild(cell);
     }
     loadMaster(im.masterFile).then(img=>{
       if(!img)return;
       const bg='url("' + img.src + '")';
-      [...hero.children].forEach((cell,n)=>cell.style.backgroundImage=bg);
+      [...hero.children].forEach((cell,n)=>{
+        if(cell.classList.contains('is-collected')) cell.style.backgroundImage=bg;
+      });
       if(imageComplete(collectionId,im)){
         hero.innerHTML='';
         hero.classList.add('completed');
@@ -165,17 +166,18 @@
     const n=Number(points)||0;if(!n)return;
     pointsNumber.textContent='';
     pointsBadge.className='points-badge '+String(rarity||'COMMON').toLowerCase()+' revealing';
+    const spec=BR.rewardSpec(rarity,n),start=performance.now(),duration=Math.max(700,Math.min(1800,Number(spec.duration)||1200));
     BR.playPointsCountUp(n,rarity);
-    const spec=BR.rewardSpec(rarity,n),start=performance.now(),duration=Math.max(900,Number(spec.duration)||1400);let flashShown=false;const flashAt=Math.round(duration*.78);
     await new Promise(resolve=>{
       const step=t=>{
         const p=Math.min(1,(t-start)/duration),ease=1-Math.pow(1-p,3);
         pointsNumber.textContent=Math.round(n*ease).toLocaleString();
-        if(!flashShown&&t-start>=flashAt){flashShown=true;showReward(n);}
         if(p<1)requestAnimationFrame(step);else{pointsNumber.textContent=n.toLocaleString();resolve();}
       };requestAnimationFrame(step);
     });
     pointsBadge.classList.remove('revealing');
+    await new Promise(resolve=>setTimeout(resolve,90));
+    showReward(n);
     if(['EPIC','LEGENDARY','MYTHIC'].includes(String(rarity||'').toUpperCase()))BR.playJackpot(rarity,.02);
   }
 
