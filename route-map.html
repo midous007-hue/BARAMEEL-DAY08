@@ -55,7 +55,7 @@
     ? {lat:Number(cfg.destination.lat),lng:Number(cfg.destination.lng),name:String(cfg.destination.name||'BARAMEEL'),radius_meters:Math.max(20,Number(cfg.destination.radius_meters||120))}
     : null;
   const checkpoints=Array.isArray(cfg.checkpoints)
-    ? cfg.checkpoints.filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))).map(x=>({id:String(x.id||''),name:String(x.name||'CHECKPOINT'),lat:Number(x.lat),lng:Number(x.lng)}))
+    ? cfg.checkpoints.filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))).map(x=>({id:String(x.id||''),name:String(x.name||'CHECKPOINT'),lat:Number(x.lat),lng:Number(x.lng),order:Number.isFinite(Number(x.order))?Number(x.order):null}))
     : [];
 
   function haversine(a,b){
@@ -97,7 +97,7 @@
     renderMap(pos);
     current.textContent='LIVE • '+pos.lat.toFixed(5)+', '+pos.lng.toFixed(5);
 
-    const available=checkpoints.filter(cp=>!discovered.has(cp.id)).map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>a.distance-b.distance);
+    const candidates=checkpoints.filter(cp=>!discovered.has(cp.id));const hasOrder=candidates.some(cp=>Number.isFinite(cp.order));const available=candidates.map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>hasOrder&&Number.isFinite(a.order)&&Number.isFinite(b.order)?a.order-b.order:a.distance-b.distance);
     const total=checkpoints.length,done=checkpoints.filter(cp=>discovered.has(cp.id)).length;
     const progress=total?Math.min(100,Math.round(done/total*100)):0;
     fill.style.width=progress+'%';
@@ -134,7 +134,8 @@
   }
 
   function routeError(message){
-    status.textContent=message;status.classList.add('route-error');
+    const inApp=/Instagram|FBAN|FBAV|FB_IAB|musical_ly|BytedanceWebview/i.test(navigator.userAgent||'');
+    status.textContent=inApp&&message.includes('LOCATION')?'OPEN IN SAFARI / CHROME FOR LOCATION ACCESS':message;status.classList.add('route-error');
     current.textContent='LOCATION UNAVAILABLE';next.textContent='—';distance.textContent='—';fill.style.width='0%';
     setAction('TRY AGAIN',true);action.onclick=()=>requestLocation();
   }
