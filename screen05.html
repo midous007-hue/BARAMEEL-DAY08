@@ -153,6 +153,7 @@
 
     if(result?.ok){
       BR.haptic('reward');BR.play('confirm');BR.flash();
+      await BR.syncPlayer().catch(()=>null);
       const reward=result.reward||BR.normalizeReward(result);
       const handoff={
         ...result,

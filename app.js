@@ -76,6 +76,7 @@
   function playArcadeConfirm(){unlockAudio();[523,659,784,1047].forEach((f,i)=>tone(f,.065,i===3?'triangle':'square',.18,i*.055))}
   function playArcadeBack(){unlockAudio();tone(659,.065,'square',.10);tone(523,.075,'square',.09,.065);tone(392,.10,'triangle',.075,.135)}
   function playArcadeScan(){unlockAudio();[660,880,1175,1568].forEach((f,i)=>tone(f,.052,'square',.16,i*.052))}
+  function playArcadeReward(){unlockAudio();[392,494,622,784].forEach((f,i)=>tone(f,.075,i===3?'triangle':'square',.16,i*.07));tone(1047,.11,'triangle',.12,.30)}
   function playArcadeError(){unlockAudio();tone(247,.085,'square',.18);tone(196,.095,'triangle',.16,.085);tone(147,.12,'square',.13,.18)}
   function playReceiptPrint(){
     const c=audio();if(!c)return;
@@ -107,6 +108,8 @@
     if(k==='confirm'){playArcadeConfirm();return}
     if(k==='back'){playArcadeBack();return}
     if(k==='scan'){playArcadeScan();return}
+    if(k==='reward'){playArcadeReward();return}
+    if(k==='jackpot'){playJackpot('EPIC',0);return}
     if(k==='error'){playArcadeError();return}
     if(k==='receipt'){playReceiptPrint();return}
     if(k==='select'){playArcadeTap();return}
@@ -234,8 +237,9 @@
     if(!ticketId)return {ok:false,code:'SCAN_TICKET_REQUIRED',error:'SCAN_TICKET_REQUIRED'};
     const r=await api('/scan',{qr:'BARAMEEL-UNIVERSAL',ticket_id:ticketId,idempotency_key:makeId('scan')});
     if(r?.player)mergePlayer(r.player);
-    if(r?.reward){
-      const reward=r.reward,c=reward.collection_id||reward.collection||'collection01',i=reward.image_id||reward.image||'image01',piece=Number(reward.piece_number||reward.piece||0);
+    const reward=r?.reward||normalizeReward(r)||(String(r?.type||'').toLowerCase()==='piece'?r:null);
+    if(reward){
+      const c=reward.collection_id||reward.collection||'collection01',i=reward.image_id||reward.image||'image01',piece=Number(reward.piece_number||reward.piece||0);
       if(c&&i&&piece){const next={...state.collected};next[c]={...(next[c]||{})};next[c][i]=Array.from(new Set([...(next[c][i]||[]).map(Number),piece]));mergePlayer({collected:next,lastReward:reward});}
     }
     return r;

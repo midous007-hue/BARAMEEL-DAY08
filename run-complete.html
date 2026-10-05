@@ -35,7 +35,7 @@
   document.getElementById('route').textContent=route;
   document.getElementById('check').textContent=String(checkpointCount);
   document.getElementById('pts').textContent=pointsEarned.toLocaleString();
-  BR.play('reward');BR.haptic('reward');BR.track('checkpoint_run_complete_view',{checkpoints:checkpointCount,points_earned:pointsEarned,total_points:Number(state.points||0)});
+  BR.playCompletionSound();BR.haptic('reward');BR.track('checkpoint_run_complete_view',{checkpoints:checkpointCount,points_earned:pointsEarned,total_points:Number(state.points||0)});
   document.getElementById('back').onclick=()=>{const parent=BR.safeSession.get('barameelRunCompleteReturn')||'route-map.html';BR.goAfter(parent,'back',180)};
   document.getElementById('continue').onclick=()=>{BR.safeSession.remove('barameelRunCompleteReturn');BR.safeSession.remove('checkpointRunStartPoints');BR.goAfter('leaderboard.html','confirm',220)};
   document.getElementById('world').onclick=()=>{BR.safeSession.remove('barameelRunCompleteReturn');BR.safeSession.remove('checkpointRunStartPoints');BR.goAfter('world.html','tap',180)};

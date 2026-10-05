@@ -49,6 +49,7 @@
   const status=document.getElementById('routeStatus'),current=document.getElementById('currentLocation');
   const next=document.getElementById('nextCheckpoint'),distance=document.getElementById('distanceNext');
   const fill=document.getElementById('routeProgressFill'),action=document.getElementById('routeAction'),label=document.getElementById('routeActionLabel');
+  await BR.syncPlayer().catch(()=>null);
   const cfg=window.BARAMEEL_ROUTE_CONFIG||{};
   const destination=cfg.destination&&Number.isFinite(Number(cfg.destination.lat))&&Number.isFinite(Number(cfg.destination.lng))
     ? {lat:Number(cfg.destination.lat),lng:Number(cfg.destination.lng),name:String(cfg.destination.name||'BARAMEEL'),radius_meters:Math.max(20,Number(cfg.destination.radius_meters||120))}

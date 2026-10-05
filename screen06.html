@@ -109,11 +109,7 @@
       }
       b.appendChild(grid);thumbs.appendChild(b);
       b.onclick=()=>{BR.play('tap');BR.haptic('tap');renderImage(im.imageId)};
-      const img=await loadMaster(im.masterFile);
-      if(img){
-        const bg='url("' + img.src + '")';
-        [...grid.children].forEach((cell,n)=>cell.style.backgroundImage=bg);
-      }
+      loadMaster(im.masterFile).then(img=>{if(img){const bg='url("' + img.src + '")';[...grid.children].forEach(cell=>cell.style.backgroundImage=bg)}})
     }
   }
 
@@ -141,8 +137,8 @@
       const option=document.createElement('option');option.value=item.id;option.textContent=item.displayName;select.appendChild(option);
     }
     select.value=collectionId;
-    await buildThumbs(activeCfg);
     await renderImage(iid||activeCfg.images[0].imageId);
+    await buildThumbs(activeCfg);
   }
 
   select.onchange=async()=>{
@@ -190,7 +186,7 @@
     BR.safeSession.remove('barameelLastScan');
   }
 
-  document.getElementById('back').onclick=()=>BR.goAfter('screen04.html','back',180);
+  document.getElementById('back').onclick=()=>{const parent=BR.safeSession.get('barameelCollectionParent')||'screen05.html';BR.goAfter(parent,'back',180)};
   document.getElementById('myRewards').onclick=()=>BR.goAfter('screen04.html','confirm',180);
   document.getElementById('scanMore').onclick=()=>{BR.safeSession.set('barameelActivePath','collection');BR.safeSession.set('barameelCollectionId',collectionId);BR.goAfter('screen05.html','scan',220)};
   BR.track('collection_hunt_view',{collection_id:collectionId});
