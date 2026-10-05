@@ -1,2 +1,0 @@
-/* BARAMEEL RUN — service worker registration */
-(()=>{if(!('serviceWorker'in navigator))return;window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20261004-23.1',{updateViaCache:'none'}).catch(()=>{}));})();

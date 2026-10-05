@@ -38,3 +38,7 @@ The checkpoint migration intentionally creates no live coordinates. Populate che
 The UI reads assets/collections/index.json. Each listed collection must point to a collection.json containing exactly 10 master images. Each master image contains its configured 3×3 piece definition.
 
 Do not add QR files per piece/image/collection. BARAMEEL-UNIVERSAL remains the single Universal gameplay QR.
+
+
+## Avatar identity V23.4
+The old runner classes are removed from the live product flow. Six avatar IDs are used only as visual identity: avatar01 through avatar06. The existing players.runner column stores the selected avatar ID for backward-compatible persistence; it has no gameplay stats, class behavior, speed, jump, coin boost, or special ability.

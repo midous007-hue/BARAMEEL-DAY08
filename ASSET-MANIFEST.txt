@@ -1,52 +1,48 @@
-BARAMEEL RUN — V23.2 ASSET MANIFEST
+BARAMEEL RUN — CURRENT ASSET MANIFEST V23.4
 
-ONE UNIVERSAL QR
-----------------
-assets/barameel-universal-qr.png
+WORLD
+-----
+assets/barameel-world-splash.webp
+assets/barameel-world.webp
+assets/how-it-works.webp
 
-CORE RUN ARTWORK
-----------------
+RUN ENTRY
+---------
 assets/screen01-start.webp
-assets/screen02-rookie.webp
-assets/screen02-skater.webp
-assets/screen02-brona.webp
-assets/screen02-racer.webp
-assets/screen02-chiller.webp
-assets/screen02-dreamer.webp
-assets/screen03-rookie.webp
-assets/screen03-skater.webp
-assets/screen03-brona.webp
-assets/screen03-racer.webp
-assets/screen03-chiller.webp
-assets/screen03-dreamer.webp
+assets/avatar-selection.webp
 assets/my-run-dashboard.webp
+
+COLLECTION HUNT
+---------------
 assets/screen05-scanner.webp
 assets/screen06-puzzle.webp
+assets/new-collection-piece.webp
+
+CHECKPOINT RUN
+--------------
 assets/route-map.webp
 assets/checkpoint-scanner.webp
 assets/checkpoint-found.webp
 assets/barameel-final-zone.webp
 assets/run-complete.webp
 
-RECEIPT / REWARD ARTWORK
-------------------------
+BARAMEEL PURCHASE / REWARD
+--------------------------
 assets/receipt-code.webp
 assets/verifying-code.webp
 assets/reveal-barameel-box.webp
 assets/your-barameel-drop.webp
 assets/rewarded-added.webp
-assets/barameel-reward-result.webp
-assets/new-collection-piece.webp
-assets/new-piece-found.webp
 
-WORLD / SHARED ARTWORK
-----------------------
-assets/barameel-world-splash.webp
-assets/barameel-world.webp
-assets/how-it-works.webp
+SHARED PROGRESSION
+------------------
 assets/leaderboard.webp
 assets/marks-wallet.webp
 assets/what-are-barameel-marks.webp
+
+ONE UNIVERSAL QR
+----------------
+assets/barameel-universal-qr.png
 
 COLLECTION CATALOG
 ------------------
@@ -63,8 +59,8 @@ assets/collections/collection01/masters/image08-master.webp
 assets/collections/collection01/masters/image09-master.webp
 assets/collections/collection01/masters/image10-master.webp
 
-REWARD FX ARTWORK
------------------
+REWARD FLASHES
+--------------
 assets/rewards/reward-super.webp
 assets/rewards/reward-amazing.webp
 assets/rewards/reward-spectacular.webp
@@ -72,7 +68,10 @@ assets/rewards/reward-jackpot.webp
 
 RULES
 -----
-Do not add duplicate QR assets.
-Do not add images outside assets/.
-Collection master images are not piece-specific QR assets.
-Each configured Collection must contain exactly 10 master images.
+- avatar-selection.webp is the only live Avatar Selection artwork.
+- Screen 03 / Runner Confirmed is removed from the live flow.
+- No runner-specific artwork files are used by the product.
+- Each collection contains exactly 10 master images.
+- One Universal BARAMEEL QR only.
+- No images outside assets/.
+- Dynamic player name, avatar, collection name, points, rank, reward values and route data are injected by code into reserved areas.

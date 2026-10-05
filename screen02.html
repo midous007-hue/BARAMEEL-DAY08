@@ -1,1 +1,95 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>BARAMEEL RUN — Choose Runner</title><link rel="stylesheet" href="./styles.css?v=20261005-23.3"><script src="./config.js?v=20261005-23.3"></script></head><body><main class="stage"><img id="art" class="base" alt="Choose runner"><div id="hotspots"></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261005-23.3"></script><script>(async()=>{const chars=BR.RUNNERS,art=document.getElementById('art'),hs=document.getElementById('hotspots');const files=Object.fromEntries(chars.map(c=>[c,`./assets/screen02-${c}.webp`]));function show(c,s=true){BR.setRunner(c);if(s){BR.playSelect(c);BR.flash()}art.onerror=()=>{art.onerror=null;art.src='./assets/screen01-start.webp'};art.src=files[c]}show(BR.selected(),false);[['rookie',1.1,24.6,16.4,18.2],['skater',17.8,24.6,16.3,18.2],['brona',34.5,24.6,16.2,18.2],['racer',51.1,24.6,16.2,18.2],['chiller',67.7,24.6,16.2,18.2],['dreamer',84.3,24.6,14.7,18.2]].forEach(([c,l,t,w,h])=>{const b=document.createElement('button');b.className='hotspot';b.style.cssText=`left:${l}%;top:${t}%;width:${w}%;height:${h}%`;b.onclick=()=>show(c);hs.appendChild(b)});function add(css,fn){const b=document.createElement('button');b.className='hotspot';b.style.cssText=css;b.onclick=fn;hs.appendChild(b)}add('left:3.0%;top:1.1%;width:19%;height:5.2%',()=>BR.goAfter('run.html','back',220));add('left:51.0%;top:75.5%;width:44.3%;height:8.3%',()=>BR.goAfter('screen03.html','confirm',300));BR.idle(()=>BR.preloadAll(chars.map(c=>files[c])));})();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#071b2b">
+<title>BARAMEEL RUN — CHOOSE YOUR AVATAR</title>
+<link rel="stylesheet" href="./styles.css?v=20261005-23.4">
+<script src="./config.js?v=20261005-23.4"></script>
+<style>
+.avatar-stage{position:relative;width:min(100vw,calc(100dvh*912/1648));height:min(100dvh,calc(100vw*1648/912));aspect-ratio:912/1648;margin:auto;overflow:hidden;background:#071b2b}
+.avatar-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.avatar-hit{position:absolute;z-index:45;border:0;background:transparent;border-radius:50%;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.avatar-01{left:4.2%;top:42.0%;width:29.0%;height:17.7%}
+.avatar-02{left:35.5%;top:42.0%;width:29.0%;height:17.7%}
+.avatar-03{left:66.6%;top:42.0%;width:29.0%;height:17.7%}
+.avatar-04{left:4.2%;top:62.0%;width:29.0%;height:17.7%}
+.avatar-05{left:35.5%;top:62.0%;width:29.0%;height:17.7%}
+.avatar-06{left:66.6%;top:62.0%;width:29.0%;height:17.7%}
+.avatar-hit.is-selected{z-index:55}
+.avatar-hit.is-selected::after{content:"";position:absolute;inset:-2.2%;border-radius:50%;border:4px solid #f6c532;box-shadow:0 0 0 3px rgba(7,27,43,.82),0 0 16px rgba(246,197,50,.95),0 0 30px rgba(246,197,50,.58);animation:avatarLock .42s cubic-bezier(.16,.9,.2,1) both,avatarPulse 1s ease-in-out .42s 2 both;pointer-events:none}
+.avatar-hit.is-selected::before{content:"";position:absolute;inset:6%;border-radius:50%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.78) 48%,transparent 59%);mix-blend-mode:screen;animation:avatarShine .56s ease-out .1s both;pointer-events:none}
+@keyframes avatarLock{0%{transform:scale(.93);opacity:.3}70%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes avatarPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+@keyframes avatarShine{0%{transform:translateX(-135%) rotate(10deg);opacity:0}35%{opacity:1}100%{transform:translateX(135%) rotate(10deg);opacity:0}}
+.player-name{position:absolute;left:34.2%;top:35.1%;width:50.0%;height:5.7%;z-index:40;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(15px,4.1vw,29px)/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.avatar-error{position:absolute;left:18%;right:18%;top:80.2%;min-height:3.8%;z-index:70;display:flex;align-items:center;justify-content:center;padding:1.2% 3%;border:2px solid #f0c830;border-radius:999px;background:rgba(7,26,32,.94);color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-align:center;opacity:0;pointer-events:none;transition:.18s ease}
+.avatar-error.show{opacity:1}
+</style>
+</head>
+<body>
+<main class="avatar-stage" id="avatarStage">
+<img class="avatar-art" src="./assets/avatar-selection.webp?v=20261005-23.4" alt="CHOOSE YOUR AVATAR" fetchpriority="high">
+<div id="playerName" class="player-name" aria-live="polite"></div>
+<button class="avatar-hit avatar-01" data-avatar="avatar01" aria-label="Avatar 1"></button>
+<button class="avatar-hit avatar-02" data-avatar="avatar02" aria-label="Avatar 2"></button>
+<button class="avatar-hit avatar-03" data-avatar="avatar03" aria-label="Avatar 3"></button>
+<button class="avatar-hit avatar-04" data-avatar="avatar04" aria-label="Avatar 4"></button>
+<button class="avatar-hit avatar-05" data-avatar="avatar05" aria-label="Avatar 5"></button>
+<button class="avatar-hit avatar-06" data-avatar="avatar06" aria-label="Avatar 6"></button>
+<button id="back" class="avatar-hit" style="left:3.6%;top:1.2%;width:17%;height:6.8%;border-radius:24%" aria-label="Back"></button>
+<button id="confirm" class="avatar-hit" style="left:7.4%;top:84.0%;width:85.2%;height:8.8%;border-radius:8%" aria-label="Confirm Avatar"></button>
+<div id="error" class="avatar-error" aria-live="polite"></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261005-23.4"></script>
+<script>
+(() => {
+  const playerName=document.getElementById('playerName');
+  const error=document.getElementById('error');
+  const buttons=[...document.querySelectorAll('.avatar-hit[data-avatar]')];
+  const entered=String(BR.state?.nickname||'').trim();
+  let selected=BR.selectedAvatar();
+
+  playerName.textContent=entered.toUpperCase()||'PLAYER';
+
+  function selectAvatar(id,play=true){
+    if(!BR.AVATARS.includes(id))return;
+    selected=id;
+    BR.setAvatar(id);
+    buttons.forEach(b=>b.classList.toggle('is-selected',b.dataset.avatar===id));
+    if(play){
+      BR.playAvatarSelect(id);
+      BR.haptic('confirm');
+      BR.flash();
+    }
+  }
+
+  selectAvatar(selected,false);
+
+  buttons.forEach(b=>b.addEventListener('click',e=>{
+    e.preventDefault();
+    selectAvatar(b.dataset.avatar,true);
+  }));
+
+  document.getElementById('back').onclick=()=>BR.goAfter('run.html','back',180);
+
+  document.getElementById('confirm').onclick=async()=>{
+    if(!entered){
+      error.textContent='ENTER YOUR PLAYER NAME FIRST';
+      error.classList.add('show');
+      BR.play('error');BR.haptic('error');
+      return;
+    }
+    const button=document.getElementById('confirm');
+    button.disabled=true;
+    BR.safeSession.set('barameelAvatar',selected);
+    BR.safeSession.remove('barameelActivePath');
+    await BR.syncPlayer().catch(()=>null);
+    BR.goAfter('screen04.html','confirm',240);
+  };
+})();
+</script>
+</body>
+</html>

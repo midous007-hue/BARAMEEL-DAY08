@@ -1,4 +1,4 @@
-# BARAMEEL RUN V23.2 — CURRENT UX / FLOW REVIEW
+# BARAMEEL RUN V23.4 — CURRENT UX / FLOW REVIEW
 
 ## Locked player journey
 
@@ -36,7 +36,7 @@ BARAMEEL FINAL ZONE → PURCHASE → RECEIPT CODE → server validation → VERI
 
 Receipt rewards are server-defined. The UI must not hard-code one reward type or a fixed reward amount.
 
-## V23.2 interaction fixes
+## V23.4 interaction fixes
 
 - START FLASH no longer repeats immediately after HOW IT WORKS.
 - START FLASH is shown once for each explicit new run start.
@@ -61,3 +61,7 @@ The Universal QR and receipt reward functions likewise require the compatible Su
 ## Dynamic artwork rule
 
 Dynamic points, ranks, names, distances, collection names, reward labels and status values are injected by code into dedicated artwork fields. Do not bake changing gameplay numbers into the artwork.
+
+
+## V23.4 avatar architecture
+The player enters a nickname once, then chooses one of six visual avatars. The avatar has no class, stat, speed, jump, boost, rarity, or special ability. The nickname is the primary player identity. The selected avatar is shown with the nickname on the live checkpoint map and can be surfaced on player-owned progression screens such as MY RUN and checkpoint results. Screen 02 is the avatar-selection screen. Screen 03 is obsolete and must not be linked by any live navigation.

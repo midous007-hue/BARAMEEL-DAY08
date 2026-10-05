@@ -4,15 +4,15 @@
 */
 (() => {
   const VERSION = '20261005-23.3';
-  const STORAGE = 'barameel.world.player.v23.2';
+  const STORAGE = 'barameel.world.player.v23.4';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
   const SUPABASE_KEY = String(window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY || '');
   let supa = null;
   let authPromise = null;
-  const RUNNERS = ['rookie','skater','brona','racer','chiller','dreamer'];
-  const RUNNER_NAMES = {rookie:'THE ROOKIE',skater:'THE SKATER',brona:'BRONA',racer:'THE RACER',chiller:'THE CHILLER',dreamer:'THE DREAMER'};
-  const DEFAULTS = {playerId:null,playerCode:null,nickname:'',runner:'brona',points:0,weeklyPoints:0,rank:null,playerCount:0,checkpoints:[],collected:{collection01:{}},totalScans:0,lastReward:null,runHowItWorksSeen:false,routeProgress:0,routeDistance:null,nextCheckpoint:null,activePath:null,lastSeen:null};
+  const AVATARS = ['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06'];
+  const LEGACY_AVATAR_MAP = {rookie:'avatar01',skater:'avatar02',brona:'avatar03',racer:'avatar04',chiller:'avatar05',dreamer:'avatar06'};
+  const DEFAULTS = {playerId:null,playerCode:null,nickname:'',avatar:'avatar01',runner:'avatar01',points:0,weeklyPoints:0,rank:null,playerCount:0,checkpoints:[],collected:{collection01:{}},totalScans:0,lastReward:null,runHowItWorksSeen:false,routeProgress:0,routeDistance:null,nextCheckpoint:null,activePath:null,lastSeen:null};
   const memoryStorage = Object.create(null);
   const safeStorage = {
     get(key){ try{return window.localStorage.getItem(key)}catch{return Object.prototype.hasOwnProperty.call(memoryStorage,key)?memoryStorage[key]:null} },
@@ -36,8 +36,10 @@
   function saveState(){ state.lastSeen = Date.now(); safeStorage.set(STORAGE, JSON.stringify(state)); }
   function patchState(p){ state = {...state,...p}; saveState(); return state; }
   function setNickname(v){ patchState({nickname:String(v||'').trim().slice(0,24)}); }
-  function setRunner(v){ if(RUNNERS.includes(v)) patchState({runner:v}); }
-  function selected(){ return state.runner || 'brona'; }
+  function setAvatar(v){const id=String(v||'').toLowerCase();if(AVATARS.includes(id))patchState({avatar:id,runner:id});}
+  function setRunner(v){const id=LEGACY_AVATAR_MAP[String(v||'').toLowerCase()]||String(v||'').toLowerCase();if(AVATARS.includes(id))setAvatar(id)}
+  function selectedAvatar(){const id=String(state.avatar||'').toLowerCase();return AVATARS.includes(id)?id:(LEGACY_AVATAR_MAP[String(state.runner||'').toLowerCase()]||'avatar01')}
+  function selected(){ return selectedAvatar(); }
   function pieces(c='collection01', i='image01'){ return (state.collected?.[c]?.[i]||[]).map(Number).sort((a,b)=>a-b); }
   function hasPiece(c,i,p){ return pieces(c,i).includes(Number(p)); }
   function count(c,i){ return pieces(c,i).length; }
@@ -120,10 +122,10 @@
     playArcadeTap();
   }
   // Exact character-specific motif from the earlier approved selection screen.
-  function playSelect(runner){
+  function playAvatarSelect(avatar){
     unlockAudio();
-    const roots={rookie:392,skater:440,brona:494,racer:554,chiller:622,dreamer:698};
-    const root=roots[runner]||494;
+    const roots={avatar01:392,avatar02:440,avatar03:494,avatar04:554,avatar05:622,avatar06:698};
+    const root=roots[String(avatar||'').toLowerCase()]||494;
     [1,1.25,1.5,2,2.5].forEach((m,i)=>tone(root*m,.065,i===4?'triangle':'square',.18,i*.045));
   }
   // POINTS COUNT-UP — classic BARAMEEL arcade counter. The pitch and number of ticks rise with rarity/value.
@@ -173,6 +175,7 @@
     }
     return spec;
   }
+  function playSelect(value){return playAvatarSelect(LEGACY_AVATAR_MAP[String(value||'').toLowerCase()]||String(value||''))}
   function playCompletionSound(){play('completion')}
   ['pointerdown','touchstart','mousedown','keydown'].forEach(e=>window.addEventListener(e,unlockAudio,{capture:true,passive:true}));
 
@@ -232,7 +235,7 @@
     }catch(e){console.error('[BARAMEEL API]',path,e);return {ok:false,code:'NETWORK_ERROR',error:'NETWORK_ERROR',message:friendlyError('NETWORK_ERROR')};}
   }
   async function track(event,meta={}){return api('/analytics',{event_name:event,payload:{...meta,path:location.pathname,ts:Date.now()}});}
-  async function syncPlayer(){const r=await api('/player',{nickname:state.nickname,runner:state.runner});if(r?.player)mergePlayer(r.player);return r;}
+  async function syncPlayer(){const avatar=selectedAvatar();const r=await api('/player',{nickname:state.nickname,avatar,runner:avatar});if(r?.player){const p={...r.player};p.avatar=AVATARS.includes(String(p.avatar||'').toLowerCase())?String(p.avatar).toLowerCase():avatar;p.runner=p.avatar;mergePlayer(p)}return r;}
   async function scanUniversal({ticketId=null}){
     if(!ticketId)return {ok:false,code:'SCAN_TICKET_REQUIRED',error:'SCAN_TICKET_REQUIRED'};
     const r=await api('/scan',{qr:'BARAMEEL-UNIVERSAL',ticket_id:ticketId,idempotency_key:makeId('scan')});
@@ -288,7 +291,7 @@
   }
   function parseUniversalQR(raw){const s=decodeURIComponent(String(raw||'')).trim();if(/^BARAMEEL[-_:]?UNIVERSAL$/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};if(/(?:^|[?&])qr=BARAMEEL-UNIVERSAL(?:&|$)/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};return null;}
 
-  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,RUNNERS,RUNNER_NAMES,RARITY,get state(){return state},setNickname,setRunner,selected,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,scanCheckpoint,duoLink,fetchCollection,listCollections,parseUniversalQR,saveState,ensureAuth,API_BASE};
+  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,AVATARS,RARITY,get state(){return state},setNickname,setAvatar,setRunner,selectedAvatar,selected,playSelect,playAvatarSelect,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,scanCheckpoint,duoLink,fetchCollection,listCollections,parseUniversalQR,saveState,ensureAuth,API_BASE};
   if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v='+VERSION,{updateViaCache:'none'}).catch(()=>{});}
   idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
 })();

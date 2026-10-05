@@ -8,13 +8,13 @@ RUN, DUO LINK, MENU, POST and MY BARAMEEL are separate experiences sharing one P
 
 ## 2. BARAMEEL RUN — MASTER FLOW
 
-After the player chooses a runner and confirms, BARAMEEL RUN splits into **two independent gameplay paths**.
+After the player chooses an avatar and confirms, BARAMEEL RUN splits into **two independent gameplay paths**.
 
 The paths do not merge into one screen-to-screen sequence. They only converge at the player's shared server-side progression data.
 
 ### 2.1 Entry point
 
-`Choose runner → Confirm → MY RUN`
+`Choose avatar → Confirm → MY RUN`
 
 **MY RUN** is the player dashboard and the explicit branch point.
 
@@ -70,7 +70,7 @@ The shared progression can drive:
 - eligibility for Marks;
 - other server-defined player progression.
 
-The player does not need to understand the backend model; the UI must simply show that both paths contribute to the same progress.
+The player does not need to understand the backend model; the UI must simply show that both paths contribute to the same progress. The selected avatar is visual identity only; it has no gameplay stats or class behavior.
 
 ## 3. BARAMEEL VISIT AND RECEIPT REWARD LAYER
 
@@ -184,7 +184,10 @@ No screen should send the player to another path without explicitly explaining w
 
 The screen plan must follow the master split:
 
-**Shared / branch point**
+**Entry / branch point**
+- Nickname entry screen: player enters the persistent display name.
+- Screen 02: AVATAR SELECTION.
+- Screen 03: REMOVED from the live flow.
 - Screen 04: MY RUN dashboard / branch selector.
 
 **Collection path**

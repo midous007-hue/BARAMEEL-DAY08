@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.3">
+<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.4">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="./config.js?v=20261005-23.3"></script>
+<script src="./config.js?v=20261005-23.4"></script>
 <style>
 #routeMap{position:absolute;left:32.9%;top:28.0%;width:59.9%;height:19.7%;z-index:20;overflow:hidden;border-radius:4.0%;isolation:isolate;background:#071b2b;box-shadow:inset 0 0 0 3px rgba(246,231,206,.9),inset 0 0 0 6px rgba(244,197,47,.28),0 6px 14px rgba(0,0,0,.4)}
 #routeMap .leaflet-container{width:100%;height:100%;background:#071b2b;filter:saturate(.76) contrast(.94) brightness(.9) sepia(.08)}
 #routeMap .leaflet-tile-pane{opacity:.94}
 #routeMap .leaflet-control-attribution{font-size:7px;line-height:1.1;background:rgba(7,27,43,.74)!important;color:#f6e7ce!important}
 #routeMap .leaflet-control-attribution a{color:#f6e7ce!important}
-#routeMap .leaflet-tooltip{font:900 10px/1 'Roboto Condensed',Arial,sans-serif;color:#071b2b;background:#f6e7ce;border:2px solid #f4c52f;box-shadow:0 2px 0 #071b2b}
+#routeMap .leaflet-tooltip{font:900 10px/1 'Roboto Condensed',Arial,sans-serif;color:#071b2b;background:#f6e7ce;border:2px solid #f4c52f;box-shadow:0 2px 0 #071b2b}.player-marker{position:relative;width:78px;height:70px}.player-marker-avatar{position:absolute;left:19px;top:0;width:40px;height:40px;border-radius:50%;border:3px solid #f4c52f;box-shadow:0 0 0 3px #071b2b,0 0 14px rgba(244,197,47,.8);background-image:url('./assets/avatar-selection.webp?v=20261005-23.4');background-repeat:no-repeat;background-size:320% 560%;overflow:hidden}.player-marker-name{position:absolute;left:0;top:44px;width:78px;padding:3px 5px;border:2px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 0 #071b2b}
 .route-field{position:absolute;z-index:24;display:flex;align-items:center;justify-content:center;color:#071b2b;font:900 clamp(11px,2.6vw,21px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2%;pointer-events:none}
 #currentLocation{left:46.7%;top:53.9%;width:47.0%;height:4.2%}
 #nextCheckpoint{left:46.7%;top:61.3%;width:47.0%;height:4.2%}
@@ -31,7 +31,7 @@
 </head>
 <body>
 <main class="flow-stage art-948x1659">
-<img class="flow-art" src="./assets/route-map.webp?v=20261005-23.3" alt="BARAMEEL RUN CHECKPOINT RUN" fetchpriority="high">
+<img class="flow-art" src="./assets/route-map.webp?v=20261005-23.4" alt="BARAMEEL RUN CHECKPOINT RUN" fetchpriority="high">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="currentLocation" class="route-field">LOCATING…</div>
 <div id="nextCheckpoint" class="route-field">LOADING…</div>
@@ -43,7 +43,7 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="./app.js?v=20261005-23.3"></script>
+<script src="./app.js?v=20261005-23.4"></script>
 <script>
 (async()=>{
   const status=document.getElementById('routeStatus'),current=document.getElementById('currentLocation');
@@ -73,6 +73,8 @@
   const discovered=new Set((BR.state?.checkpoints||[]).map(String));
   let map=null,watchId=null,playerMarker=null,markers=[];
 
+  function avatarPosition(id){const map={avatar01:['0%','24%'],avatar02:['50%','24%'],avatar03:['100%','24%'],avatar04:['0%','78%'],avatar05:['50%','78%'],avatar06:['100%','78%']};return map[id]||map.avatar01}
+  function playerIcon(){const avatar=BR.selectedAvatar(),name=String(BR.state?.nickname||'PLAYER').toUpperCase().replace(/[&<>"]/g,'');const pos=avatarPosition(avatar);return L.divIcon({className:'',iconSize:[78,70],iconAnchor:[39,35],html:'<div class="player-marker"><div class="player-marker-avatar" style="background-position:'+pos[0]+' '+pos[1]+'"></div><div class="player-marker-name">'+name+'</div></div>'})}
   function marker(lat,lng,type,text){
     const fillColor=type==='player'?'#ef2d24':type==='barameel'?'#f4c52f':type==='found'?'#f4c52f':'#071b2b';
     const m=L.circleMarker([lat,lng],{radius:type==='player'?8:7,color:'#f6e7ce',weight:3,fillColor,fillOpacity:1});
@@ -84,13 +86,13 @@
     if(!map){
       map=L.map('routeMap',{zoomControl:false,attributionControl:true,scrollWheelZoom:false,doubleClickZoom:false,touchZoom:false}).setView([pos.lat,pos.lng],15);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
-      playerMarker=marker(pos.lat,pos.lng,'player','YOU ARE HERE');
+      playerMarker=L.marker([pos.lat,pos.lng],{icon:playerIcon(),keyboard:false,interactive:false}).addTo(map);
       if(destination){
         marker(destination.lat,destination.lng,'barameel',destination.name);
       }
       checkpoints.forEach(cp=>markers.push({cp,marker:marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CLEARED':'CHECKPOINT')}));
     }else{
-      playerMarker.setLatLng([pos.lat,pos.lng]);
+      playerMarker.setLatLng([pos.lat,pos.lng]);playerMarker.setIcon(playerIcon());
     }
   }
 
