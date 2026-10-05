@@ -156,7 +156,8 @@
     rewardFlashImage.src=src;rewardFlashImage.alt=word;
     rewardFlash.style.setProperty('--flash-art','url("' + src + '")');
     rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
-    setTimeout(()=>rewardFlash.classList.remove('on'),2800);
+    window.clearTimeout(showReward.timer);
+    showReward.timer=window.setTimeout(()=>rewardFlash.classList.remove('on'),1120);
   }
 
   async function reveal(points,rarity){
@@ -164,11 +165,11 @@
     pointsNumber.textContent='';
     pointsBadge.className='points-badge '+String(rarity||'COMMON').toLowerCase()+' revealing';
     BR.playPointsCountUp(n,rarity);
-    const spec=BR.rewardSpec(rarity,n),start=performance.now(),duration=Math.max(900,Number(spec.duration)||1400);
+    const spec=BR.rewardSpec(rarity,n),start=performance.now(),duration=Math.max(900,Number(spec.duration)||1400);let flashShown=false;const flashAt=Math.round(duration*.78);
     await new Promise(resolve=>{
       const step=t=>{
         const p=Math.min(1,(t-start)/duration),ease=1-Math.pow(1-p,3);
-        pointsNumber.textContent=Math.round(n*ease).toLocaleString();
+        pointsNumber.textContent=Math.round(n*ease).toLocaleString();if(!flashShown&&t-start>=flashAt){flashShown=true;// Reward flash is intentionally triggered during the final ~22% of the counter, not after it.}
         if(p<1)requestAnimationFrame(step);else{pointsNumber.textContent=n.toLocaleString();resolve();}
       };requestAnimationFrame(step);
     });

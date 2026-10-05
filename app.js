@@ -57,7 +57,7 @@
     if(audioCtx) return audioCtx;
     const C=window.AudioContext||window.webkitAudioContext; if(!C) return null;
     audioCtx=new C();
-    const g=audioCtx.createGain(); g.gain.value=.95; g.connect(audioCtx.destination); audioCtx.master=g;
+    const g=audioCtx.createGain(); g.gain.value=1.28; const limiter=audioCtx.createDynamicsCompressor(); limiter.threshold.value=-7; limiter.knee.value=10; limiter.ratio.value=5; limiter.attack.value=.003; limiter.release.value=.14; g.connect(limiter).connect(audioCtx.destination); audioCtx.master=g;
     return audioCtx;
   }
   function unlockAudio(){const c=audio();if(!c)return;if(c.state==='suspended')c.resume().catch(()=>{});}
