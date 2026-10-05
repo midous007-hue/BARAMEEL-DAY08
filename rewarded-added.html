@@ -31,9 +31,9 @@
   if(reward){
     title.textContent=String(reward.reward_label||'REWARD CLAIMED').toUpperCase();
     const points=Number(reward.points_awarded||0),marks=Number(reward.marks_awarded||0);
-    value.textContent=points>0?'+'+points.toLocaleString():marks>0?marks.toLocaleString()+' MARKS':String(reward.product_code||'READY').replace(/[_-]+/g,' ').toUpperCase();
+    value.textContent=points>0?'+'+points.toLocaleString():marks>0?marks.toLocaleString()+' MARKS':String(reward.reward_label||reward.product_code||'READY').replace(/[_-]+/g,' ').toUpperCase();
     const type=String(reward.reward_type||'REWARD').toUpperCase();
-    description.textContent=type==='PRODUCT'?'PHYSICAL REWARD READY AT BARAMEEL':type==='POINTS'?'POINTS ADDED TO YOUR SHARED BALANCE':type==='MARKS'?'MARKS ADDED TO YOUR WALLET':type==='PIECE'?'COLLECTION PIECE REWARD READY':'REWARD CONFIRMED';
+    description.textContent=type==='PRODUCT'?'PHYSICAL REWARD READY AT BARAMEEL':type==='POINTS'?'POINTS ADDED TO YOUR SHARED BALANCE':type==='MARKS'?'MARKS ADDED TO YOUR WALLET':type==='MULTIPLIER'?'POINTS MULTIPLIER APPLIED':type==='PIECE'?'COLLECTION PIECE REWARD READY':'REWARD CONFIRMED';
   }else{
     title.textContent='REWARD RESULT UNAVAILABLE';description.textContent='TRY AGAIN FROM RECEIPT VERIFICATION';
   }

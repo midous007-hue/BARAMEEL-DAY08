@@ -86,7 +86,6 @@
       playerMarker=marker(pos.lat,pos.lng,'player','YOU ARE HERE');
       if(destination){
         marker(destination.lat,destination.lng,'barameel',destination.name);
-        L.polyline([[pos.lat,pos.lng],[destination.lat,destination.lng]],{color:'#ef2d24',weight:4,dashArray:'8 9',opacity:.72}).addTo(map);
       }
       checkpoints.forEach(cp=>markers.push({cp,marker:marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CLEARED':'CHECKPOINT')}));
     }else{

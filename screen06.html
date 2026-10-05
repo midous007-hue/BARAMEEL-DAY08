@@ -124,7 +124,7 @@
   async function renderImage(iid){
     const im=(activeCfg?.images||[]).find(x=>x.imageId===iid)||activeCfg?.images?.[0];
     if(!im)return;
-    select.value=im.imageId;renderHero(im);
+    renderHero(im);
     BR.track('collection_view',{collection_id:collectionId,image_id:im.imageId});
   }
 

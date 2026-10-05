@@ -77,6 +77,14 @@ Deno.serve(async (req) => {
     return json({ ok: false, error: code, code }, 409);
   }
 
+  const { data: freshPlayer, error: freshPlayerError } = await admin
+    .from("players")
+    .select("id,player_code,nickname,runner,points,weekly_points")
+    .eq("id", player.id)
+    .single();
+
+  if (freshPlayerError || !freshPlayer) return json({ ok: false, error: "PLAYER_STATE_FAILED", code: "PLAYER_STATE_FAILED" }, 500);
+
   const { data: claims, error: claimsError } = await admin
     .from("checkpoint_claims")
     .select("checkpoint_id,points_awarded")
@@ -95,8 +103,8 @@ Deno.serve(async (req) => {
       playerId: player.player_code,
       nickname: player.nickname,
       runner: player.runner,
-      points: Number(player.points || 0),
-      weeklyPoints: Number(player.weekly_points || 0),
+      points: Number(freshPlayer.points || 0),
+      weeklyPoints: Number(freshPlayer.weekly_points || 0),
       checkpoints: checkpointIds,
       rank: Number(rank || 0),
     },
