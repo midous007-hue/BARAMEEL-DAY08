@@ -242,7 +242,8 @@
       const c=reward.collection_id||reward.collection||'collection01',i=reward.image_id||reward.image||'image01',piece=Number(reward.piece_number||reward.piece||0);
       if(c&&i&&piece){const next={...state.collected};next[c]={...(next[c]||{})};next[c][i]=Array.from(new Set([...(next[c][i]||[]).map(Number),piece]));mergePlayer({collected:next,lastReward:reward});}
     }
-    if(Number.isFinite(Number(r?.points_awarded??r?.points))) patchState({points: Number(state.points||0)+Number(r.points_awarded??r.points||0), weeklyPoints:Number(state.weeklyPoints||0)+Number(r.points_awarded??r.points||0)});
+    const awarded=Number((r?.points_awarded??r?.points)??0);
+    if(Number.isFinite(awarded)&&awarded>0) patchState({points:Number(state.points||0)+awarded,weeklyPoints:Number(state.weeklyPoints||0)+awarded});
     return r;
   }
   async function scanCheckpoint({checkpointId,lat=null,lng=null}){
