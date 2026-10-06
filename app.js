@@ -3,8 +3,8 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261005-23.3';
-  const STORAGE = 'barameel.world.player.v23.5';
+  const VERSION = '20261006-23.7';
+  const STORAGE = 'barameel.world.player.v23.6';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
   const SUPABASE_KEY = String(window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY || '');
@@ -32,7 +32,22 @@
   let state = loadState();
   if (!state.playerId) { state.playerId = makeId('player'); saveState(); }
 
-  function loadState(){ try { return {...DEFAULTS, ...JSON.parse(safeStorage.get(STORAGE)||'{}')}; } catch { return {...DEFAULTS}; } }
+  function loadState(){
+    const legacyKeys=['barameel.world.player.v23.5','barameel.world.player.v23.4','barameel.world.player.v23.3','barameel.world.player.v23.2'];
+    try{
+      let raw=safeStorage.get(STORAGE);
+      if(!raw){
+        for(const key of legacyKeys){
+          const legacy=safeStorage.get(key);
+          if(legacy){raw=legacy;break}
+        }
+      }
+      const parsed=raw?JSON.parse(raw):{};
+      const next={...DEFAULTS,...parsed};
+      if(parsed?.weekly_points!=null&&next.weeklyPoints==null)next.weeklyPoints=Number(parsed.weekly_points)||0;
+      return next;
+    }catch{return {...DEFAULTS}}
+  }
   function saveState(){ state.lastSeen = Date.now(); safeStorage.set(STORAGE, JSON.stringify(state)); }
   function patchState(p){ state = {...state,...p}; saveState(); return state; }
   function setNickname(v){ patchState({nickname:String(v||'').trim().slice(0,24)}); }
@@ -45,8 +60,27 @@
   function count(c,i){ return pieces(c,i).length; }
   function mergePlayer(p){
     if(!p) return state;
-    state = {...state,...p};
-    if(p.collected) state.collected = p.collected;
+    const local=state||DEFAULTS;
+    const incoming={...p};
+    const localPoints=Number(local.points||0);
+    const incomingPoints=Number(incoming.points);
+    if(Number.isFinite(incomingPoints) && incomingPoints===0 && localPoints>0) incoming.points=localPoints;
+    const localWeekly=Number(local.weeklyPoints||0);
+    const incomingWeekly=Number(incoming.weeklyPoints??incoming.weekly_points);
+    if(Number.isFinite(incomingWeekly) && incomingWeekly===0 && localWeekly>0) incoming.weeklyPoints=localWeekly;
+    if(incoming.weekly_points!=null && incoming.weeklyPoints==null) incoming.weeklyPoints=Number(incoming.weekly_points)||0;
+    if(incoming.collected){
+      const merged={...local.collected};
+      for(const [cid,images] of Object.entries(incoming.collected||{})){
+        merged[cid]={...(merged[cid]||{})};
+        for(const [iid,piecesList] of Object.entries(images||{})){
+          merged[cid][iid]=Array.from(new Set([...(merged[cid][iid]||[]).map(Number),...(Array.isArray(piecesList)?piecesList:[]).map(Number)])).sort((a,b)=>a-b);
+        }
+      }
+      incoming.collected=merged;
+    }
+    if((incoming.lastReward==null || incoming.lastReward==='') && local.lastReward) incoming.lastReward=local.lastReward;
+    state={...local,...incoming};
     saveState();
     return state;
   }
@@ -134,15 +168,15 @@
     unlockAudio();
     const root={COMMON:392,UNCOMMON:440,RARE:494,EPIC:554,LEGENDARY:622,MYTHIC:698}[spec.rarity]||494;
     const ratio=Math.max(.1,Math.min(1,value/100000));
-    const steps=Math.max(8,Math.min(20,Math.round(8+ratio*12)));
+    const steps=Math.max(10,Math.min(24,Math.round(10+ratio*14)));
     const span=Math.max(760,Math.min(2200,spec.duration));
     for(let i=0;i<steps;i++){
       const p=i/Math.max(1,steps-1),f=root*(1.0+1.65*p+0.15*ratio*p);
-      tone(f, i===steps-1 ? .075 : .045, i%4===3?'triangle':'square', .06+.028*ratio, (span*p)/1000);
+      tone(f, i===steps-1 ? .105 : .072, i%4===3?'triangle':'square', .105+.055*ratio, (span*p)/1000);
     }
     const end=Math.max(.05,(span-120)/1000);
-    tone(root*2.5,.11,'triangle',.09+.05*ratio,end);
-    tone(root*3,.14,'sine',.075+.06*ratio,end+.075);
+    tone(root*2.5,.13,'triangle',.13+.07*ratio,end);
+    tone(root*3,.16,'sine',.10+.075*ratio,end+.075);
     return spec;
   }
   function playJackpot(rarity='EPIC',delay=.15){
@@ -235,7 +269,19 @@
     }catch(e){console.error('[BARAMEEL API]',path,e);return {ok:false,code:'NETWORK_ERROR',error:'NETWORK_ERROR',message:friendlyError('NETWORK_ERROR')};}
   }
   async function track(event,meta={}){return api('/analytics',{event_name:event,payload:{...meta,path:location.pathname,ts:Date.now()}});}
-  async function syncPlayer(){const avatar=selectedAvatar();const r=await api('/player',{nickname:state.nickname,avatar,runner:avatar});if(r?.player){const p={...r.player};p.avatar=AVATARS.includes(String(p.avatar||'').toLowerCase())?String(p.avatar).toLowerCase():avatar;p.runner=p.avatar;mergePlayer(p)}return r;}
+  async function syncPlayer(){
+    const avatar=selectedAvatar();
+    const r=await api('/player',{nickname:state.nickname,avatar,runner:avatar});
+    if(r?.player){
+      const p={...r.player};
+      p.avatar=AVATARS.includes(String(p.avatar||'').toLowerCase())?String(p.avatar).toLowerCase():avatar;
+      p.runner=p.avatar;
+      if(p.points==null && p.weekly_points!=null)p.points=Number(p.weekly_points)||0;
+      if(p.weeklyPoints==null && p.weekly_points!=null)p.weeklyPoints=Number(p.weekly_points)||0;
+      mergePlayer(p);
+    }
+    return r;
+  }
   async function scanUniversal({ticketId=null}){
     if(!ticketId)return {ok:false,code:'SCAN_TICKET_REQUIRED',error:'SCAN_TICKET_REQUIRED'};
     const r=await api('/scan',{qr:'BARAMEEL-UNIVERSAL',ticket_id:ticketId,idempotency_key:makeId('scan')});
