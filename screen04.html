@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — MY RUN</title>
-<link rel="stylesheet" href="./styles.css?v=20261006-23.6">
-<script src="./config.js?v=20261006-23.6"></script>
+<link rel="stylesheet" href="./styles.css?v=20261006-23.7">
+<script src="./config.js?v=20261006-23.7"></script>
 <style>
 .my-run-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#061f27}
 .my-run-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -18,21 +18,23 @@
 .my-run-points{left:9.0%;top:86.55%;width:23.5%;height:4.9%}
 .my-run-rank{left:37.2%;top:86.55%;width:25.2%;height:4.9%}
 .my-run-marks{left:69.2%;top:86.55%;width:22.2%;height:4.9%}
+.my-run-rewards{left:2.5%;top:81.8%;width:95%;height:14.0%;z-index:45}
 .my-run-hit:active{transform:scale(.988);filter:brightness(1.08)}
 </style>
 </head>
 <body>
 <main class="my-run-stage">
-<img class="my-run-art" src="./assets/my-run-dashboard.webp?v=20261006-23.6" alt="MY RUN">
+<img class="my-run-art" src="./assets/my-run-dashboard.webp?v=20261006-23.7" alt="MY RUN">
 <button id="back" class="my-run-hit my-run-back" aria-label="Back"></button>
 <button id="collection" class="my-run-hit my-run-collection" aria-label="Collection Hunt"></button>
 <button id="checkpoint" class="my-run-hit my-run-checkpoint" aria-label="Checkpoint Run"></button>
+<button id="rewards" class="my-run-hit my-run-rewards" aria-label="Open My Rewards"></button>
 <div id="playerName" class="my-run-player-name"></div><div id="points" class="my-run-value my-run-points">0</div>
 <div id="rank" class="my-run-value my-run-rank">—</div>
 <div id="marks" class="my-run-value my-run-marks">0</div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261006-23.6"></script>
+<script src="./app.js?v=20261006-23.7"></script>
 <script>
 (async () => {
   await BR.syncPlayer();
@@ -54,6 +56,11 @@
     BR.safeSession.set('checkpointRunStartPoints', String(BR.state?.points || 0));
     BR.safeSession.set('barameelActivePath', 'checkpoint');
     BR.goAfter('route-map.html', 'confirm', 240);
+  };
+  document.getElementById('rewards').onclick = () => {
+    BR.safeSession.set('barameelRewardsParent', 'screen04.html');
+    BR.safeSession.set('barameelActivePath', 'rewards');
+    BR.goAfter('marks-wallet.html', 'confirm', 180);
   };
   BR.track('my_run_view');
 })();
