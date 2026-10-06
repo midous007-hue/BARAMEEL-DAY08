@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261007-26.0';
+  const VERSION = '20261007-26.1';
   const STORAGE = 'barameel.world.player.v23.6';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -242,8 +242,20 @@
     }catch(e){console.error('[BARAMEEL AUTH]',e);return null;}})();
     return authPromise;
   }
+  function normalizeErrorCode(value=''){
+    let c=String(value||'').trim().toUpperCase();
+    if(!c)return '';
+    c=c.replace(/^ERROR:\s*/,'').replace(/^P0001:\s*/,'').replace(/^POSTGRES ERROR:\s*/,'');
+    if(c.includes('CHECKPOINT_NOT_AT_PHYSICAL_LOCATION'))return 'CHECKPOINT_NOT_AT_PHYSICAL_LOCATION';
+    if(c.includes('GPS_ACCURACY_TOO_LOW'))return 'GPS_ACCURACY_TOO_LOW';
+    if(c.includes('MASTER_QR_INVALID'))return 'MASTER_QR_INVALID';
+    if(c.includes('CHECKPOINT_ALREADY_CLAIMED'))return 'CHECKPOINT_ALREADY_CLAIMED';
+    if(c.includes('CHECKPOINT_LOCATION_REQUIRED'))return 'CHECKPOINT_LOCATION_REQUIRED';
+    if(c.includes('PLAYER_NOT_INITIALIZED'))return 'PLAYER_NOT_INITIALIZED';
+    return c;
+  }
   function friendlyError(code=''){
-    const c=String(code||'').toUpperCase();
+    const c=normalizeErrorCode(code);
     const map={
       NETWORK_ERROR:'CHECK YOUR CONNECTION AND TRY AGAIN.',
       AUTH_UNAVAILABLE:'WE COULDN’T CONNECT YOU. TRY AGAIN.',
@@ -253,7 +265,7 @@
       SCAN_TICKET_REQUIRED:'READYING YOUR SCAN. TRY AGAIN.',
       HTTP_500:'SOMETHING WENT WRONG. TRY AGAIN.',
       HTTP_502:'SOMETHING WENT WRONG. TRY AGAIN.',
-      HTTP_503:'BARAMEEL RUN IS BUSY. TRY AGAIN.',CHECKPOINT_NOT_CONFIGURED:'CHECKPOINT RUN IS NOT ACTIVE YET.',CHECKPOINT_LOCATION_REQUIRED:'LOCATION IS REQUIRED TO CLEAR A CHECKPOINT.',CHECKPOINT_NOT_ACTIVE:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_NOT_FOUND:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_TOO_FAR:'MOVE CLOSER TO THE CHECKPOINT AND TRY AGAIN.',CHECKPOINT_NOT_AT_PHYSICAL_LOCATION:'THIS CHECKPOINT IS NOT AT ITS PHYSICAL LOCATION.',GPS_ACCURACY_TOO_LOW:'GPS SIGNAL IS NOT ACCURATE ENOUGH. MOVE TO AN OPEN AREA AND TRY AGAIN.',MASTER_QR_INVALID:'THIS CHECKPOINT QR IS NOT VALID.',CHECKPOINT_ALREADY_CLAIMED:'YOU ALREADY CLEARED THIS CHECKPOINT.',CHECKPOINT_SCAN_REQUIRED:'SCAN A CHECKPOINT QR FIRST.',RECEIPT_CODE_REQUIRED:'ENTER YOUR RECEIPT CODE.',RECEIPT_CODE_INVALID:'THAT RECEIPT CODE IS NOT VALID.',RECEIPT_CODE_ALREADY_USED:'THAT RECEIPT CODE WAS ALREADY USED.'
+      HTTP_503:'BARAMEEL RUN IS BUSY. TRY AGAIN.',CHECKPOINT_NOT_CONFIGURED:'CHECKPOINT RUN IS NOT ACTIVE YET.',CHECKPOINT_LOCATION_REQUIRED:'LOCATION IS REQUIRED TO CLEAR A CHECKPOINT.',CHECKPOINT_NOT_ACTIVE:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_NOT_FOUND:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_TOO_FAR:'MOVE CLOSER TO THE CHECKPOINT AND TRY AGAIN.',CHECKPOINT_NOT_AT_PHYSICAL_LOCATION:'THIS CHECKPOINT IS NOT AT ITS PHYSICAL LOCATION.',GPS_ACCURACY_TOO_LOW:'GPS SIGNAL IS NOT ACCURATE ENOUGH. MOVE TO AN OPEN AREA AND TRY AGAIN.',MASTER_QR_INVALID:'THIS CHECKPOINT QR IS NOT VALID.',CHECKPOINT_ALREADY_CLAIMED:'YOU ALREADY CLEARED THIS CHECKPOINT.',PLAYER_NOT_INITIALIZED:'PLAYER SETUP IS NOT COMPLETE. OPEN BARAMEEL RUN AGAIN.',CHECKPOINT_SCAN_REQUIRED:'SCAN A CHECKPOINT QR FIRST.',RECEIPT_CODE_REQUIRED:'ENTER YOUR RECEIPT CODE.',RECEIPT_CODE_INVALID:'THAT RECEIPT CODE IS NOT VALID.',RECEIPT_CODE_ALREADY_USED:'THAT RECEIPT CODE WAS ALREADY USED.'
     };
     return map[c]||'SOMETHING WENT WRONG. TRY AGAIN.';
   }
@@ -264,7 +276,7 @@
     try{
       const r=await fetch(API_BASE+path,{method,headers:{'content-type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},body:body?JSON.stringify(body):undefined,cache:'no-store'});
       const data=await r.json().catch(()=>({}));
-      if(!r.ok){console.error('[BARAMEEL API]',path,r.status,data);const code=data.code||data.error||`HTTP_${r.status}`;return {ok:false,...data,code,error:data.error||code,message:data.message||friendlyError(code)};}
+      if(!r.ok){console.error('[BARAMEEL API]',path,r.status,data);const rawCode=data.code||data.error||data.message||`HTTP_${r.status}`;const code=normalizeErrorCode(rawCode)||`HTTP_${r.status}`;return {ok:false,...data,code,error:data.error||code,message:friendlyError(code)};}
       return data;
     }catch(e){console.error('[BARAMEEL API]',path,e);return {ok:false,code:'NETWORK_ERROR',error:'NETWORK_ERROR',message:friendlyError('NETWORK_ERROR')};}
   }
