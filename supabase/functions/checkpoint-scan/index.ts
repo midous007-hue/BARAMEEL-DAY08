@@ -103,14 +103,43 @@ Deno.serve(async (req) => {
   }
 
   if (error) {
-    const raw = String(error.message || "CHECKPOINT_SCAN_FAILED").toUpperCase();
-    const code = raw.includes("CHECKPOINT_NOT_AT_PHYSICAL_LOCATION")
-      ? "CHECKPOINT_NOT_AT_PHYSICAL_LOCATION"
-      : raw.includes("GPS_ACCURACY_TOO_LOW")
-        ? "GPS_ACCURACY_TOO_LOW"
-        : raw.includes("MASTER_QR_INVALID")
-          ? "MASTER_QR_INVALID"
-          : raw;
+    // Postgres RPC errors can expose the stable SQLSTATE separately from the
+    // human message. Normalize all fields so the client never falls back to
+    // a generic error for a known checkpoint validation failure.
+    console.error("[checkpoint-scan] RPC error", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
+    const raw = [
+      error.code,
+      error.message,
+      error.details,
+      error.hint,
+    ].filter(Boolean).join(" ").toUpperCase();
+
+    let code = "CHECKPOINT_SCAN_FAILED";
+    if (raw.includes("CHECKPOINT_NOT_AT_PHYSICAL_LOCATION")) {
+      code = "CHECKPOINT_NOT_AT_PHYSICAL_LOCATION";
+    } else if (raw.includes("GPS_ACCURACY_TOO_LOW")) {
+      code = "GPS_ACCURACY_TOO_LOW";
+    } else if (raw.includes("MASTER_QR_INVALID")) {
+      code = "MASTER_QR_INVALID";
+    } else if (raw.includes("CHECKPOINT_ALREADY_CLAIMED")) {
+      code = "CHECKPOINT_ALREADY_CLAIMED";
+    } else if (raw.includes("CHECKPOINT_LOCATION_REQUIRED")) {
+      code = "CHECKPOINT_LOCATION_REQUIRED";
+    } else if (raw.includes("CHECKPOINT_LOCATION_INACTIVE")) {
+      code = "CHECKPOINT_LOCATION_INACTIVE";
+    } else if (raw.includes("NO_ACTIVE_STAGE")) {
+      code = "NO_ACTIVE_STAGE";
+    } else if (raw.includes("CHECKPOINT_NOT_CONFIGURED")) {
+      code = "CHECKPOINT_NOT_CONFIGURED";
+    } else if (raw.includes("PLAYER_NOT_INITIALIZED")) {
+      code = "PLAYER_NOT_INITIALIZED";
+    }
+
     return json({ ok: false, error: code, code }, 409);
   }
 
