@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261005-23.4">
-<script src="./config.js?v=20261005-23.4"></script>
+<link rel="stylesheet" href="./styles.css?v=20261006-23.7">
+<script src="./config.js?v=20261006-23.7"></script>
 </head>
 <body>
 <main class="stage collection-stage">
-<img class="base" src="./assets/screen06-puzzle.webp?v=20261005-23.4" alt="Collection Puzzle">
+<img class="base" src="./assets/screen06-puzzle.webp?v=20261006-23.7" alt="Collection Puzzle">
 <button id="back" class="collection-back" aria-label="Back to Collection Scan"></button>
 <select id="select" class="collection-select" aria-label="Select collection"></select>
 <div id="collectionName" class="collection-name" aria-hidden="true"></div>
@@ -21,16 +21,50 @@
 <button id="scanMore" class="hotspot" aria-label="Scan More"></button>
 <div id="completeFlash" class="complete-flash"></div>
 <div id="imagePreload"></div>
-</main>
+<style>
+/* COLLECTION PUZZLE — exact geometry for the supplied 954×1649 artwork.
+   The supplied frame is non-uniform; live cells mirror the visible inner windows. */
+.hero-grid{
+  left:46.65%!important;
+  top:38.64%!important;
+  width:46.55%!important;
+  height:19.18%!important;
+  grid-template-columns:32.4% 29.6% 30.2%!important;
+  grid-template-rows:31.0% 31.8% 28.7%!important;
+  column-gap:3.9%!important;
+  row-gap:4.25%!important;
+}
+.points-badge{
+  left:59.55%!important;
+  top:59.25%!important;
+  width:21.4%!important;
+  height:4.35%!important;
+}
+.points-number{
+  font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif!important;
+  font-size:clamp(24px,7.2vw,72px)!important;
+  font-weight:900!important;
+  line-height:.86!important;
+  letter-spacing:-.015em!important;
+  transform:none!important;
+  -webkit-text-stroke:1px #d92f25!important;
+}
+.reward-flash{z-index:120!important}
+</style></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.4"></script>
+<script src="./app.js?v=20261006-23.7"></script>
 <script>
 (async()=>{
   const nameEl=document.getElementById('collectionName'),select=document.getElementById('select');
   const hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs');
   const pointsBadge=document.getElementById('pointsBadge'),pointsNumber=document.getElementById('pointsNumber');
   document.getElementById('back').onclick=()=>{const parent=BR.safeSession.get('barameelCollectionParent')||'screen05.html';BR.goAfter(parent,'back',180)};
-  document.getElementById('myRewards').onclick=()=>BR.goAfter('screen04.html','confirm',180);
+  document.getElementById('myRewards').onclick=()=>{
+    BR.safeSession.set('barameelRewardsParent','screen06.html');
+    BR.safeSession.set('barameelCollectionId',collectionId);
+    BR.safeSession.set('barameelActivePath','collection');
+    BR.goAfter('marks-wallet.html','confirm',180);
+  };
   document.getElementById('scanMore').onclick=()=>{BR.safeSession.set('barameelActivePath','collection');BR.safeSession.set('barameelCollectionId',collectionId);BR.safeSession.set('barameelCollectionParent','screen06.html');BR.goAfter('screen05.html','scan',220)};
   const rewardFlash=document.getElementById('rewardFlash'),rewardFlashImage=document.getElementById('rewardFlashImage');
 
@@ -162,7 +196,7 @@
     rewardFlash.style.setProperty('--flash-art','url("' + src + '")');
     rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
     window.clearTimeout(showReward.timer);
-    showReward.timer=window.setTimeout(()=>rewardFlash.classList.remove('on'),1120);
+    showReward.timer=window.setTimeout(()=>rewardFlash.classList.remove('on'),3200);
   }
 
   async function reveal(points,rarity){
@@ -194,8 +228,18 @@
   }
 
   document.getElementById('back').onclick=()=>{const parent=BR.safeSession.get('barameelCollectionParent')||'screen05.html';BR.goAfter(parent,'back',180)};
-  document.getElementById('myRewards').onclick=()=>BR.goAfter('screen04.html','confirm',180);
-  document.getElementById('scanMore').onclick=()=>{BR.safeSession.set('barameelActivePath','collection');BR.safeSession.set('barameelCollectionId',collectionId);BR.goAfter('screen05.html','scan',220)};
+  document.getElementById('myRewards').onclick=()=>{
+    BR.safeSession.set('barameelRewardsParent','screen06.html');
+    BR.safeSession.set('barameelCollectionId',collectionId);
+    BR.safeSession.set('barameelActivePath','collection');
+    BR.goAfter('marks-wallet.html','confirm',180);
+  };
+  document.getElementById('scanMore').onclick=()=>{
+    BR.safeSession.set('barameelActivePath','collection');
+    BR.safeSession.set('barameelCollectionId',collectionId);
+    BR.safeSession.set('barameelCollectionParent','screen06.html');
+    BR.goAfter('screen05.html','scan',220);
+  };
   BR.track('collection_hunt_view',{collection_id:collectionId});
 })();
 </script>
