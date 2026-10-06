@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — MY RUN</title>
-<link rel="stylesheet" href="./styles.css?v=20261005-23.4">
-<script src="./config.js?v=20261005-23.4"></script>
+<link rel="stylesheet" href="./styles.css?v=20261006-23.6">
+<script src="./config.js?v=20261006-23.6"></script>
 <style>
 .my-run-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#061f27}
 .my-run-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -14,16 +14,16 @@
 .my-run-collection{left:2.8%;top:34.6%;width:46.5%;height:41.2%;border-radius:5%}
 .my-run-checkpoint{left:50.6%;top:34.6%;width:46.4%;height:41.2%;border-radius:5%}
 .my-run-back{left:2.5%;top:1.0%;width:12%;height:7%;z-index:50}
-.my-run-player-name{position:absolute;left:35%;top:27.8%;width:56%;height:4.0%;z-index:35;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}.my-run-value{position:absolute;z-index:35;display:flex;align-items:center;justify-content:center;color:#071a20;font-family:'Righteous','Arial Black',Impact,sans-serif;font-size:clamp(14px,3.9vw,32px);font-weight:400;line-height:1;white-space:nowrap;text-shadow:0 2px 0 rgba(255,255,255,.18);pointer-events:none}
-.my-run-points{left:9.0%;top:86.7%;width:23.5%;height:4.6%}
-.my-run-rank{left:37.2%;top:86.7%;width:25.2%;height:4.6%}
-.my-run-marks{left:69.2%;top:86.7%;width:22.2%;height:4.6%}
+.my-run-player-name{position:absolute;left:35%;top:27.8%;width:56%;height:4.0%;z-index:35;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}.my-run-value{position:absolute;z-index:35;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:clamp(16px,4.35vw,34px);font-weight:900;line-height:1;white-space:nowrap;letter-spacing:.035em;text-shadow:0 2px 0 #071a20,0 0 6px rgba(244,197,47,.22);pointer-events:none}
+.my-run-points{left:9.0%;top:86.55%;width:23.5%;height:4.9%}
+.my-run-rank{left:37.2%;top:86.55%;width:25.2%;height:4.9%}
+.my-run-marks{left:69.2%;top:86.55%;width:22.2%;height:4.9%}
 .my-run-hit:active{transform:scale(.988);filter:brightness(1.08)}
 </style>
 </head>
 <body>
 <main class="my-run-stage">
-<img class="my-run-art" src="./assets/my-run-dashboard.webp?v=20261005-23.4" alt="MY RUN">
+<img class="my-run-art" src="./assets/my-run-dashboard.webp?v=20261006-23.6" alt="MY RUN">
 <button id="back" class="my-run-hit my-run-back" aria-label="Back"></button>
 <button id="collection" class="my-run-hit my-run-collection" aria-label="Collection Hunt"></button>
 <button id="checkpoint" class="my-run-hit my-run-checkpoint" aria-label="Checkpoint Run"></button>
@@ -32,7 +32,7 @@
 <div id="marks" class="my-run-value my-run-marks">0</div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.4"></script>
+<script src="./app.js?v=20261006-23.6"></script>
 <script>
 (async () => {
   await BR.syncPlayer();
