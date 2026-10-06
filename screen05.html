@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — COLLECTION QR</title>
-<link rel="stylesheet" href="./styles.css?v=20261006-23.7">
-<script src="./config.js?v=20261006-23.7"></script>
+<link rel="stylesheet" href="./styles.css?v=20261006-24.0">
+<script src="./config.js?v=20261006-24.0"></script>
 <style>
 .scan-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071c28}
 .scan-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -46,7 +46,7 @@
 <canvas id="scanCanvas" hidden></canvas>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261006-23.7"></script>
+<script src="./app.js?v=20261006-24.0"></script>
 <script>
 (() => {
   const video=document.getElementById('video'),cam=document.getElementById('cameraWindow'),status=document.getElementById('scanStatus');
@@ -196,7 +196,7 @@
   back.onclick=e=>{
     e.preventDefault();
     stop();
-    const parent=BR.safeSession.get('barameelCollectionParent')||'screen04.html';
+    const parent=BR.safeSession.get('barameelRedemptionScan')==='1' ? (BR.safeSession.get('barameelRedemptionParent')||'marks-wallet.html') : (BR.safeSession.get('barameelCollectionParent')||'screen04.html');
     BR.goAfter(parent,'back',180);
   };
   window.addEventListener('pagehide',stop);
