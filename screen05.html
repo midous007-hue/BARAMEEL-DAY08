@@ -33,7 +33,7 @@
 </head>
 <body>
 <main class="scan-stage">
-<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261006-23.7" alt="COLLECTION HUNT — SCAN BARAMEEL QR" fetchpriority="high">
+<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261006-23.9" alt="BARAMEEL QR SCAN" fetchpriority="high">
 <div id="cameraWindow" class="collection-qr-frame">
 <video id="video" playsinline webkit-playsinline muted autoplay></video>
 <div class="scanner-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -42,7 +42,7 @@
 </div>
 <button id="back" class="scan-hit scan-back" aria-label="Back to My Run"></button>
 <button id="open" class="scan-hit scan-open" aria-label="Open camera and scan"></button>
-<button id="collections" class="scan-hit scan-collections" aria-label="Open collection puzzle"></button>
+<button id="collections" class="scan-hit scan-collections" aria-label="Continue"></button>
 <canvas id="scanCanvas" hidden></canvas>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -52,6 +52,7 @@
   const video=document.getElementById('video'),cam=document.getElementById('cameraWindow'),status=document.getElementById('scanStatus');
   const canvas=document.getElementById('scanCanvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});
   const open=document.getElementById('open'),back=document.getElementById('back'),collections=document.getElementById('collections');
+  const redemptionMode=BR.safeSession.get('barameelRedemptionScan')==='1';
   let stream=null,detector=null,raf=0,locked=false,starting=false,ticketId=null,ticketPromise=null,lastBadRaw='',badUntil=0;
 
   function setStatus(text,type=''){
@@ -63,11 +64,11 @@
     if(ticketId)return ticketId;
     if(ticketPromise)return ticketPromise;
     ticketPromise=(async()=>{
-      setStatus('PREPARING COLLECTION SCAN');
+      setStatus(redemptionMode?'PREPARING FINAL REDEMPTION SCAN':'PREPARING COLLECTION SCAN');
       const r=await BR.api('/scan-ticket',{});
       if(r?.ok&&r.ticket_id){
         ticketId=r.ticket_id;
-        setStatus('POINT CAMERA AT THE BARAMEEL QR');
+        setStatus(redemptionMode?'SCAN THE BARAMEEL QR TO UNLOCK REDEMPTION':'POINT CAMERA AT THE BARAMEEL QR');
         return ticketId;
       }
       setStatus(r?.message||BR.friendlyError(r?.code||r?.error||'SCAN_TICKET_UNAVAILABLE'),'error');
@@ -98,7 +99,7 @@
     starting=true;
     const ticket=await ensureTicket();
     if(!ticket){starting=false;return;}
-    BR.play('scan');BR.haptic('scan');setStatus('POINT CAMERA AT THE BARAMEEL QR');
+    BR.play('scan');BR.haptic('scan');setStatus(redemptionMode?'SCAN THE BARAMEEL QR TO UNLOCK REDEMPTION':'POINT CAMERA AT THE BARAMEEL QR');
     if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){
       setStatus('CAMERA NEEDS HTTPS','error');BR.play('error');BR.haptic('error');starting=false;return;
     }
@@ -148,7 +149,15 @@
       setStatus('WRONG QR — SCAN THE BARAMEEL QR','error');BR.play('error');BR.haptic('error');return;
     }
 
-    locked=true;stop();setStatus('VERIFYING BARAMEEL QR');BR.play('scan');BR.haptic('scan');
+    locked=true;stop();setStatus(redemptionMode?'VERIFYING FINAL BARAMEEL QR':'VERIFYING BARAMEEL QR');BR.play('scan');BR.haptic('scan');
+    if(redemptionMode){
+      BR.safeSession.set('barameelRedemptionScanVerified','1');
+      BR.safeSession.remove('barameelRedemptionScan');
+      BR.haptic('reward');BR.play('confirm');BR.flash();
+      setStatus('BARAMEEL QR ACCEPTED','success');
+      setTimeout(()=>BR.go('redeem-rewards.html','confirm',220),320);
+      return;
+    }
     const result=await BR.scanUniversal({ticketId});
 
     if(result?.ok){
@@ -176,10 +185,11 @@
   }
 
   ensureTicket();
+  if(redemptionMode){document.querySelector('.scan-open')?.setAttribute('aria-label','Open final Barameel redemption scanner');document.querySelector('.scan-collections')?.setAttribute('aria-label','Continue to redemption');}
   open.onclick=e=>{e.preventDefault();start()};
   collections.onclick=e=>{
-    e.preventDefault();
-    stop();
+    e.preventDefault();stop();
+    if(redemptionMode){BR.go('redeem-rewards.html','confirm',180);return;}
     const cid=BR.safeSession.get('barameelCollectionId')||'collection01';
     BR.goAfter('screen06.html?collection='+encodeURIComponent(cid),'confirm',180);
   };
