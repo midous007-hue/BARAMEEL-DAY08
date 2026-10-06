@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261006-23.7">
-<script src="./config.js?v=20261006-23.7"></script>
+<link rel="stylesheet" href="./styles.css?v=20261006-23.8">
+<script src="./config.js?v=20261006-23.8"></script>
 </head>
 <body>
 <main class="stage collection-stage">
-<img class="base" src="./assets/screen06-puzzle.webp?v=20261006-23.7" alt="Collection Puzzle">
+<img class="base" src="./assets/screen06-puzzle.webp?v=20261006-23.8" alt="Collection Puzzle">
 <button id="back" class="collection-back" aria-label="Back to Collection Scan"></button>
 <select id="select" class="collection-select" aria-label="Select collection"></select>
 <div id="collectionName" class="collection-name" aria-hidden="true"></div>
@@ -24,17 +24,7 @@
 <style>
 /* COLLECTION PUZZLE — exact geometry for the supplied 954×1649 artwork.
    The supplied frame is non-uniform; live cells mirror the visible inner windows. */
-.hero-grid{
-  left:46.65%!important;
-  top:38.64%!important;
-  width:46.55%!important;
-  height:19.18%!important;
-  grid-template-columns:32.4% 29.6% 30.2%!important;
-  grid-template-rows:31.0% 31.8% 28.7%!important;
-  column-gap:3.9%!important;
-  row-gap:4.25%!important;
-}
-.points-badge{
+.hero-grid{left:45.51%!important;top:38.24%!important;width:50.10%!important;height:21.12%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
   left:59.55%!important;
   top:59.25%!important;
   width:21.4%!important;
@@ -42,23 +32,18 @@
 }
 .points-number{
   font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif!important;
-  font-size:clamp(24px,7.2vw,72px)!important;
-  font-weight:900!important;
-  line-height:.86!important;
-  letter-spacing:-.015em!important;
-  transform:none!important;
-  -webkit-text-stroke:1px #d92f25!important;
+  font-size:clamp(18px,4.25vw,42px)!important;font-weight:900!important;line-height:1!important;letter-spacing:-.02em!important;color:#f6e7ce!important;text-shadow:0 2px 0 #071a20,0 0 5px rgba(246,231,206,.18)!important;transform:none!important;-webkit-text-stroke:1px #071a20!important;
 }
 .reward-flash{z-index:120!important}
 </style></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261006-23.7"></script>
+<script src="./app.js?v=20261006-23.8"></script>
 <script>
 (async()=>{
   const nameEl=document.getElementById('collectionName'),select=document.getElementById('select');
   const hero=document.getElementById('heroGrid'),thumbs=document.getElementById('thumbs');
   const pointsBadge=document.getElementById('pointsBadge'),pointsNumber=document.getElementById('pointsNumber');
-  document.getElementById('back').onclick=()=>{const parent=BR.safeSession.get('barameelCollectionParent')||'screen05.html';BR.goAfter(parent,'back',180)};
+  document.getElementById('back').onclick=()=>{BR.safeSession.remove('barameelCollectionParent');BR.safeSession.set('barameelActivePath','world');BR.goAfter('screen04.html','back',180)};
   document.getElementById('myRewards').onclick=()=>{
     BR.safeSession.set('barameelRewardsParent','screen06.html');
     BR.safeSession.set('barameelCollectionId',collectionId);
@@ -104,31 +89,10 @@
   function pieceCollected(cid,iid,num){return BR.hasPiece(cid,iid,num)}
   function imageComplete(cid,im){return BR.count(cid,im.imageId)>=9}
 
-  function renderHero(im){
-    hero.classList.remove('completed');hero.innerHTML='';hero.style.backgroundImage='';
-    if(!im)return;
-    for(let n=1;n<=9;n++){
-      const collected=pieceCollected(collectionId,im.imageId,n);
-      const cell=document.createElement('div');
-      cell.className='hero-piece '+(collected?'is-collected':'is-missing');
-      crop(cell,im.pieces?.[n-1]);
-      hero.appendChild(cell);
-    }
-    loadMaster(im.masterFile).then(img=>{
-      if(!img)return;
-      const bg='url("' + img.src + '")';
-      [...hero.children].forEach((cell,n)=>{
-        if(cell.classList.contains('is-collected')) cell.style.backgroundImage=bg;
-      });
-      if(imageComplete(collectionId,im)){
-        hero.innerHTML='';
-        hero.classList.add('completed');
-        hero.style.backgroundImage=bg;
-        hero.style.backgroundSize='100% 100%';
-        hero.style.backgroundPosition='center';
-      }
-    });
-  }
+  const HERO_COLS=[{left:0,width:32.8244},{left:33.0153,width:32.0611},{left:65.2672,width:34.7328}]; const HERO_ROWS=[{top:0,height:28.7565},{top:31.6062,height:32.3834},{top:65.0259,height:34.9741}];
+  function syncHeroCrops(){if(!hero.children.length)return;const gw=hero.clientWidth,gh=hero.clientHeight;if(!gw||!gh)return;[...hero.children].forEach((cell,n)=>{const col=n%3,row=Math.floor(n/3),c=HERO_COLS[col],r=HERO_ROWS[row];cell.style.left=c.left+'%';cell.style.top=r.top+'%';cell.style.width=c.width+'%';cell.style.height=r.height+'%';cell.style.backgroundSize=gw+'px '+gh+'px';cell.style.backgroundPosition=(-gw*c.left/100)+'px '+(-gh*r.top/100)+'px';});}
+  function renderHero(im){hero.classList.remove('completed');hero.innerHTML='';hero.style.backgroundImage='';if(!im)return;for(let n=1;n<=9;n++){const collected=pieceCollected(collectionId,im.imageId,n);const cell=document.createElement('div');cell.className='hero-piece '+(collected?'is-collected':'is-missing');hero.appendChild(cell);}loadMaster(im.masterFile).then(img=>{if(!img)return;const bg='url("' + img.src + '")';[...hero.children].forEach(cell=>cell.style.backgroundImage=bg);syncHeroCrops();if(imageComplete(collectionId,im)){hero.innerHTML='';hero.classList.add('completed');hero.style.backgroundImage=bg;hero.style.backgroundSize='100% 100%';hero.style.backgroundPosition='center';}});requestAnimationFrame(syncHeroCrops);}
+  
 
   const positions=[
     [3.04,75.14,17.82,9.95],[22.22,75.14,17.71,9.95],[41.19,75.14,17.71,9.95],[60.27,75.14,17.82,9.95],[79.45,75.14,17.71,9.95],
@@ -240,6 +204,7 @@
     BR.safeSession.set('barameelCollectionParent','screen06.html');
     BR.goAfter('screen05.html','scan',220);
   };
+  window.addEventListener('resize',()=>{if(!hero.classList.contains('completed'))syncHeroCrops()},{passive:true});
   BR.track('collection_hunt_view',{collection_id:collectionId});
 })();
 </script>
