@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHOOSE YOUR AVATAR</title>
-<link rel="stylesheet" href="./styles.css?v=20261006-23.5">
-<script src="./config.js?v=20261006-23.5"></script>
+<link rel="stylesheet" href="./styles.css?v=20261006-23.8">
+<script src="./config.js?v=20261006-23.8"></script>
 <style>
 .avatar-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071b2b}
 .avatar-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -18,8 +18,8 @@
 .avatar-05{left:34.8%;top:62.3%}
 .avatar-06{left:65.5%;top:62.3%}
 .avatar-hit.is-selected{z-index:55}
-.avatar-hit.is-selected::after{content:"";position:absolute;inset:-.25%;border-radius:50%;border:4px dashed #f6c532;box-shadow:0 0 0 2px rgba(7,27,43,.9),0 0 8px rgba(246,197,50,.95),0 0 18px rgba(246,197,50,.72),inset 0 0 7px rgba(246,197,50,.38);animation:avatarLock .24s cubic-bezier(.16,.9,.2,1) both,avatarPulse 1.05s ease-in-out .24s infinite,avatarDash 2.2s linear infinite;pointer-events:none}
-.avatar-hit.is-selected::before{content:"";position:absolute;inset:1.2%;border-radius:50%;background:conic-gradient(from -25deg,transparent 0 8%,rgba(255,255,255,.9) 9% 11%,transparent 12% 34%,rgba(255,255,255,.62) 35% 37%,transparent 38% 100%);mix-blend-mode:screen;animation:avatarShine .7s ease-out .05s both;pointer-events:none}
+.avatar-hit.is-selected::after{content:"";position:absolute;inset:-1.7%;border-radius:50%;border:6px solid #f6c532;box-shadow:0 0 0 3px #071b2b,0 0 0 6px rgba(246,197,50,.92),0 0 14px rgba(246,197,50,.98),0 0 30px rgba(246,197,50,.78),inset 0 0 10px rgba(246,197,50,.45);background:radial-gradient(circle,transparent 67%,rgba(246,197,50,.10) 74%,rgba(246,197,50,.34) 100%);animation:avatarLock .24s cubic-bezier(.16,.9,.2,1) both,avatarPulse 1.05s ease-in-out .24s infinite,avatarDash 2.2s linear infinite;pointer-events:none}
+.avatar-hit.is-selected::before{content:"";position:absolute;inset:5%;border-radius:50%;background:conic-gradient(from -25deg,transparent 0 8%,rgba(255,255,255,.98) 9% 13%,transparent 14% 32%,rgba(255,255,255,.72) 33% 37%,transparent 38% 100%);mix-blend-mode:screen;animation:avatarShine .7s ease-out .05s both;pointer-events:none}
 @keyframes avatarLock{0%{transform:scale(.985);opacity:.2}65%{transform:scale(1.012);opacity:1}100%{transform:scale(1);opacity:1}}
 @keyframes avatarPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.16)}}
 @keyframes avatarDash{to{transform:rotate(360deg)}}
@@ -31,7 +31,7 @@
 </head>
 <body>
 <main class="avatar-stage" id="avatarStage">
-<img class="avatar-art" src="./assets/avatar-selection.webp?v=20261006-23.5" alt="CHOOSE YOUR AVATAR" fetchpriority="high">
+<img class="avatar-art" src="./assets/avatar-selection.webp?v=20261006-23.8" alt="CHOOSE YOUR AVATAR" fetchpriority="high">
 <div id="playerName" class="player-name" aria-live="polite"></div>
 <button class="avatar-hit avatar-01" data-avatar="avatar01" aria-label="Avatar 1"></button>
 <button class="avatar-hit avatar-02" data-avatar="avatar02" aria-label="Avatar 2"></button>
@@ -44,7 +44,7 @@
 <div id="error" class="avatar-error" aria-live="polite"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261006-23.5"></script>
+<script src="./app.js?v=20261006-23.8"></script>
 <script>
 (() => {
   const playerName=document.getElementById('playerName');
