@@ -79,7 +79,12 @@
     if(!id){checkpointValue.textContent='WRONG QR';setStatus('FIND A CHECKPOINT QR','error');BR.play('error');BR.haptic('error');return}
     locked=true;stop();checkpointValue.textContent=id;setStatus('VERIFYING…');BR.play('scan');BR.haptic('scan');
     let pos=null;
-    try{pos=await getPosition()}catch(e){setStatus(e.message==='LOCATION_REQUIRED'?'LOCATION ACCESS NEEDED':'LOCATION NOT SUPPORTED','error');BR.play('error');BR.haptic('error');locked=false;return}
+    if(TEST_MODE){
+      const testCp=(window.BARAMEEL_ROUTE_CONFIG?.checkpoints||[]).find(x=>String(x.id)===id);
+      pos=testCp?{lat:Number(testCp.lat),lng:Number(testCp.lng)}:{lat:31.191153,lng:29.918580};
+    }else{
+      try{pos=await getPosition()}catch(e){setStatus(e.message==='LOCATION_REQUIRED'?'LOCATION ACCESS NEEDED':'LOCATION NOT SUPPORTED','error');BR.play('error');BR.haptic('error');locked=false;return}
+    }
     let result;
     if(TEST_MODE){
       const testPoints=10000;
@@ -159,9 +164,15 @@
     }
   }
   if(TEST_MODE){
+    const params=new URLSearchParams(location.search);
+    const reset=params.get('reset')==='1';
+    if(reset){
+      const keep=(Array.isArray(BR.state?.checkpoints)?BR.state.checkpoints:[]).map(String).filter(x=>x!=='CP01');
+      BR.mergePlayer({checkpoints:keep});
+    }
     setStatus('TEST MODE — GPS BYPASSED');
-    checkpointValue.textContent='TEST CP01';
-    pointsValue.textContent='10,000';
+    checkpointValue.textContent='READY';
+    pointsValue.textContent='—';
     document.title='BARAMEEL RUN — CHECKPOINT SCANNER — TEST';
   }
   open.onclick=e=>{e.preventDefault();start()};
