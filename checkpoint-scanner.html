@@ -32,6 +32,8 @@
 <div class="checkpoint-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <div class="checkpoint-scan-line" aria-hidden="true"></div>
 </div>
+<div id="checkpointValue" class="checkpoint-value">—</div>
+<div id="pointsValue" class="points-value">—</div>
 <div id="status" class="checkpoint-status" aria-live="polite">READY TO SCAN</div>
 <button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back to Route"></button>
 <button id="open" class="checkpoint-scan-hit" aria-label="Open camera and scan checkpoint QR"></button>
@@ -43,6 +45,7 @@
 <script>
 (() => {
   const video=document.getElementById('video'),camera=document.getElementById('camera'),status=document.getElementById('status'),canvas=document.getElementById('canvas');
+  const checkpointValue=document.getElementById('checkpointValue'),pointsValue=document.getElementById('pointsValue');
   const ctx=canvas.getContext('2d',{willReadFrequently:true}),open=document.getElementById('open'),back=document.getElementById('back');
   let stream=null,detector=null,raf=0,starting=false,locked=false,scanBusy=false;
   const checkpointBack=document.getElementById('back');checkpointBack.onclick=()=>{stop();BR.goAfter('route-map.html','back',180)};
@@ -72,21 +75,23 @@
   async function handle(raw){
     if(locked)return;
     const id=parse(raw);
-    if(!id){setStatus('WRONG QR — FIND A CHECKPOINT QR','error');BR.play('error');BR.haptic('error');return}
-    locked=true;stop();setStatus('VERIFYING CHECKPOINT');BR.play('scan');BR.haptic('scan');
+    if(!id){checkpointValue.textContent='WRONG QR';setStatus('FIND A CHECKPOINT QR','error');BR.play('error');BR.haptic('error');return}
+    locked=true;stop();checkpointValue.textContent=id;setStatus('VERIFYING…');BR.play('scan');BR.haptic('scan');
     let pos=null;
     try{pos=await getPosition()}catch(e){setStatus(e.message==='LOCATION_REQUIRED'?'LOCATION ACCESS NEEDED':'LOCATION NOT SUPPORTED','error');BR.play('error');BR.haptic('error');locked=false;return}
     const result=await BR.scanCheckpoint({checkpointId:id,lat:pos.lat,lng:pos.lng});
     if(result?.ok){
       const handoff={...result,checkpoint_id:result.checkpoint_id||id,checkpoint_name:result.checkpoint_name||result.name||id,points_awarded:Number(result.points_awarded??result.points??0)||0};
+      checkpointValue.textContent=handoff.checkpoint_name;
+      pointsValue.textContent=handoff.points_awarded.toLocaleString();
       BR.safeSession.set('barameelCheckpointResult',JSON.stringify(handoff));
       BR.haptic('reward');BR.play('confirm');BR.flash();
-      setStatus('CHECKPOINT CLEARED','success');
+      setStatus('CLEARED','success');
       BR.track('checkpoint_scan_success',{checkpoint_id:id,points:handoff.points_awarded});
       setTimeout(()=>BR.go('checkpoint-found.html','reward',180),320);
     }else{
       const code=result?.code||result?.error||'CHECKPOINT_SCAN_FAILED';
-      setStatus(result?.message||BR.friendlyError(code),'error');BR.play('error');BR.haptic('error');locked=false;
+      setStatus(BR.friendlyError(code),'error');BR.play('error');BR.haptic('error');locked=false;
     }
   }
   async function loop(){
@@ -122,7 +127,9 @@
     try{
       stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
       camera.classList.add('active');video.srcObject=stream;await video.play();await native();starting=false;
-      setStatus('SCAN CHECKPOINT QR');
+      checkpointValue.textContent='READY';
+      pointsValue.textContent='—';
+      setStatus('SCAN QR');
       loop();
     }catch{
       starting=false;
