@@ -1,6 +1,6 @@
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-player-id, x-idempotency-key",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -36,24 +36,33 @@ async function requireUser(req: Request, admin: ReturnType<typeof adminClient>) 
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return json({ error: "METHOD_NOT_ALLOWED" }, 405);
+  if (req.method !== "POST") return json({ ok: false, error: "METHOD_NOT_ALLOWED" }, 405);
 
   const admin = adminClient();
   const user = await requireUser(req, admin);
-  if (!user) return json({ error: "AUTH_REQUIRED" }, 401);
+  if (!user) return json({ ok: false, error: "AUTH_REQUIRED", code: "AUTH_REQUIRED" }, 401);
 
   let body: any = {};
   try { body = await req.json(); }
-  catch { return json({ error: "INVALID_JSON" }, 400); }
+  catch { return json({ ok: false, error: "INVALID_JSON", code: "INVALID_JSON" }, 400); }
 
-  const checkpointId = String(body.checkpoint_id || "").trim().toUpperCase();
+  // New flow: scan an opaque Master QR token.
+  // Legacy checkpoint_id is intentionally retained only for isolated Test Mode.
+  const qrToken = String(body.qr_token || "").trim();
+  const legacyCheckpointId = String(body.checkpoint_id || "").trim().toUpperCase();
   const idempotencyKey = String(body.idempotency_key || crypto.randomUUID()).slice(0, 120);
   const lat = Number(body.lat);
   const lng = Number(body.lng);
+  const accuracy = body.accuracy_meters == null ? null : Number(body.accuracy_meters);
 
-  if (!checkpointId) return json({ ok: false, error: "CHECKPOINT_SCAN_REQUIRED", code: "CHECKPOINT_SCAN_REQUIRED" }, 400);
+  if (!qrToken && !legacyCheckpointId) {
+    return json({ ok: false, error: "MASTER_QR_REQUIRED", code: "MASTER_QR_REQUIRED" }, 400);
+  }
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return json({ ok: false, error: "CHECKPOINT_LOCATION_REQUIRED", code: "CHECKPOINT_LOCATION_REQUIRED" }, 400);
+  }
+  if (accuracy !== null && !Number.isFinite(accuracy)) {
+    return json({ ok: false, error: "GPS_ACCURACY_INVALID", code: "GPS_ACCURACY_INVALID" }, 400);
   }
 
   const { data: player, error: playerError } = await admin
@@ -62,18 +71,46 @@ Deno.serve(async (req) => {
     .eq("auth_user_id", user.id)
     .single();
 
-  if (playerError || !player) return json({ error: "PLAYER_NOT_INITIALIZED" }, 409);
+  if (playerError || !player) {
+    return json({ ok: false, error: "PLAYER_NOT_INITIALIZED", code: "PLAYER_NOT_INITIALIZED" }, 409);
+  }
 
-  const { data, error } = await admin.rpc("claim_checkpoint", {
-    p_player_id: player.id,
-    p_checkpoint_id: checkpointId,
-    p_idempotency_key: idempotencyKey,
-    p_lat: lat,
-    p_lng: lng,
-  });
+  let data: any;
+  let error: any;
+
+  if (qrToken) {
+    const result = await admin.rpc("resolve_and_claim_master_checkpoint", {
+      p_player_id: player.id,
+      p_qr_token: qrToken,
+      p_lat: lat,
+      p_lng: lng,
+      p_accuracy_meters: accuracy,
+      p_idempotency_key: idempotencyKey,
+    });
+    data = result.data;
+    error = result.error;
+  } else {
+    // Legacy path remains only so the existing isolated test flow does not break.
+    const result = await admin.rpc("claim_checkpoint", {
+      p_player_id: player.id,
+      p_checkpoint_id: legacyCheckpointId,
+      p_idempotency_key: idempotencyKey,
+      p_lat: lat,
+      p_lng: lng,
+    });
+    data = result.data;
+    error = result.error;
+  }
 
   if (error) {
-    const code = String(error.message || "CHECKPOINT_SCAN_FAILED").toUpperCase();
+    const raw = String(error.message || "CHECKPOINT_SCAN_FAILED").toUpperCase();
+    const code = raw.includes("CHECKPOINT_NOT_AT_PHYSICAL_LOCATION")
+      ? "CHECKPOINT_NOT_AT_PHYSICAL_LOCATION"
+      : raw.includes("GPS_ACCURACY_TOO_LOW")
+        ? "GPS_ACCURACY_TOO_LOW"
+        : raw.includes("MASTER_QR_INVALID")
+          ? "MASTER_QR_INVALID"
+          : raw;
     return json({ ok: false, error: code, code }, 409);
   }
 
@@ -83,18 +120,27 @@ Deno.serve(async (req) => {
     .eq("id", player.id)
     .single();
 
-  if (freshPlayerError || !freshPlayer) return json({ ok: false, error: "PLAYER_STATE_FAILED", code: "PLAYER_STATE_FAILED" }, 500);
+  if (freshPlayerError || !freshPlayer) {
+    return json({ ok: false, error: "PLAYER_STATE_FAILED", code: "PLAYER_STATE_FAILED" }, 500);
+  }
 
-  const { data: claims, error: claimsError } = await admin
-    .from("checkpoint_claims")
-    .select("checkpoint_id,points_awarded")
-    .eq("player_id", player.id)
-    .order("created_at", { ascending: true });
+  const { data: claims, error: claimsError } = qrToken
+    ? await admin
+        .from("checkpoint_challenge_claims")
+        .select("challenge_id,points_awarded")
+        .eq("player_id", player.id)
+        .order("created_at", { ascending: true })
+    : await admin
+        .from("checkpoint_claims")
+        .select("checkpoint_id,points_awarded")
+        .eq("player_id", player.id)
+        .order("created_at", { ascending: true });
 
-  if (claimsError) return json({ ok: false, error: "CHECKPOINT_STATE_FAILED", code: "CHECKPOINT_STATE_FAILED" }, 500);
+  if (claimsError) {
+    return json({ ok: false, error: "CHECKPOINT_STATE_FAILED", code: "CHECKPOINT_STATE_FAILED" }, 500);
+  }
 
-  const checkpointIds = (claims || []).map((row: any) => String(row.checkpoint_id));
-  const { data: rank } = await admin.rpc("player_rank", { p_player_id: player.id });
+  const claimsList = (claims || []).map((row: any) => String(row.challenge_id || row.checkpoint_id));
 
   return json({
     ...data,
@@ -105,9 +151,10 @@ Deno.serve(async (req) => {
       runner: player.runner,
       points: Number(freshPlayer.points || 0),
       weeklyPoints: Number(freshPlayer.weekly_points || 0),
-      checkpoints: checkpointIds,
-      rank: Number(rank || 0),
+      checkpoints: claimsList,
+      challengeClaims: claimsList,
     },
-    checkpoints: checkpointIds,
+    checkpoints: claimsList,
+    challenge_claims: claimsList,
   });
 });
