@@ -85,6 +85,17 @@
     return m;
   }
 
+  function unlockedCheckpoints(){
+    const ordered=[...checkpoints].sort((a,b)=>{
+      const ao=Number.isFinite(a.order)?a.order:9999,bo=Number.isFinite(b.order)?b.order:9999;
+      return ao-bo;
+    });
+    // Discovery is progressive, but collection is not sequential:
+    // initially CP01 is visible; every claimed checkpoint unlocks one more.
+    const unlockCount=Math.min(ordered.length,Math.max(1,discovered.size+1));
+    return ordered.slice(0,unlockCount);
+  }
+
   function renderMap(pos){
     if(!map){
       map=L.map('routeMap',{zoomControl:false,attributionControl:true,scrollWheelZoom:false,doubleClickZoom:false,touchZoom:false}).setView([pos.lat,pos.lng],15);
@@ -93,7 +104,8 @@
       if(destination){
         marker(destination.lat,destination.lng,'barameel',destination.name);
       }
-      checkpoints.forEach(cp=>markers.push({cp,marker:marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CLEARED':'CHECKPOINT')}));
+      const unlocked=unlockedCheckpoints();
+      unlocked.forEach(cp=>markers.push({cp,marker:marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CLEARED':'AVAILABLE')}));
     }else{
       playerMarker.setLatLng([pos.lat,pos.lng]);playerMarker.setIcon(playerIcon());
     }
@@ -103,17 +115,18 @@
     renderMap(pos);
     current.textContent='LIVE • '+pos.lat.toFixed(5)+', '+pos.lng.toFixed(5);
 
-    const candidates=checkpoints.filter(cp=>!discovered.has(cp.id));const hasOrder=candidates.some(cp=>Number.isFinite(cp.order));const available=candidates.map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>hasOrder&&Number.isFinite(a.order)&&Number.isFinite(b.order)?a.order-b.order:a.distance-b.distance);
+    const unlocked=unlockedCheckpoints();
+    const available=unlocked.filter(cp=>!discovered.has(cp.id)).map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>a.distance-b.distance);
     const total=checkpoints.length,done=checkpoints.filter(cp=>discovered.has(cp.id)).length;
     const progress=total?Math.min(100,Math.round(done/total*100)):0;
     fill.style.width=progress+'%';
     BR.mergePlayer({routeProgress:progress,routeDistance:available[0]?.distance??null,nextCheckpoint:available[0]?.id??null});
     if(available.length){
-      next.textContent=available[0].name;
-      distance.textContent=formatDistance(available[0].distance);
-      status.textContent='NEXT CHECKPOINT READY';
+      next.textContent=available.length===1?available[0].name:(available[0].name+' + '+(available.length-1)+' MORE');
+      distance.textContent=available.length===1?formatDistance(available[0].distance):(available.length+' AVAILABLE');
+      status.textContent=available.length===1?'CHECKPOINT AVAILABLE':'CHOOSE ANY AVAILABLE CHECKPOINT';
       status.classList.remove('route-error');
-      setAction('GO TO CHECKPOINT',true);
+      setAction('OPEN CHECKPOINT SCANNER',true,true);
       action.onclick=()=>BR.goAfter('checkpoint-scanner.html','scan',220);
       return;
     }
@@ -127,7 +140,7 @@
         setAction('ARRIVE AT BARAMEEL',true,true);
         action.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
       }else{
-        status.textContent='ALL CHECKPOINTS CLEARED • HEAD TO BARAMEEL';
+        status.textContent='HEAD TO BARAMEEL ANYTIME';
         setAction('REFRESH LOCATION',true,false);
         action.onclick=()=>{BR.play('tap');BR.haptic('tap');requestLocation()};
       }
