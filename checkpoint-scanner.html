@@ -48,6 +48,7 @@
   const checkpointValue=document.getElementById('checkpointValue'),pointsValue=document.getElementById('pointsValue');
   const ctx=canvas.getContext('2d',{willReadFrequently:true}),open=document.getElementById('open'),back=document.getElementById('back');
   let stream=null,detector=null,raf=0,starting=false,locked=false,scanBusy=false;
+  const TEST_MODE=new URLSearchParams(location.search).get('test')==='1';
   const checkpointBack=document.getElementById('back');checkpointBack.onclick=()=>{stop();BR.goAfter('route-map.html','back',180)};
 
   function setStatus(text,type=''){status.textContent=text;status.className='checkpoint-status '+type}
@@ -79,7 +80,26 @@
     locked=true;stop();checkpointValue.textContent=id;setStatus('VERIFYING…');BR.play('scan');BR.haptic('scan');
     let pos=null;
     try{pos=await getPosition()}catch(e){setStatus(e.message==='LOCATION_REQUIRED'?'LOCATION ACCESS NEEDED':'LOCATION NOT SUPPORTED','error');BR.play('error');BR.haptic('error');locked=false;return}
-    const result=await BR.scanCheckpoint({checkpointId:id,lat:pos.lat,lng:pos.lng});
+    let result;
+    if(TEST_MODE){
+      const testPoints=10000;
+      const existing=Array.isArray(BR.state?.checkpoints)?BR.state.checkpoints.map(String):[];
+      const already=existing.includes(id);
+      if(already){
+        result={ok:false,code:'CHECKPOINT_ALREADY_CLAIMED',error:'CHECKPOINT_ALREADY_CLAIMED'};
+      }else{
+        BR.mergePlayer({
+          checkpoints:[...existing,id],
+          points:Number(BR.state?.points||0)+testPoints,
+          weeklyPoints:Number(BR.state?.weeklyPoints||0)+testPoints,
+          routeProgress:0,
+          nextCheckpoint:null
+        });
+        result={ok:true,checkpoint_id:id,checkpoint_name:id,points_awarded:testPoints,test_mode:true};
+      }
+    }else{
+      result=await BR.scanCheckpoint({checkpointId:id,lat:pos.lat,lng:pos.lng});
+    }
     if(result?.ok){
       const handoff={...result,checkpoint_id:result.checkpoint_id||id,checkpoint_name:result.checkpoint_name||result.name||id,points_awarded:Number(result.points_awarded??result.points??0)||0};
       checkpointValue.textContent=handoff.checkpoint_name;
@@ -137,6 +157,12 @@
       setStatus(inApp?'OPEN IN SAFARI / CHROME TO USE THE CAMERA':'CAMERA ACCESS OFF — ENABLE CAMERA IN BROWSER SETTINGS','error');
       BR.play('error');BR.haptic('error');
     }
+  }
+  if(TEST_MODE){
+    setStatus('TEST MODE — GPS BYPASSED');
+    checkpointValue.textContent='TEST CP01';
+    pointsValue.textContent='10,000';
+    document.title='BARAMEEL RUN — CHECKPOINT SCANNER — TEST';
   }
   open.onclick=e=>{e.preventDefault();start()};
 
