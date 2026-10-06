@@ -25,10 +25,11 @@
 /* COLLECTION PUZZLE — exact geometry for the supplied 954×1649 artwork.
    The supplied frame is non-uniform; live cells mirror the visible inner windows. */
 .hero-grid{left:45.51%!important;top:38.24%!important;width:50.10%!important;height:21.12%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
-  left:59.55%!important;
-  top:59.25%!important;
-  width:21.4%!important;
-  height:4.35%!important;
+  left:61.0%!important;
+  top:64.4%!important;
+  width:20.5%!important;
+  height:4.2%!important;
+  filter:none!important;
 }
 .points-number{
   font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif!important;
@@ -191,7 +192,7 @@
     BR.safeSession.remove('barameelLastScan');
   }
 
-  document.getElementById('back').onclick=()=>{const parent=BR.safeSession.get('barameelCollectionParent')||'screen05.html';BR.goAfter(parent,'back',180)};
+  document.getElementById('back').onclick=()=>{BR.safeSession.remove('barameelCollectionParent');BR.safeSession.set('barameelActivePath','world');BR.goAfter('screen04.html','back',180)};
   document.getElementById('myRewards').onclick=()=>{
     BR.safeSession.set('barameelRewardsParent','screen06.html');
     BR.safeSession.set('barameelCollectionId',collectionId);
