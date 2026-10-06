@@ -93,11 +93,7 @@ button,input,select{font:inherit}
 .world-nav{z-index:20}
 .hub-link{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:filter .12s ease,transform .12s ease}
 .hub-link:active{filter:brightness(1.12);transform:scale(.985)}
-.world-hub-stage[data-active="run"] .world-art{filter:saturate(1.05)}
-.world-hub-stage[data-active="duo"] .world-art{filter:saturate(1.04)}
-.world-hub-stage[data-active="menu"] .world-art{filter:saturate(1.05)}
-.world-hub-stage[data-active="post"] .world-art{filter:saturate(1.04)}
-.world-hub-stage[data-active="profile"] .world-art{filter:saturate(1.03)}
+
 @keyframes world-art-breathe{from{transform:scale(1.008) translate3d(var(--mx),var(--my),0)}to{transform:scale(1.014) translate3d(var(--mx),calc(var(--my) - .25%),0)}}
 @keyframes world-ambient{0%,100%{opacity:.42;transform:scale(.99)}50%{opacity:.82;transform:scale(1.025)}}
 @keyframes world-scan{from{background-position:0 0}to{background-position:0 100px}}
