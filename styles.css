@@ -308,7 +308,26 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .world-hub-stage .hub-link[data-section].is-active::after{inset:-1.2%!important;animation:card-shine .58s ease-out 0s 2 both!important}
 .world-hub-stage .hub-link[data-section].is-active::before{animation:card-lock .46s cubic-bezier(.16,.86,.2,1) both,card-glow-loop 1.05s ease-in-out .18s 2 both!important}
 @keyframes card-glow-loop{0%,100%{opacity:.98;filter:brightness(1)}50%{opacity:.66;filter:brightness(1.12)}}
-@media (prefers-reduced-motion:reduce){.world-hub-stage .hub-link[data-section].is-active::before,.world-hub-stage .hub-link[data-section].is-active::after{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.world-hub-stage .hub-link[data-section].is-active::before{
+  animation:card-lock .46s cubic-bezier(.16,.86,.2,1) both,card-glow-loop 1.05s ease-in-out .18s 2!important;
+  border-color:#f4c52f!important;
+  box-shadow:0 0 0 2px #071b2b,0 0 12px rgba(244,197,47,.88),0 0 24px rgba(239,45,36,.46);
+}
+.world-hub-stage .hub-link[data-section].is-active::after{
+  animation:card-shine .58s ease-out 0s 1 both!important;
+  opacity:.95!important;
+}
+.world-hub-stage .hub-link[data-section]::before{
+  /* The artwork title is the visual target; the hotspot remains full-card for reliable touch. */
+  inset:3% 6% 45% 6%!important;
+  border-radius:10%!important;
+}
+.world-hub-stage .hub-collection::before{clip-path:polygon(7% 10%,92% 5%,96% 42%,86% 73%,34% 78%,8% 58%)}
+.world-hub-stage .hub-run::before{clip-path:polygon(7% 10%,94% 4%,97% 42%,84% 75%,34% 78%,7% 58%)}
+.world-hub-stage .hub-duo::before{clip-path:polygon(7% 10%,94% 4%,97% 42%,84% 75%,34% 78%,7% 58%)}
+.world-hub-stage .hub-menu::before{clip-path:polygon(7% 10%,94% 4%,97% 42%,84% 75%,34% 78%,7% 58%)}
+.world-hub-stage .hub-post::before{clip-path:polygon(7% 10%,94% 4%,97% 42%,84% 75%,34% 78%,7% 58%)}
+.world-hub-stage .hub-profile::before{clip-path:none;inset:2% 3%!important}}
 
 .haptic-pulse{animation:barameel-haptic-pulse .14s ease-out both}
 @keyframes barameel-haptic-pulse{0%{filter:brightness(1)}45%{filter:brightness(1.07)}100%{filter:brightness(1)}}
