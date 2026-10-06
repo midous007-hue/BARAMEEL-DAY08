@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHECKPOINT SCANNER</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261006-25.0">
-<script src="./config.js?v=20261006-25.0"></script>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.0">
+<script src="./config.js?v=20261007-26.0"></script>
 <style>
 .checkpoint-camera{position:absolute;left:43.4%;top:46.7%;width:51.8%;height:18.8%;z-index:42;overflow:hidden;pointer-events:none}
 .checkpoint-camera video{position:absolute;left:7.0%;top:8.0%;width:86.0%;height:84.0%;object-fit:cover;border-radius:5px;background:#071b2b}
@@ -26,7 +26,7 @@
 </head>
 <body>
 <main class="flow-stage art-948x1659">
-<img class="flow-art" src="./assets/checkpoint-scanner.webp?v=20261006-25.0" alt="SCAN CHECKPOINT QR" fetchpriority="high">
+<img class="flow-art" src="./assets/checkpoint-scanner.webp?v=20261007-26.0" alt="SCAN CHECKPOINT QR" fetchpriority="high">
 <div id="camera" class="checkpoint-camera">
 <video id="video" playsinline webkit-playsinline muted autoplay></video>
 <div class="checkpoint-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -41,7 +41,7 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script src="./app.js?v=20261006-25.0"></script>
+<script src="./app.js?v=20261007-26.0"></script>
 <script>
 (() => {
   const video=document.getElementById('video'),camera=document.getElementById('camera'),status=document.getElementById('status'),canvas=document.getElementById('canvas');
@@ -61,13 +61,15 @@
   function parse(raw){
     const s=decodeURIComponent(String(raw||'').trim());
     const m=s.match(/^BARAMEEL[-_:]?CHECKPOINT[-_:]?([A-Z0-9_-]+)$/i);
-    return m?m[1]:null;
+    if(m)return {legacyId:m[1],qrToken:null};
+    if(/^BRM-Q1-[A-Z0-9_-]+$/i.test(s))return {legacyId:null,qrToken:s};
+    return null;
   }
   function getPosition(){
     return new Promise((resolve,reject)=>{
       if(!navigator.geolocation)return reject(new Error('LOCATION_NOT_SUPPORTED'));
       navigator.geolocation.getCurrentPosition(
-        p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude}),
+        p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:Number(p.coords.accuracy)}),
         ()=>reject(new Error('LOCATION_REQUIRED')),
         {enableHighAccuracy:true,timeout:10000,maximumAge:10000}
       );
@@ -75,13 +77,15 @@
   }
   async function handle(raw){
     if(locked)return;
-    const id=parse(raw);
-    if(!id){checkpointValue.textContent='WRONG QR';setStatus('FIND A CHECKPOINT QR','error');BR.play('error');BR.haptic('error');return}
-    locked=true;stop();checkpointValue.textContent=id;setStatus('VERIFYING…');BR.play('scan');BR.haptic('scan');
+    const parsed=parse(raw);
+    if(!parsed){checkpointValue.textContent='WRONG QR';setStatus('FIND A CHECKPOINT QR','error');BR.play('error');BR.haptic('error');return}
+    const id=parsed.legacyId;
+    const qrToken=parsed.qrToken;
+    locked=true;stop();checkpointValue.textContent=id||'VERIFYING';setStatus('VERIFYING…');BR.play('scan');BR.haptic('scan');
     let pos=null;
     if(TEST_MODE){
       const testCp=(window.BARAMEEL_ROUTE_CONFIG?.checkpoints||[]).find(x=>String(x.id)===id);
-      pos=testCp?{lat:Number(testCp.lat),lng:Number(testCp.lng)}:{lat:31.191153,lng:29.918580};
+      pos=testCp?{lat:Number(testCp.lat),lng:Number(testCp.lng),accuracy:5}:{lat:31.191153,lng:29.918580,accuracy:5};
     }else{
       try{pos=await getPosition()}catch(e){setStatus(e.message==='LOCATION_REQUIRED'?'LOCATION ACCESS NEEDED':'LOCATION NOT SUPPORTED','error');BR.play('error');BR.haptic('error');locked=false;return}
     }
@@ -103,7 +107,7 @@
         result={ok:true,checkpoint_id:id,checkpoint_name:id,points_awarded:testPoints,test_mode:true};
       }
     }else{
-      result=await BR.scanCheckpoint({checkpointId:id,lat:pos.lat,lng:pos.lng});
+      result=await BR.scanCheckpoint({checkpointId:id,qrToken,lat:pos.lat,lng:pos.lng,accuracyMeters:pos.accuracy});
     }
     if(result?.ok){
       const handoff={...result,checkpoint_id:result.checkpoint_id||id,checkpoint_name:result.checkpoint_name||result.name||id,points_awarded:Number(result.points_awarded??result.points??0)||0};
