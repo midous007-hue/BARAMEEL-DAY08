@@ -61,7 +61,7 @@
   };
 
   document.getElementById('info').onclick=()=>BARAMEEL_FLOW.go(parent,'back');
-  document.getElementById('redeem').onclick=()=>BARAMEEL_FLOW.go('redeem-rewards.html','tap');
+  document.getElementById('redeem').onclick=()=>{BR.safeSession.set('barameelRedemptionScan','1');BR.safeSession.set('barameelRedemptionParent','marks-wallet.html');BARAMEEL_FLOW.go('screen05.html','scan');};
 
   const convert=document.getElementById('convert');
   let converting=false;
