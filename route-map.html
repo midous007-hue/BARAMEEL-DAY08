@@ -7,7 +7,7 @@
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
 <link rel="stylesheet" href="./barameel-flow.css?v=20261006-23.6">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="./config.js?v=20261006-23.6"></script>
+<script src="./config.js?v=20261006-25.0"></script>
 <style>
 #routeMap{position:absolute;left:32.9%;top:28.0%;width:59.9%;height:19.7%;z-index:20;overflow:hidden;border-radius:4.0%;isolation:isolate;background:#071b2b;box-shadow:inset 0 0 0 3px rgba(246,231,206,.9),inset 0 0 0 6px rgba(244,197,47,.28),0 6px 14px rgba(0,0,0,.4)}
 #routeMap .leaflet-container{width:100%;height:100%;background:#071b2b;filter:saturate(.76) contrast(.94) brightness(.9) sepia(.08)}
@@ -32,7 +32,7 @@
 </head>
 <body>
 <main class="flow-stage art-948x1659">
-<img class="flow-art" src="./assets/route-map.webp?v=20261006-23.6" alt="BARAMEEL RUN CHECKPOINT RUN" fetchpriority="high">
+<img class="flow-art" src="./assets/route-map.webp?v=20261006-25.0" alt="BARAMEEL RUN CHECKPOINT RUN" fetchpriority="high">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="currentLocation" class="route-field">LOCATING…</div>
 <div id="nextCheckpoint" class="route-field">LOADING…</div>
@@ -127,7 +127,7 @@
       status.textContent=available.length===1?'CHECKPOINT AVAILABLE':'CHOOSE ANY AVAILABLE CHECKPOINT';
       status.classList.remove('route-error');
       setAction('OPEN CHECKPOINT SCANNER',true,true);
-      action.onclick=()=>BR.goAfter('checkpoint-scanner.html','scan',220);
+      action.onclick=()=>BR.goAfter('checkpoint-scanner.html?v=20261006-25.0','scan',220);
       return;
     }
 
