@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261007-26.1';
+  const VERSION = '20261007-26.2';
   const STORAGE = 'barameel.world.player.v23.6';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -276,7 +276,7 @@
     try{
       const r=await fetch(API_BASE+path,{method,headers:{'content-type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},body:body?JSON.stringify(body):undefined,cache:'no-store'});
       const data=await r.json().catch(()=>({}));
-      if(!r.ok){console.error('[BARAMEEL API]',path,r.status,data);const rawCode=data.code||data.error||data.message||`HTTP_${r.status}`;const code=normalizeErrorCode(rawCode)||`HTTP_${r.status}`;return {ok:false,...data,code,error:data.error||code,message:friendlyError(code)};}
+      if(!r.ok){console.error('[BARAMEEL API]',path,r.status,data);const rawCode=[data.code,data.error,data.message].filter(Boolean).join(' ');const code=normalizeErrorCode(rawCode)||`HTTP_${r.status}`;return {ok:false,...data,code,error:data.error||code,message:friendlyError(code)};}
       return data;
     }catch(e){console.error('[BARAMEEL API]',path,e);return {ok:false,code:'NETWORK_ERROR',error:'NETWORK_ERROR',message:friendlyError('NETWORK_ERROR')};}
   }
