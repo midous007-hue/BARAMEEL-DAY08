@@ -1,9 +1,37 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><link rel="stylesheet" href="./barameel-flow.css?v=20261006-23.8"><script src="./config.js?v=20261006-23.8"></script></head><body><main class="flow-stage"><img class="flow-art" src="./assets/marks-wallet.webp" alt="BARAMEEL RUN" fetchpriority="high"><div class="arcade-shine"></div><button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button><div id="points" class="flow-data flow-number wallet-number" style="left:10%;top:45.2%;width:34%;height:4.2%;text-align:center">0</div><div id="marks" class="flow-data flow-number wallet-number" style="left:59%;top:45.2%;width:32%;height:4.2%;text-align:center">0</div><button id="convert" class="flow-hit" style="left:55%;top:53%;width:40%;height:7%" aria-label="Convert Now"></button><button id="info" class="flow-hit" style="left:24%;top:84%;width:52%;height:7%" aria-label="What are Marks"></button></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261006-23.8"></script><script src="./barameel-flow.js?v=20261006-23.8"></script><style>.wallet-number{color:#071a20!important;font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif!important;font-size:clamp(20px,3.8vw,40px)!important;font-weight:900!important;line-height:.92!important;letter-spacing:.015em!important;text-shadow:0 2px 0 rgba(246,231,206,.72)!important;-webkit-text-stroke:1px rgba(246,231,206,.42)!important;display:flex!important;align-items:center!important;justify-content:center!important}</style><script>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><link rel="stylesheet" href="./barameel-flow.css?v=20261006-23.9"><script src="./config.js?v=20261006-23.9"></script></head><body><main class="flow-stage"><img class="flow-art" src="./assets/marks-wallet.webp" alt="BARAMEEL RUN" fetchpriority="high"><div class="arcade-shine"></div>
+<div id="playerAvatar" class="player-avatar" aria-hidden="true"></div>
+<div id="playerName" class="player-name" aria-live="polite"></div>
+<button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button>
+<div id="points" class="flow-data flow-number wallet-number" style="left:10%;top:44.72%;width:33%;height:4.0%;text-align:center">0</div>
+<div id="marks" class="flow-data flow-number wallet-number" style="left:57%;top:44.72%;width:33%;height:4.0%;text-align:center">—</div>
+<button id="convert" class="flow-hit" style="left:49.0%;top:49.0%;width:44.0%;height:6.4%" aria-label="Convert Points To Marks"></button>
+<button id="redeem" class="flow-hit" style="left:8.0%;top:87.35%;width:84.0%;height:7.3%" aria-label="Redeem Rewards"></button>
+<button id="info" class="flow-hit" style="left:3%;top:92%;width:19%;height:5%" aria-label="Back"></button></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261006-23.9"></script><script src="./barameel-flow.js?v=20261006-23.9"></script><style>
+.wallet-number{color:#071a20!important;font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif!important;font-size:clamp(17px,3.05vw,31px)!important;font-weight:900!important;line-height:.92!important;letter-spacing:.01em!important;text-shadow:0 1px 0 #f6e7ce,0 0 3px rgba(255,255,255,.72)!important;-webkit-text-stroke:.45px #f6e7ce!important;display:flex!important;align-items:center!important;justify-content:center!important}
+.player-name{position:absolute;left:79.4%;top:2.58%;width:14.0%;height:3.25%;z-index:40;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(7px,1.55vw,14px)/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.01em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:1px 1px 0 #071a20,0 0 3px #071a20;pointer-events:none}
+.player-avatar{position:absolute;left:73.35%;top:2.38%;width:6.25%;aspect-ratio:1;z-index:41;border-radius:50%;overflow:hidden;pointer-events:none;background-repeat:no-repeat;background-color:#071a20;box-shadow:0 0 0 2px #f4c52f,0 0 7px rgba(244,197,47,.55)}
+</style><script>
 (async()=>{
   await BR.syncPlayer().catch(()=>null);
   const parent=BR.safeSession.get('barameelRewardsParent')||'leaderboard.html';
   const collectionId=BR.safeSession.get('barameelCollectionId')||'collection01';
 
+  const avatarSource='./assets/avatar-selection.webp?v=20261006-23.9';
+  const avatarCrop={
+    avatar01:{left:3.5,top:43.1},avatar02:{left:34.8,top:43.1},avatar03:{left:65.7,top:43.2},
+    avatar04:{left:3.9,top:62.5},avatar05:{left:34.8,top:62.3},avatar06:{left:65.5,top:62.3}
+  };
+  function syncIdentity(){
+    const name=String(BR.state?.nickname||'PLAYER').trim().toUpperCase()||'PLAYER';
+    document.getElementById('playerName').textContent=name;
+    const avatar=BR.selectedAvatar();
+    const crop=avatarCrop[avatar]||avatarCrop.avatar01;
+    const el=document.getElementById('playerAvatar');
+    const scale=el.clientWidth/(948*.306);
+    el.style.backgroundImage='url("'+avatarSource+'")';
+    el.style.backgroundSize=(scale*948)+'px '+(scale*1659)+'px';
+    el.style.backgroundPosition=(-crop.left/100*948*scale)+'px '+(-crop.top/100*1659*scale)+'px';
+  }
   async function loadWallet(){
     try{
       const r=await BR.api('/wallet',{});
@@ -11,25 +39,29 @@
         const serverPoints=Number(r.points??r.points_remaining??0);
         const localPoints=Number(BR.state?.points||0);
         const points=Math.max(serverPoints,localPoints);
-        document.getElementById('points').textContent=points.toLocaleString();
         const currentMarks=Number(r.marks??r.marks_total??0);
-        const marksToReceive=Math.floor(points/1000);
-        document.getElementById('marks').textContent=marksToReceive.toLocaleString();
+        document.getElementById('points').textContent=points.toLocaleString();
+        document.getElementById('marks').textContent='—';
         document.getElementById('marks').dataset.walletTotal=String(currentMarks);
         return;
       }
     }catch{}
-    const fallbackPoints=Number(BR.state?.points||0);document.getElementById('points').textContent=fallbackPoints.toLocaleString();document.getElementById('marks').textContent=Math.floor(fallbackPoints/1000).toLocaleString();
+    const fallbackPoints=Number(BR.state?.points||0);
+    document.getElementById('points').textContent=fallbackPoints.toLocaleString();
+    document.getElementById('marks').textContent='—';
   }
 
   await loadWallet();
+  syncIdentity();
+  new ResizeObserver(syncIdentity).observe(document.getElementById('playerAvatar'));
 
   document.getElementById('back').onclick=()=>{
     BR.safeSession.remove('barameelRewardsParent');
     BARAMEEL_FLOW.go(parent,'back');
   };
 
-  document.getElementById('info').onclick=()=>BARAMEEL_FLOW.go('barameel-marks.html','tap');
+  document.getElementById('info').onclick=()=>BARAMEEL_FLOW.go(parent,'back');
+  document.getElementById('redeem').onclick=()=>BARAMEEL_FLOW.go('redeem-rewards.html','tap');
 
   const convert=document.getElementById('convert');
   let converting=false;
@@ -46,7 +78,8 @@
         const marks=Number(r.marks_total??0);
         BR.mergePlayer({points:remaining});
         document.getElementById('points').textContent=remaining.toLocaleString();
-        document.getElementById('marks').textContent=marks.toLocaleString();
+        const added=Number(r.marks_added??0);
+        document.getElementById('marks').textContent=added>0?added.toLocaleString():'—';
         BARAMEEL_FLOW.fx('reward');
       }else BARAMEEL_FLOW.fx('error');
     }catch{BARAMEEL_FLOW.fx('error')}
