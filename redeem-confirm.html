@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>BARAMEEL RUN — CONFIRM REDEMPTION</title>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261006-23.9">
+<script src="./config.js?v=20261006-23.9"></script>
+<style>
+body{background:#071a20}.stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071a20}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.3)}
+.title{position:absolute;left:8%;top:17%;width:84%;text-align:center;color:#f4c52f;font:900 clamp(28px,7vw,62px)/.92 Impact,'Arial Black',sans-serif;text-shadow:4px 4px 0 #071a20}
+.value{position:absolute;left:14%;top:34%;width:72%;height:18%;display:flex;align-items:center;justify-content:center;border:4px solid #f4c52f;border-radius:22px;background:rgba(7,26,32,.9);color:#f6e7ce;font:900 clamp(42px,11vw,90px)/1 Impact,'Arial Black',sans-serif;text-shadow:3px 3px 0 #071a20}
+.copy{position:absolute;left:12%;top:55%;width:76%;text-align:center;color:#f6e7ce;font:900 clamp(13px,3.2vw,24px)/1.15 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase}
+#confirm{position:absolute;left:10%;bottom:8%;width:80%;height:8%;border:0;border-radius:999px;background:#f4c52f;color:#071a20;font:900 clamp(17px,4.5vw,32px)/1 Impact,'Arial Black',sans-serif;box-shadow:0 0 0 4px #071a20,0 0 0 7px #f4c52f}
+#back{position:absolute;left:3%;top:1%;width:19%;height:6%;z-index:10}
+</style>
+</head>
+<body><main class="stage">
+<img class="bg" src="./assets/marks-wallet.webp?v=20261006-23.9" alt="">
+<button id="back" class="flow-hit" aria-label="Back"></button>
+<div class="title">CONFIRM REDEMPTION</div>
+<div id="value" class="value">— MARKS</div>
+<div class="copy">REDEMPTION UI IS READY. FINAL MARKS DEDUCTION WILL USE THE REDEMPTION BACKEND.</div>
+<button id="confirm">CONFIRM</button>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261006-23.9"></script>
+<script>
+(()=>{const v=Number(BR.safeSession.get('barameelRedeemMarkValue')||0);document.getElementById('value').textContent=v?v.toLocaleString()+' MARKS':'SELECT A VALUE';document.getElementById('back').onclick=()=>BR.goAfter('redeem-rewards.html','back',180);document.getElementById('confirm').onclick=()=>{BR.safeSession.set('barameelRedeemPending','1');BR.play('reward');BR.haptic('reward');BR.goAfter('marks-wallet.html','confirm',220)}})();
+</script></body></html>
