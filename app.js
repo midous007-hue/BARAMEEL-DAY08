@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261006-23.7';
+  const VERSION = '20261007-26.0';
   const STORAGE = 'barameel.world.player.v23.6';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -253,7 +253,7 @@
       SCAN_TICKET_REQUIRED:'READYING YOUR SCAN. TRY AGAIN.',
       HTTP_500:'SOMETHING WENT WRONG. TRY AGAIN.',
       HTTP_502:'SOMETHING WENT WRONG. TRY AGAIN.',
-      HTTP_503:'BARAMEEL RUN IS BUSY. TRY AGAIN.',CHECKPOINT_NOT_CONFIGURED:'CHECKPOINT RUN IS NOT ACTIVE YET.',CHECKPOINT_LOCATION_REQUIRED:'LOCATION IS REQUIRED TO CLEAR A CHECKPOINT.',CHECKPOINT_NOT_ACTIVE:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_NOT_FOUND:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_TOO_FAR:'MOVE CLOSER TO THE CHECKPOINT AND TRY AGAIN.',CHECKPOINT_ALREADY_CLAIMED:'YOU ALREADY CLEARED THIS CHECKPOINT.',CHECKPOINT_SCAN_REQUIRED:'SCAN A CHECKPOINT QR FIRST.',RECEIPT_CODE_REQUIRED:'ENTER YOUR RECEIPT CODE.',RECEIPT_CODE_INVALID:'THAT RECEIPT CODE IS NOT VALID.',RECEIPT_CODE_ALREADY_USED:'THAT RECEIPT CODE WAS ALREADY USED.'
+      HTTP_503:'BARAMEEL RUN IS BUSY. TRY AGAIN.',CHECKPOINT_NOT_CONFIGURED:'CHECKPOINT RUN IS NOT ACTIVE YET.',CHECKPOINT_LOCATION_REQUIRED:'LOCATION IS REQUIRED TO CLEAR A CHECKPOINT.',CHECKPOINT_NOT_ACTIVE:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_NOT_FOUND:'THAT CHECKPOINT IS NOT ACTIVE.',CHECKPOINT_TOO_FAR:'MOVE CLOSER TO THE CHECKPOINT AND TRY AGAIN.',CHECKPOINT_NOT_AT_PHYSICAL_LOCATION:'THIS CHECKPOINT IS NOT AT ITS PHYSICAL LOCATION.',GPS_ACCURACY_TOO_LOW:'GPS SIGNAL IS NOT ACCURATE ENOUGH. MOVE TO AN OPEN AREA AND TRY AGAIN.',MASTER_QR_INVALID:'THIS CHECKPOINT QR IS NOT VALID.',CHECKPOINT_ALREADY_CLAIMED:'YOU ALREADY CLEARED THIS CHECKPOINT.',CHECKPOINT_SCAN_REQUIRED:'SCAN A CHECKPOINT QR FIRST.',RECEIPT_CODE_REQUIRED:'ENTER YOUR RECEIPT CODE.',RECEIPT_CODE_INVALID:'THAT RECEIPT CODE IS NOT VALID.',RECEIPT_CODE_ALREADY_USED:'THAT RECEIPT CODE WAS ALREADY USED.'
     };
     return map[c]||'SOMETHING WENT WRONG. TRY AGAIN.';
   }
@@ -295,10 +295,11 @@
     if(Number.isFinite(awarded)&&awarded>0) patchState({points:Number(state.points||0)+awarded,weeklyPoints:Number(state.weeklyPoints||0)+awarded});
     return r;
   }
-  async function scanCheckpoint({checkpointId,lat=null,lng=null}){
+  async function scanCheckpoint({checkpointId=null,qrToken=null,lat=null,lng=null,accuracyMeters=null}){
     const id=String(checkpointId||'').trim();
-    if(!id)return {ok:false,code:'CHECKPOINT_SCAN_REQUIRED',error:'CHECKPOINT_SCAN_REQUIRED'};
-    const r=await api('/checkpoint-scan',{checkpoint_id:id,lat:Number.isFinite(Number(lat))?Number(lat):null,lng:Number.isFinite(Number(lng))?Number(lng):null,idempotency_key:makeId('checkpoint')});
+    const token=String(qrToken||'').trim();
+    if(!token&&!id)return {ok:false,code:'CHECKPOINT_SCAN_REQUIRED',error:'CHECKPOINT_SCAN_REQUIRED'};
+    const r=await api('/checkpoint-scan',{qr_token:token||null,checkpoint_id:token?null:id,lat:Number.isFinite(Number(lat))?Number(lat):null,lng:Number.isFinite(Number(lng))?Number(lng):null,accuracy_meters:Number.isFinite(Number(accuracyMeters))?Number(accuracyMeters):null,idempotency_key:makeId('checkpoint')});
     if(r?.player)mergePlayer(r.player);
     if(Array.isArray(r?.checkpoints))mergePlayer({checkpoints:r.checkpoints});
     return r;
