@@ -5,24 +5,25 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHOOSE YOUR AVATAR</title>
-<link rel="stylesheet" href="./styles.css?v=20261005-23.4">
-<script src="./config.js?v=20261005-23.4"></script>
+<link rel="stylesheet" href="./styles.css?v=20261006-23.5">
+<script src="./config.js?v=20261006-23.5"></script>
 <style>
-.avatar-stage{position:relative;width:min(100vw,calc(100dvh*912/1648));height:min(100dvh,calc(100vw*1648/912));aspect-ratio:912/1648;margin:auto;overflow:hidden;background:#071b2b}
+.avatar-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071b2b}
 .avatar-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
-.avatar-hit{position:absolute;z-index:45;border:0;background:transparent;border-radius:50%;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.avatar-01{left:4.2%;top:42.0%;width:29.0%;height:17.7%}
-.avatar-02{left:35.5%;top:42.0%;width:29.0%;height:17.7%}
-.avatar-03{left:66.6%;top:42.0%;width:29.0%;height:17.7%}
-.avatar-04{left:4.2%;top:62.0%;width:29.0%;height:17.7%}
-.avatar-05{left:35.5%;top:62.0%;width:29.0%;height:17.7%}
-.avatar-06{left:66.6%;top:62.0%;width:29.0%;height:17.7%}
+.avatar-hit{position:absolute;z-index:45;width:30.6%;height:auto;aspect-ratio:1/1;border:0;background:transparent;border-radius:50%;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.avatar-01{left:3.5%;top:43.1%}
+.avatar-02{left:34.8%;top:43.1%}
+.avatar-03{left:65.7%;top:43.2%}
+.avatar-04{left:3.9%;top:62.5%}
+.avatar-05{left:34.8%;top:62.3%}
+.avatar-06{left:65.5%;top:62.3%}
 .avatar-hit.is-selected{z-index:55}
-.avatar-hit.is-selected::after{content:"";position:absolute;inset:-2.2%;border-radius:50%;border:4px solid #f6c532;box-shadow:0 0 0 3px rgba(7,27,43,.82),0 0 16px rgba(246,197,50,.95),0 0 30px rgba(246,197,50,.58);animation:avatarLock .42s cubic-bezier(.16,.9,.2,1) both,avatarPulse 1s ease-in-out .42s 2 both;pointer-events:none}
-.avatar-hit.is-selected::before{content:"";position:absolute;inset:6%;border-radius:50%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.78) 48%,transparent 59%);mix-blend-mode:screen;animation:avatarShine .56s ease-out .1s both;pointer-events:none}
-@keyframes avatarLock{0%{transform:scale(.93);opacity:.3}70%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
-@keyframes avatarPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
-@keyframes avatarShine{0%{transform:translateX(-135%) rotate(10deg);opacity:0}35%{opacity:1}100%{transform:translateX(135%) rotate(10deg);opacity:0}}
+.avatar-hit.is-selected::after{content:"";position:absolute;inset:-.25%;border-radius:50%;border:4px dashed #f6c532;box-shadow:0 0 0 2px rgba(7,27,43,.9),0 0 8px rgba(246,197,50,.95),0 0 18px rgba(246,197,50,.72),inset 0 0 7px rgba(246,197,50,.38);animation:avatarLock .24s cubic-bezier(.16,.9,.2,1) both,avatarPulse 1.05s ease-in-out .24s infinite,avatarDash 2.2s linear infinite;pointer-events:none}
+.avatar-hit.is-selected::before{content:"";position:absolute;inset:1.2%;border-radius:50%;background:conic-gradient(from -25deg,transparent 0 8%,rgba(255,255,255,.9) 9% 11%,transparent 12% 34%,rgba(255,255,255,.62) 35% 37%,transparent 38% 100%);mix-blend-mode:screen;animation:avatarShine .7s ease-out .05s both;pointer-events:none}
+@keyframes avatarLock{0%{transform:scale(.985);opacity:.2}65%{transform:scale(1.012);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes avatarPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.16)}}
+@keyframes avatarDash{to{transform:rotate(360deg)}}
+@keyframes avatarShine{0%{opacity:0;transform:rotate(-18deg) scale(.98)}35%{opacity:1}100%{opacity:0;transform:rotate(18deg) scale(1.02)}}
 .player-name{position:absolute;left:34.2%;top:35.1%;width:50.0%;height:5.7%;z-index:40;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(15px,4.1vw,29px)/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
 .avatar-error{position:absolute;left:18%;right:18%;top:80.2%;min-height:3.8%;z-index:70;display:flex;align-items:center;justify-content:center;padding:1.2% 3%;border:2px solid #f0c830;border-radius:999px;background:rgba(7,26,32,.94);color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-align:center;opacity:0;pointer-events:none;transition:.18s ease}
 .avatar-error.show{opacity:1}
@@ -30,7 +31,7 @@
 </head>
 <body>
 <main class="avatar-stage" id="avatarStage">
-<img class="avatar-art" src="./assets/avatar-selection.webp?v=20261005-23.4" alt="CHOOSE YOUR AVATAR" fetchpriority="high">
+<img class="avatar-art" src="./assets/avatar-selection.webp?v=20261006-23.5" alt="CHOOSE YOUR AVATAR" fetchpriority="high">
 <div id="playerName" class="player-name" aria-live="polite"></div>
 <button class="avatar-hit avatar-01" data-avatar="avatar01" aria-label="Avatar 1"></button>
 <button class="avatar-hit avatar-02" data-avatar="avatar02" aria-label="Avatar 2"></button>
@@ -43,7 +44,7 @@
 <div id="error" class="avatar-error" aria-live="polite"></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.4"></script>
+<script src="./app.js?v=20261006-23.5"></script>
 <script>
 (() => {
   const playerName=document.getElementById('playerName');
@@ -62,6 +63,7 @@
     if(play){
       BR.playAvatarSelect(id);
       BR.haptic('confirm');
+      try{ if(navigator.vibrate) navigator.vibrate([28,18,42]); }catch{}
       BR.flash();
     }
   }
