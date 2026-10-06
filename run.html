@@ -43,14 +43,10 @@
     }
 
     BR.setNickname(name);
-    BR.safeSession.set('barameelStartFlashPending', '1');
+    BR.safeSession.set('barameelStartFlashPending', '0');
+    BR.safeSession.set('barameelStartFlashShown', '1');
     BR.track('run_start');
-
-    if (BR.safeSession.get('barameelStartFlashShown') === '1') {
-      BR.goAfter('screen02.html', 'confirm', 220);
-    } else {
-      BR.goAfter('start-flash.html', 'confirm', 220);
-    }
+    BR.goAfter('screen02.html', 'confirm', 220);
   };
 
   BR.track('run_view');
