@@ -24,7 +24,7 @@
 <style>
 /* COLLECTION PUZZLE — exact geometry for the supplied 954×1649 artwork.
    The supplied frame is non-uniform; live cells mirror the visible inner windows. */
-.hero-grid{left:45.51%!important;top:38.24%!important;width:50.10%!important;height:21.12%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
+.hero-grid{left:44.25%!important;top:38.05%!important;width:51.55%!important;height:19.55%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
   left:61.0%!important;
   top:64.4%!important;
   width:20.5%!important;
@@ -90,7 +90,7 @@
   function pieceCollected(cid,iid,num){return BR.hasPiece(cid,iid,num)}
   function imageComplete(cid,im){return BR.count(cid,im.imageId)>=9}
 
-  const HERO_COLS=[{left:0,width:32.8244},{left:33.0153,width:32.0611},{left:65.2672,width:34.7328}]; const HERO_ROWS=[{top:0,height:28.7565},{top:31.6062,height:32.3834},{top:65.0259,height:34.9741}];
+  const HERO_COLS=[{left:0,width:32.55},{left:33.55,width:31.15},{left:65.35,width:34.65}]; const HERO_ROWS=[{top:0,height:28.40},{top:31.20,height:32.10},{top:65.05,height:34.95}];
   function syncHeroCrops(){if(!hero.children.length)return;const gw=hero.clientWidth,gh=hero.clientHeight;if(!gw||!gh)return;[...hero.children].forEach((cell,n)=>{const col=n%3,row=Math.floor(n/3),c=HERO_COLS[col],r=HERO_ROWS[row];cell.style.left=c.left+'%';cell.style.top=r.top+'%';cell.style.width=c.width+'%';cell.style.height=r.height+'%';cell.style.backgroundSize=gw+'px '+gh+'px';cell.style.backgroundPosition=(-gw*c.left/100)+'px '+(-gh*r.top/100)+'px';});}
   function renderHero(im){hero.classList.remove('completed');hero.innerHTML='';hero.style.backgroundImage='';if(!im)return;for(let n=1;n<=9;n++){const collected=pieceCollected(collectionId,im.imageId,n);const cell=document.createElement('div');cell.className='hero-piece '+(collected?'is-collected':'is-missing');hero.appendChild(cell);}loadMaster(im.masterFile).then(img=>{if(!img)return;const bg='url("' + img.src + '")';[...hero.children].forEach(cell=>cell.style.backgroundImage=bg);syncHeroCrops();if(imageComplete(collectionId,im)){hero.innerHTML='';hero.classList.add('completed');hero.style.backgroundImage=bg;hero.style.backgroundSize='100% 100%';hero.style.backgroundPosition='center';}});requestAnimationFrame(syncHeroCrops);}
   
