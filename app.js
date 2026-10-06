@@ -4,7 +4,7 @@
 */
 (() => {
   const VERSION = '20261005-23.3';
-  const STORAGE = 'barameel.world.player.v23.4';
+  const STORAGE = 'barameel.world.player.v23.5';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
   const SUPABASE_KEY = String(window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY || '');
