@@ -123,7 +123,8 @@
   // Test mode must not wait for backend player sync.
   if(!TEST_MODE) await BR.syncPlayer().catch(()=>null);
   const TEST_CP_ID=String(TEST_PARAMS.get('cp')||'CP01').toUpperCase();
-  const TEST_APPROACH=TEST_MODE && TEST_PARAMS.get('approach')!=='0';
+  const TEST_APPROACH=TEST_MODE && TEST_PARAMS.get('approach')==='1';
+  const TEST_INSTANT=TEST_MODE && TEST_PARAMS.get('instant')==='1';
   let testApproachTimer=null;
   const CHECKPOINT_HOTSPOT_RADIUS=10;
   const CHECKPOINT_SIGNAL_RADIUS=35;
@@ -436,7 +437,7 @@
   }
 
   function refresh(pos){
-    renderMap(pos);
+    if(!TEST_MODE) renderMap(pos);
     current.textContent='LIVE • '+pos.lat.toFixed(5)+', '+pos.lng.toFixed(5);
     const unlocked=unlockedCheckpoints();
     const available=unlocked.filter(cp=>!discovered.has(cp.id)).map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>a.distance-b.distance);
@@ -445,6 +446,22 @@
     fill.style.width=progress+'%';
     BR.mergePlayer({routeProgress:progress,routeDistance:available[0]?.distance??null,nextCheckpoint:available[0]?.id??null});
     if(navigationStarted){ updateNavigation(pos); return; }
+    if(TEST_MODE && TEST_INSTANT){
+      const testCp=checkpoints.find(cp=>String(cp.id).toUpperCase()===TEST_CP_ID);
+      if(!testCp){routeError('TEST CHECKPOINT NOT FOUND');return;}
+      const already=discovered.has(TEST_CP_ID);
+      if(already){
+        const keep=checkpoints.find(cp=>!discovered.has(cp.id));
+        if(keep){next.textContent=keep.name;distance.textContent='TEST RESET REQUIRED';status.textContent='CP01 ALREADY TESTED • USE RESET';}
+        return;
+      }
+      next.textContent=testCp.name;
+      distance.textContent='0 M • YOU ARE HERE';
+      status.textContent='TEST MODE • CHECKPOINT REACHED';
+      setAction(true,'Open Checkpoint Scanner');
+      enterCheckpointHotspot(testCp);
+      return;
+    }
     if(available.length){
       const hotspot=available[0];
       const hotspotRadius=Math.max(5,Number(hotspot.radius_meters||CHECKPOINT_HOTSPOT_RADIUS));
@@ -519,6 +536,7 @@
 
   function requestLocation(){
     if(TEST_MODE){
+      if(TEST_INSTANT){const p=testPosition();if(!p){routeError('TEST CHECKPOINT NOT FOUND');return;}refresh(p);return;}
       if(TEST_APPROACH){startTestApproach();return;}
       const p=testPosition();
       if(!p){routeError('TEST CHECKPOINT NOT FOUND');return;}
@@ -557,7 +575,7 @@
 
   window.addEventListener('pagehide',()=>{if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);if(testApproachTimer)clearInterval(testApproachTimer);leaveCheckpointHotspot()});
   if(TEST_MODE){
-    status.textContent='TEST MODE • '+TEST_CP_ID+(TEST_APPROACH?' • APPROACH SIMULATION':' • SIMULATED');
+    status.textContent='TEST MODE • '+TEST_CP_ID+(TEST_INSTANT?' • CHECKPOINT REACHED':TEST_APPROACH?' • APPROACH SIMULATION':' • SIMULATED');
     document.title='BARAMEEL RUN — CHECKPOINT RUN — TEST';
   }
   BR.track('checkpoint_route_view');
