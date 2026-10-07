@@ -4,24 +4,36 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — CHECKPOINT CLEARED</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.4">
-<script src="./config.js?v=20261005-23.4"></script>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.3">
+<script src="./config.js?v=20261007-26.3"></script>
 <style>
 .checkpoint-value{position:absolute;z-index:25;display:flex;align-items:center;justify-content:center;color:#071b2b;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
 #checkpointName{left:43.0%;top:53.8%;width:49.0%;height:5.0%;font-size:clamp(12px,2.9vw,22px)}
 #checkpointPoints{left:47.0%;top:68.0%;width:45.0%;height:6.5%;font-family:'Bebas Neue','Roboto Condensed',Arial,sans-serif;font-size:clamp(21px,6vw,46px);color:#f4c52f;text-shadow:2px 2px 0 #071b2b}
+#checkpointTotal{position:absolute;left:8%;top:76.0%;width:39%;height:4.0%;z-index:26;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(9px,2.2vw,16px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-shadow:1px 1px 0 #071b2b;pointer-events:none}
+#checkpointMarks{position:absolute;left:53%;top:76.0%;width:39%;height:4.0%;z-index:26;display:flex;align-items:center;justify-content:center;color:#f4c52f;font:900 clamp(9px,2.2vw,16px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-shadow:1px 1px 0 #071b2b;pointer-events:none}
+#decisionPanel{position:absolute;left:7%;top:80.5%;width:86%;height:15.0%;z-index:50;display:grid;grid-template-columns:1fr;grid-template-rows:repeat(3,1fr);gap:5px}
+.decision-btn{border:2px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.94);color:#f6e7ce;font:900 clamp(11px,2.8vw,19px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-align:center;text-shadow:1px 1px 0 #071b2b;box-shadow:0 2px 0 #071b2b;touch-action:manipulation}
+.decision-btn.primary{background:#f4c52f;color:#071b2b;border-color:#ef2d24}
+.decision-btn:active{transform:scale(.985);filter:brightness(1.08)}
 </style>
 </head>
 <body>
 <main class="flow-stage art-948x1659">
-<img class="flow-art" src="./assets/checkpoint-found.webp?v=20261005-23.4" alt="CHECKPOINT CLEARED" fetchpriority="high">
+<img class="flow-art" src="./assets/checkpoint-found.webp?v=20261007-26.3" alt="CHECKPOINT CLEARED" fetchpriority="high">
 <div id="checkpointName" class="checkpoint-value">CHECKPOINT</div>
 <div id="checkpointPoints" class="checkpoint-value">0</div>
+<div id="checkpointTotal">TOTAL POINTS —</div>
+<div id="checkpointMarks">MARKS —</div>
+<div id="decisionPanel" aria-label="Checkpoint next actions">
+  <button id="continue" class="decision-btn primary">CONTINUE CHECKPOINT RUN</button>
+  <button id="wallet" class="decision-btn">MARKS WALLET</button>
+  <button id="myRun" class="decision-btn">MY RUN</button>
+</div>
 <button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back to Route"></button>
-<button id="continue" class="flow-hit" style="left:7%;top:84.5%;width:86%;height:8%" aria-label="Next Checkpoint"></button>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.4"></script>
+<script src="./app.js?v=20261007-26.3"></script>
 <script>
 (() => {
   let result=null;try{result=JSON.parse(BR.safeSession.get('barameelCheckpointResult')||'null')}catch{}
@@ -33,8 +45,15 @@
   }
   document.getElementById('checkpointName').textContent=String(result.checkpoint_name||result.name||result.checkpoint_id||'CHECKPOINT').toUpperCase();
   document.getElementById('checkpointPoints').textContent='+'+Number(result.points_awarded||0).toLocaleString();
+  document.getElementById('checkpointTotal').textContent='TOTAL POINTS '+Number(BR.state?.points||0).toLocaleString();
+  try{
+    const wallet=await BR.api('/wallet',{});
+    if(wallet?.ok)document.getElementById('checkpointMarks').textContent='MARKS '+Number(wallet.marks??wallet.marks_total??0).toLocaleString();
+  }catch{}
   BR.haptic('reward');BR.play('confirm');BR.flash();BR.track('checkpoint_cleared',{checkpoint_id:result.checkpoint_id,points:result.points_awarded});
   document.getElementById('continue').onclick=()=>{BR.safeSession.remove('barameelCheckpointResult');BR.goAfter('route-map.html','confirm',220)};
+  document.getElementById('wallet').onclick=()=>{BR.safeSession.remove('barameelCheckpointResult');BR.safeSession.set('barameelRewardsParent','route-map.html');BR.goAfter('marks-wallet.html','confirm',220)};
+  document.getElementById('myRun').onclick=()=>{BR.safeSession.remove('barameelCheckpointResult');BR.safeSession.set('barameelRewardsParent','screen04.html');BR.goAfter('screen04.html','tap',220)};
   document.getElementById('back').onclick=()=>{BR.safeSession.remove('barameelCheckpointResult');BR.goAfter('route-map.html','back',180)};
 })();
 </script>
