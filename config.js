@@ -21,7 +21,7 @@ window.BARAMEEL_ROUTE_CONFIG = {
     radius_meters: 120
   },
   checkpoints: [
-    { id: 'CP01', name: 'CP01', order: 1, lat: 31.191153, lng: 29.918580 },
+    { id: 'CP01', name: 'CP01', order: 1, lat: 31.1909169, lng: 29.9193794 },
     { id: 'CP02', name: 'CP02', order: 2, lat: 31.189221, lng: 29.920068 },
     { id: 'CP03', name: 'CP03', order: 3, lat: 31.190137, lng: 29.921695 },
     { id: 'CP04', name: 'CP04', order: 4, lat: 31.192098, lng: 29.922995 },
