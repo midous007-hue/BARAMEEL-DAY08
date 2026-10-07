@@ -1,35 +1,16 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — FINAL ZONE</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.4">
-<script src="./config.js?v=20261005-23.4"></script>
-<style>
-#arrivalStatus{position:absolute;left:21.0%;top:75.0%;width:51.0%;height:4.7%;z-index:25;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(11px,2.6vw,20px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;text-shadow:0 2px 0 #071b2b;pointer-events:none}
-#arrive{left:7.4%;top:81.5%;width:85.4%;height:8.4%;z-index:30}
-</style>
-</head>
-<body>
-<main class="flow-stage art-941x1672">
-<img class="flow-art" src="./assets/barameel-final-zone.webp?v=20261005-23.4" alt="BARAMEEL FINAL ZONE" fetchpriority="high">
-<div id="arrivalStatus" aria-live="polite">FINAL ZONE REACHED</div>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261008-27.0"><script src="./config.js?v=20261008-27.0"></script>
+</head><body><main class="flow-stage art-941x1672">
+<img class="flow-art" src="./assets/barameel-final-zone.webp?v=20261008-27.0" alt="BARAMEEL FINAL ZONE" fetchpriority="high">
 <button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back to Route"></button>
-<button id="arrive" class="flow-hit" aria-label="Arrive at Barameel"></button>
+<button id="arrive" class="flow-hit" style="left:5.85%;top:84.81%;width:88.20%;height:8.31%" aria-label="Arrive at Barameel"></button>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261008-27.0"></script>
 <script>
-(() => {
-  document.getElementById('arrivalStatus').textContent='BARAMEEL FINAL ZONE REACHED';
-  BR.haptic('confirm');BR.play('confirm');BR.track('barameel_final_zone_view');
-  document.getElementById('back').onclick=()=>BR.goAfter('route-map.html','back',180);
-  document.getElementById('arrive').onclick=()=>{
-    BR.safeSession.set('barameelReceiptParent','barameel-final-zone.html');
-    BR.goAfter('receipt-code.html','confirm',240);
-  };
-})();
-</script>
-</body>
-</html>
+(()=>{BR.haptic('confirm');BR.play('confirm');BR.track('barameel_final_zone_view');
+document.getElementById('back').onclick=()=>BR.goAfter('route-map.html','back',180);
+document.getElementById('arrive').onclick=()=>{BR.safeSession.set('barameelReceiptParent','barameel-final-zone.html');BR.goAfter('receipt-code.html','confirm',240)};})();
+</script></body></html>
