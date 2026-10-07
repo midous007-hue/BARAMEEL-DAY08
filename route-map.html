@@ -122,6 +122,8 @@
   const TEST_PARAMS=new URLSearchParams(location.search);
   const TEST_MODE=TEST_PARAMS.get('test')==='1';
   const TEST_CP_ID=String(TEST_PARAMS.get('cp')||'CP01').toUpperCase();
+  const TEST_APPROACH=TEST_MODE && TEST_PARAMS.get('approach')!=='0';
+  let testApproachTimer=null;
   const cfg=window.BARAMEEL_ROUTE_CONFIG||{};
   const destination=cfg.destination&&Number.isFinite(Number(cfg.destination.lat))&&Number.isFinite(Number(cfg.destination.lng))
     ? {lat:Number(cfg.destination.lat),lng:Number(cfg.destination.lng),name:String(cfg.destination.name||'BARAMEEL'),radius_meters:Math.max(20,Number(cfg.destination.radius_meters||120))}
@@ -402,7 +404,7 @@
     distance.textContent='YOU ARE HERE';
     setAction(true,'Open Checkpoint Scanner');
     action.classList.add('scan-ready');
-    action.onclick=()=>BR.goAfter('checkpoint-scanner.html?v=20261007-26.2&test=1&auto='+encodeURIComponent(id),'scan',220);
+    action.onclick=()=>BR.goAfter('checkpoint-scanner.html?v=20261007-26.2&test=1&cp='+encodeURIComponent(id),'scan',220);
   }
 
   function leaveCheckpointHotspot(){
@@ -493,8 +495,30 @@
     return cp?{lat:Number(cp.lat),lng:Number(cp.lng),accuracy:5}:null;
   }
 
+  function startTestApproach(){
+    const target=testPosition();
+    if(!target){routeError('TEST CHECKPOINT NOT FOUND');return;}
+    if(testApproachTimer)clearInterval(testApproachTimer);
+    // Start ~55m away and move toward the real checkpoint in small GPS-like steps.
+    let metersRemaining=55;
+    const northStep=meters=>meters/111320;
+    let p={lat:target.lat+northStep(metersRemaining),lng:target.lng,accuracy:5};
+    status.textContent='TEST MODE • APPROACHING '+TEST_CP_ID;
+    refresh(p);
+    testApproachTimer=setInterval(()=>{
+      metersRemaining=Math.max(0,metersRemaining-5);
+      p={lat:target.lat+northStep(metersRemaining),lng:target.lng,accuracy:5};
+      refresh(p);
+      if(metersRemaining<=0){
+        clearInterval(testApproachTimer);testApproachTimer=null;
+        status.textContent='TEST MODE • CHECKPOINT LOCATION REACHED';
+      }
+    },650);
+  }
+
   function requestLocation(){
     if(TEST_MODE){
+      if(TEST_APPROACH){startTestApproach();return;}
       const p=testPosition();
       if(!p){routeError('TEST CHECKPOINT NOT FOUND');return;}
       status.textContent='TEST MODE • SIMULATED CHECKPOINT';
@@ -530,9 +554,9 @@
     setInterval(()=>loadLivePlayers(latestPosition),10000);
   }
 
-  window.addEventListener('pagehide',()=>{if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);leaveCheckpointHotspot()});
+  window.addEventListener('pagehide',()=>{if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);if(testApproachTimer)clearInterval(testApproachTimer);leaveCheckpointHotspot()});
   if(TEST_MODE){
-    status.textContent='TEST MODE • '+TEST_CP_ID+' SIMULATED';
+    status.textContent='TEST MODE • '+TEST_CP_ID+(TEST_APPROACH?' • APPROACH SIMULATION':' • SIMULATED');
     document.title='BARAMEEL RUN — CHECKPOINT RUN — TEST';
   }
   BR.track('checkpoint_route_view');
