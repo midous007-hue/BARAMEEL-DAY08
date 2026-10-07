@@ -169,6 +169,10 @@
   }
   if(TEST_MODE){
     const params=new URLSearchParams(location.search);
+    const auto=params.get('auto');
+    if(auto){
+      setTimeout(()=>handle('BARAMEEL-CHECKPOINT-'+String(auto).toUpperCase()),350);
+    }
     const reset=params.get('reset')==='1';
     if(reset){
       const keep=(Array.isArray(BR.state?.checkpoints)?BR.state.checkpoints:[]).map(String).filter(x=>x!=='CP01');
