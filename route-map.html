@@ -118,12 +118,15 @@
   const routeBack=document.getElementById('back');
   routeBack.onclick=()=>BR.goAfter('screen04.html','back',180);
 
-  await BR.syncPlayer().catch(()=>null);
   const TEST_PARAMS=new URLSearchParams(location.search);
   const TEST_MODE=TEST_PARAMS.get('test')==='1';
+  // Test mode must not wait for backend player sync.
+  if(!TEST_MODE) await BR.syncPlayer().catch(()=>null);
   const TEST_CP_ID=String(TEST_PARAMS.get('cp')||'CP01').toUpperCase();
   const TEST_APPROACH=TEST_MODE && TEST_PARAMS.get('approach')!=='0';
   let testApproachTimer=null;
+  const CHECKPOINT_HOTSPOT_RADIUS=10;
+  const CHECKPOINT_SIGNAL_RADIUS=35;
   const cfg=window.BARAMEEL_ROUTE_CONFIG||{};
   const destination=cfg.destination&&Number.isFinite(Number(cfg.destination.lat))&&Number.isFinite(Number(cfg.destination.lng))
     ? {lat:Number(cfg.destination.lat),lng:Number(cfg.destination.lng),name:String(cfg.destination.name||'BARAMEEL'),radius_meters:Math.max(20,Number(cfg.destination.radius_meters||120))}
@@ -325,8 +328,6 @@
     if(!lastRoutePosition||haversine(pos,lastRoutePosition)>35 || Date.now()-lastRouteAt>20000)buildWalkingRoute(pos,navigationTarget);
   }
 
-  const CHECKPOINT_HOTSPOT_RADIUS=10;
-  const CHECKPOINT_SIGNAL_RADIUS=35;
   let checkpointLockId=null;
   let checkpointSignalId=null;
 
