@@ -1,59 +1,29 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — RECEIPT CODE</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261005-23.4">
-<script src="./config.js?v=20261005-23.4"></script>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261008-27.0"><script src="./config.js?v=20261008-27.0"></script>
 <style>
-.receipt-code-input{position:absolute;left:19.2%;top:63.0%;width:71.8%;height:8.1%;z-index:25;border:2px solid #f4c52f;border-radius:12px;background:rgba(7,27,43,.96);color:#f6e7ce;text-align:center;font:900 clamp(16px,4vw,30px)/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;outline:none;padding:0 4%;box-shadow:inset 0 0 0 2px rgba(239,45,36,.35),0 4px 0 rgba(0,0,0,.4)}
-.receipt-code-input::placeholder{color:rgba(246,231,206,.35);letter-spacing:.08em}
-.receipt-code-input:focus{box-shadow:0 0 0 3px rgba(244,197,47,.25),0 0 18px rgba(244,197,47,.32)}
-#receiptMessage{position:absolute;left:16%;top:72.3%;width:68%;min-height:5%;z-index:26;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(10px,2.5vw,18px)/1.1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-align:center;pointer-events:none}
-#continue{left:14%;top:80.4%;width:72%;height:6.8%;z-index:30}
-#without{left:20%;top:88.8%;width:60%;height:5.8%;z-index:30}
-</style>
-</head>
-<body>
-<main class="flow-stage art-955">
-<img class="flow-art" src="./assets/receipt-code.webp?v=20261005-23.4" alt="HAVE A BARAMEEL RECEIPT" fetchpriority="high">
-<input id="receiptCode" class="receipt-code-input" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" aria-label="Receipt code" placeholder="ENTER RECEIPT CODE">
+.receipt-code-input{position:absolute;left:20.71%;top:66.22%;width:69.35%;height:5.23%;z-index:25;border:0;background:transparent;color:#071b2b;outline:0;text-align:center;font:900 clamp(16px,4vw,30px)/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;padding:0 2%}
+.receipt-code-input::placeholder{color:transparent}.receipt-code-input:focus{box-shadow:none}
+#receiptMessage{position:absolute;left:14.12%;top:72.90%;width:69.87%;height:4.25%;z-index:26;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(10px,2.5vw,18px)/1.05 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-align:center;pointer-events:none;text-shadow:0 2px 0 #071b2b}
+#continue{left:10.36%;top:78.68%;width:79.29%;height:7.17%;z-index:30}#without{left:24.90%;top:86.88%;width:50.21%;height:5.65%;z-index:30}
+</style></head><body><main class="flow-stage art-956x1646">
+<img class="flow-art" src="./assets/receipt-code.webp?v=20261008-27.0" alt="HAVE A BARAMEEL RECEIPT" fetchpriority="high">
+<input id="receiptCode" class="receipt-code-input" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" aria-label="Receipt code">
 <div id="receiptMessage" aria-live="polite"></div>
 <button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button>
-<button id="continue" class="flow-hit" aria-label="Verify receipt code"></button>
-<button id="without" class="flow-hit" aria-label="Continue without receipt code"></button>
+<button id="continue" class="flow-hit" aria-label="Verify receipt code"></button><button id="without" class="flow-hit" aria-label="Continue without receipt code"></button>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js?v=20261008-27.0"></script>
 <script>
-(() => {
-  const input=document.getElementById('receiptCode'),message=document.getElementById('receiptMessage'),continueBtn=document.getElementById('continue');
-  const parent=BR.safeSession.get('barameelReceiptParent')||'barameel-final-zone.html';
-  input.addEventListener('input',()=>input.value=input.value.toUpperCase().replace(/[^A-Z0-9-]/g,''));
-  input.addEventListener('keydown',e=>{if(e.key==='Enter')continueBtn.click()});
-  document.getElementById('back').onclick=()=>BR.goAfter(parent,'back',180);
-  document.getElementById('without').onclick=()=>{
-    BR.safeSession.set('barameelRunCompleteReturn','receipt-code.html');
-    BR.track('receipt_skipped');BR.goAfter('run-complete.html','confirm',220);
-  };
-  continueBtn.onclick=async()=>{
-    const code=input.value.trim();
-    if(!code){message.textContent='ENTER YOUR RECEIPT CODE';BR.play('error');BR.haptic('error');input.focus();return}
-    continueBtn.disabled=true;continueBtn.setAttribute('aria-busy','true');message.textContent='VERIFYING RECEIPT…';BR.play('scan');BR.haptic('scan');
-    const result=await BR.api('/receipt-draw',{receipt_code:code,idempotency_key:BR.makeId('receipt')});
-    if(result?.ok){
-      BR.safeSession.set('barameelReceiptReward',JSON.stringify(result));
-      BR.safeSession.set('barameelReceiptParent',parent);
-      BR.track('receipt_code_validated',{reward_type:result.reward_type||null});
-      BR.play('confirm');BR.haptic('confirm');BR.goAfter('verifying-code.html','confirm',240);
-    }else{
-      message.textContent=result?.message||BR.friendlyError(result?.code||result?.error||'RECEIPT_CODE_INVALID');
-      continueBtn.disabled=false;continueBtn.removeAttribute('aria-busy');BR.play('error');BR.haptic('error');
-    }
-  };
-  input.focus();
-})();
-</script>
-</body>
-</html>
+(()=>{const input=document.getElementById('receiptCode'),message=document.getElementById('receiptMessage'),continueBtn=document.getElementById('continue'),parent=BR.safeSession.get('barameelReceiptParent')||'barameel-final-zone.html';
+input.addEventListener('input',()=>input.value=input.value.toUpperCase().replace(/[^A-Z0-9-]/g,''));input.addEventListener('keydown',e=>{if(e.key==='Enter')continueBtn.click()});
+document.getElementById('back').onclick=()=>BR.goAfter(parent,'back',180);
+document.getElementById('without').onclick=()=>{BR.safeSession.set('barameelRunCompleteReturn','receipt-code.html');BR.track('receipt_skipped');BR.goAfter('run-complete.html','confirm',220)};
+continueBtn.onclick=async()=>{const code=input.value.trim();if(!code){message.textContent='ENTER YOUR RECEIPT CODE';BR.play('error');BR.haptic('error');input.focus();return}
+continueBtn.disabled=true;continueBtn.setAttribute('aria-busy','true');message.textContent='VERIFYING RECEIPT…';BR.play('scan');BR.haptic('scan');
+const result=await BR.api('/receipt-draw',{receipt_code:code,idempotency_key:BR.makeId('receipt')});
+if(result?.ok){BR.safeSession.set('barameelReceiptReward',JSON.stringify(result));BR.safeSession.set('barameelReceiptParent',parent);BR.track('receipt_code_validated',{reward_type:result.reward_type||null});BR.play('confirm');BR.haptic('confirm');BR.goAfter('verifying-code.html','confirm',240)}
+else{message.textContent=result?.message||BR.friendlyError(result?.code||result?.error||'RECEIPT_CODE_INVALID');continueBtn.disabled=false;continueBtn.removeAttribute('aria-busy');BR.play('error');BR.haptic('error')}};input.focus();})();
+</script></body></html>
