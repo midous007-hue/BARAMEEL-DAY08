@@ -7,7 +7,7 @@
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
 <link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="./config.js?v=20261006-25.0"></script>
+<script src="./config.js?v=20261007-26.3"></script>
 <style>
 #routeMap{position:absolute;left:32.9%;top:28.0%;width:59.9%;height:19.7%;z-index:20;overflow:hidden;border-radius:4.0%;isolation:isolate;background:#071b2b;box-shadow:inset 0 0 0 3px rgba(246,231,206,.9),inset 0 0 0 6px rgba(244,197,47,.28),0 6px 14px rgba(0,0,0,.4)}
 #routeMap .leaflet-container{width:100%;height:100%;background:#071b2b;filter:saturate(.76) contrast(.94) brightness(.9) sepia(.08)}
@@ -15,7 +15,7 @@
 #routeMap .leaflet-control-attribution{font-size:7px;line-height:1.1;background:rgba(7,27,43,.74)!important;color:#f6e7ce!important}
 #routeMap .leaflet-control-attribution a{color:#f6e7ce!important}
 #routeMap .leaflet-tooltip{font:900 10px/1 'Roboto Condensed',Arial,sans-serif;color:#071b2b;background:#f6e7ce;border:2px solid #f4c52f;box-shadow:0 2px 0 #071b2b}.player-marker{position:relative;width:78px;height:70px}.player-marker-avatar{position:absolute;left:19px;top:0;width:40px;height:40px;border-radius:50%;border:3px solid #f4c52f;box-shadow:0 0 0 3px #071b2b,0 0 14px rgba(244,197,47,.8);background-image:url('./assets/avatar-selection.webp?v=20261007-26.2');background-repeat:no-repeat;background-size:320% 560%;overflow:hidden}.player-marker-name{position:absolute;left:0;top:44px;width:78px;padding:3px 5px;border:2px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 0 #071b2b}
-.route-field{position:absolute;z-index:24;display:flex;align-items:center;justify-content:center;color:#071b2b;font:900 clamp(11px,2.6vw,21px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2%;pointer-events:none}
+.route-field{position:absolute;z-index:24;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(11px,2.6vw,21px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2%;pointer-events:none;text-shadow:1px 2px 0 #071b2b,0 0 6px rgba(244,197,47,.22)}
 #currentLocation{left:46.7%;top:53.9%;width:47.0%;height:4.2%}
 #nextCheckpoint{left:46.7%;top:61.3%;width:47.0%;height:4.2%}
 #distanceNext{left:46.7%;top:68.6%;width:47.0%;height:4.2%}
