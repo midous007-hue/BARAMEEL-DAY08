@@ -9,6 +9,42 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="./config.js?v=20261007-26.3"></script>
 <style>
+#checkpointLockLayer{position:absolute;inset:0;z-index:44;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .16s ease,visibility 0s linear .16s;background:radial-gradient(circle at 62.85% 37.85%,rgba(244,197,47,.16) 0 8%,rgba(239,45,36,.08) 13%,transparent 30%),linear-gradient(180deg,rgba(7,27,43,0) 0 70%,rgba(239,45,36,.05) 100%);overflow:hidden}
+#checkpointLockLayer.active{opacity:1;visibility:visible;transition:opacity .12s ease}
+#checkpointLockLayer.signal{opacity:.78}
+#checkpointLockLayer.locked{opacity:1}
+#checkpointLockLayer .cp-vignette{position:absolute;inset:-8%;border:0 solid rgba(244,197,47,0);box-shadow:inset 0 0 0 0 rgba(239,45,36,0),inset 0 0 90px rgba(7,27,43,0);animation:none}
+#checkpointLockLayer.active .cp-vignette{animation:cpVignette .9s ease-out both}
+#checkpointLockLayer .cp-ring{position:absolute;left:62.85%;top:37.85%;width:13%;aspect-ratio:1;border:3px solid rgba(244,197,47,.9);border-radius:50%;transform:translate(-50%,-50%) scale(.25);opacity:0;box-shadow:0 0 0 2px rgba(7,27,43,.72),0 0 24px rgba(244,197,47,.42)}
+#checkpointLockLayer .cp-ring.r2{width:24%;border-color:rgba(25,185,210,.62);box-shadow:0 0 0 2px rgba(7,27,43,.55),0 0 32px rgba(25,185,210,.28)}
+#checkpointLockLayer .cp-ring.r3{width:38%;border-color:rgba(239,45,36,.42);box-shadow:0 0 0 2px rgba(7,27,43,.42),0 0 38px rgba(239,45,36,.24)}
+#checkpointLockLayer.active .cp-ring{animation:cpRadarRing 1.15s cubic-bezier(.16,.72,.22,1) both}
+#checkpointLockLayer.active .cp-ring.r2{animation-delay:.08s}
+#checkpointLockLayer.active .cp-ring.r3{animation-delay:.16s}
+#checkpointLockLayer .cp-sweep{position:absolute;left:62.85%;top:37.85%;width:34%;height:34%;transform:translate(-50%,-50%) rotate(-32deg);transform-origin:center;border-radius:50%;opacity:0;background:conic-gradient(from 0deg,transparent 0 318deg,rgba(244,197,47,0) 324deg,rgba(244,197,47,.72) 348deg,rgba(255,255,255,.95) 360deg);filter:blur(.2px)}
+#checkpointLockLayer.active .cp-sweep{animation:cpSweep .95s linear both}
+#checkpointLockLayer .cp-cross{position:absolute;left:62.85%;top:37.85%;width:16%;height:16%;transform:translate(-50%,-50%);opacity:0}
+#checkpointLockLayer.active .cp-cross{animation:cpCross .55s ease-out .16s both}
+#checkpointLockLayer .cp-cross::before,#checkpointLockLayer .cp-cross::after{content:"";position:absolute;left:50%;top:50%;background:#f4c52f;box-shadow:0 0 10px rgba(244,197,47,.85)}
+#checkpointLockLayer .cp-cross::before{width:100%;height:2px;transform:translate(-50%,-50%)}
+#checkpointLockLayer .cp-cross::after{width:2px;height:100%;transform:translate(-50%,-50%)}
+#checkpointLockLayer .cp-lock-badge{position:absolute;left:35%;top:40.2%;width:56.5%;height:5.0%;display:flex;align-items:center;justify-content:center;gap:10px;color:#f4c52f;font:900 clamp(13px,3vw,23px)/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.08em;text-shadow:2px 2px 0 #071b2b,0 0 9px rgba(244,197,47,.7);opacity:0;transform:translateY(6px);white-space:nowrap}
+#checkpointLockLayer.locked .cp-lock-badge{animation:cpBadge .42s cubic-bezier(.2,.8,.2,1) .42s both}
+#checkpointLockLayer .cp-lock-badge::before{content:"◉";font-size:.78em}
+#checkpointLockLayer .cp-scanline{position:absolute;left:31%;top:0;width:38%;height:1px;background:linear-gradient(90deg,transparent,#f4c52f,#fff,#f4c52f,transparent);box-shadow:0 0 12px #f4c52f;opacity:0}
+#checkpointLockLayer.active .cp-scanline{animation:cpScanline 1.05s ease-in-out both}
+#checkpointLockLayer.locked .cp-scanline{animation:cpScanline 1.05s ease-in-out .15s both}
+@keyframes cpRadarRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.55)}}
+@keyframes cpSweep{0%{opacity:0;transform:translate(-50%,-50%) rotate(-32deg)}15%{opacity:.95}100%{opacity:0;transform:translate(-50%,-50%) rotate(328deg)}}
+@keyframes cpCross{0%{opacity:0;transform:translate(-50%,-50%) scale(.35)}45%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:.85;transform:translate(-50%,-50%) scale(1)}}
+@keyframes cpBadge{0%{opacity:0;transform:translateY(6px) scale(.94)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes cpScanline{0%{top:0;opacity:0}12%{opacity:.9}88%{opacity:.9}100%{top:100%;opacity:0}}
+@keyframes cpVignette{0%{box-shadow:inset 0 0 0 0 rgba(239,45,36,0),inset 0 0 90px rgba(7,27,43,0)}35%{box-shadow:inset 0 0 0 5px rgba(244,197,47,.24),inset 0 0 120px rgba(239,45,36,.12)}100%{box-shadow:inset 0 0 0 0 rgba(244,197,47,0),inset 0 0 90px rgba(7,27,43,0)}}
+#routeAction.scan-ready{z-index:52;filter:drop-shadow(0 0 10px rgba(244,197,47,.42))}
+#routeAction.scan-ready::after{content:"◉  OPEN CHECKPOINT SCANNER";position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);color:#fff;font:900 clamp(13px,3.4vw,25px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-shadow:2px 2px 0 #071b2b,0 0 7px #071b2b;pointer-events:none;animation:cpButtonPulse .82s ease-in-out infinite}
+#routeAction.scan-ready::before{content:"";position:absolute;left:7%;top:50%;width:28px;height:22px;transform:translateY(-50%);border:3px solid #fff;border-radius:6px;box-shadow:0 0 0 2px #071b2b,0 0 12px rgba(244,197,47,.75);pointer-events:none}
+@keyframes cpButtonPulse{0%,100%{opacity:.82;transform:translateY(-50%) scale(1)}50%{opacity:1;transform:translateY(-50%) scale(1.025)}}
+@media(prefers-reduced-motion:reduce){#checkpointLockLayer.active .cp-ring,#checkpointLockLayer.active .cp-sweep,#checkpointLockLayer.active .cp-cross,#checkpointLockLayer.active .cp-vignette,#checkpointLockLayer.locked .cp-lock-badge,#checkpointLockLayer.active .cp-scanline,#checkpointLockLayer.locked .cp-scanline,#routeAction.scan-ready::after{animation:none!important}}
 #routeMap{position:absolute;left:32.9%;top:28.0%;width:59.9%;height:19.7%;z-index:20;overflow:hidden;border-radius:4.0%;isolation:isolate;background:#071b2b;box-shadow:inset 0 0 0 3px rgba(246,231,206,.9),inset 0 0 0 6px rgba(244,197,47,.28),0 6px 14px rgba(0,0,0,.4)}
 #routeMap .leaflet-container{width:100%;height:100%;background:#071b2b;filter:saturate(.76) contrast(.94) brightness(.9) sepia(.08)}
 #routeMap .leaflet-tile-pane{opacity:.94}
@@ -47,7 +83,14 @@
 </head>
 <body>
 <main class="flow-stage art-948x1659">
-<img class="flow-art" src="./assets/route-map.webp?v=20261007-27.0" alt="BARAMEEL RUN CHECKPOINT RUN" fetchpriority="high">
+<img class="flow-art" src="./assets/route-map.webp?v=20261007-27.1" alt="BARAMEEL RUN CHECKPOINT RUN" fetchpriority="high">
+<div id="checkpointLockLayer" aria-hidden="true">
+  <div class="cp-vignette"></div>
+  <div class="cp-ring"></div><div class="cp-ring r2"></div><div class="cp-ring r3"></div>
+  <div class="cp-sweep"></div><div class="cp-cross"></div>
+  <div class="cp-scanline"></div>
+  <div class="cp-lock-badge">CHECKPOINT SIGNAL LOCKED</div>
+</div>
 <div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="currentLocation" class="route-field">LOCATING…</div>
 <div id="nextCheckpoint" class="route-field">LOADING…</div>
@@ -81,7 +124,7 @@
     ? {lat:Number(cfg.destination.lat),lng:Number(cfg.destination.lng),name:String(cfg.destination.name||'BARAMEEL'),radius_meters:Math.max(20,Number(cfg.destination.radius_meters||120))}
     : null;
   const checkpoints=Array.isArray(cfg.checkpoints)
-    ? cfg.checkpoints.filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))).map(x=>({id:String(x.id||''),name:String(x.name||'CHECKPOINT'),lat:Number(x.lat),lng:Number(x.lng),order:Number.isFinite(Number(x.order))?Number(x.order):null}))
+    ? cfg.checkpoints.filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))).map(x=>({id:String(x.id||''),name:String(x.name||'CHECKPOINT'),lat:Number(x.lat),lng:Number(x.lng),order:Number.isFinite(Number(x.order))?Number(x.order):null,radius_meters:Math.max(5,Number(x.radius_meters||CHECKPOINT_HOTSPOT_RADIUS))}))
     : [];
 
   function haversine(a,b){
@@ -254,6 +297,10 @@
       }
     }
 
+    if(navigationTarget.id!=='barameel' && remaining<=Math.max(5,navigationTarget.radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
+      enterCheckpointHotspot(navigationTarget);
+      return;
+    }
     if(remaining<=Math.max(10,navigationTarget.radius_meters)){
       navDirection.textContent=navigationTarget.id==='barameel'?'BARAMEEL':'CHECKPOINT';
       navDistance.textContent='YOU ARE HERE';
@@ -264,16 +311,103 @@
         action.classList.remove('scan-ready');
         action.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
       }else{
-        status.textContent='CHECKPOINT REACHED • TAP TO OPEN CAMERA';
-        setAction(true,'Open Checkpoint Scanner');
-        action.classList.add('scan-ready');
-        action.onclick=()=>BR.goAfter('checkpoint-scanner.html?v=20261007-26.2','scan',220);
+        enterCheckpointHotspot(navigationTarget);
       }
       return;
     }
 
     action.classList.remove('scan-ready');
     if(!lastRoutePosition||haversine(pos,lastRoutePosition)>35 || Date.now()-lastRouteAt>20000)buildWalkingRoute(pos,navigationTarget);
+  }
+
+  const CHECKPOINT_HOTSPOT_RADIUS=10;
+  const CHECKPOINT_SIGNAL_RADIUS=35;
+  let checkpointLockId=null;
+  let checkpointSignalId=null;
+
+  function checkpointAudio(kind='lock'){
+    try{
+      if(!window.AudioContext&&!window.webkitAudioContext)return;
+      const Ctx=window.AudioContext||window.webkitAudioContext;
+      if(!checkpointAudio.ctx)checkpointAudio.ctx=new Ctx();
+      const c=checkpointAudio.ctx;
+      if(c.state==='suspended')c.resume().catch(()=>{});
+      const now=c.currentTime;
+      const master=c.createGain();
+      master.gain.setValueAtTime(.0001,now);
+      master.gain.exponentialRampToValueAtTime(kind==='lock'?.20:.085,now+.025);
+      master.gain.exponentialRampToValueAtTime(.0001,now+(kind==='lock'?1.15:.48));
+      master.connect(c.destination);
+
+      const sweep=c.createOscillator(),sg=c.createGain();
+      sweep.type='sine';
+      sweep.frequency.setValueAtTime(kind==='lock'?180:140,now);
+      sweep.frequency.exponentialRampToValueAtTime(kind==='lock'?920:620,now+.72);
+      sg.gain.setValueAtTime(.0001,now);
+      sg.gain.exponentialRampToValueAtTime(1,now+.035);
+      sg.gain.exponentialRampToValueAtTime(.0001,now+.72);
+      sweep.connect(sg).connect(master);sweep.start(now);sweep.stop(now+.75);
+
+      const beeps=kind==='lock'?[0,.16,.34,.55]:[0,.24];
+      beeps.forEach((delay,i)=>{
+        const o=c.createOscillator(),g=c.createGain();
+        o.type=i===beeps.length-1?'triangle':'square';
+        o.frequency.value=kind==='lock'?[660,880,1175,1568][i]:[520,740][i];
+        const t=now+delay;
+        g.gain.setValueAtTime(.0001,t);
+        g.gain.exponentialRampToValueAtTime(kind==='lock'?.14:.075,t+.018);
+        g.gain.exponentialRampToValueAtTime(.0001,t+(i===beeps.length-1?.18:.10));
+        o.connect(g).connect(master);o.start(t);o.stop(t+.22);
+      });
+      if(kind==='lock'){
+        const sub=c.createOscillator(),sg2=c.createGain();
+        sub.type='triangle';sub.frequency.setValueAtTime(72,now);sub.frequency.exponentialRampToValueAtTime(42,now+.7);
+        sg2.gain.setValueAtTime(.0001,now);sg2.gain.exponentialRampToValueAtTime(.11,now+.04);sg2.gain.exponentialRampToValueAtTime(.0001,now+.75);
+        sub.connect(sg2).connect(master);sub.start(now);sub.stop(now+.78);
+      }
+    }catch{}
+  }
+
+  function checkpointLayer(mode){
+    const layer=document.getElementById('checkpointLockLayer');
+    if(!layer)return;
+    layer.classList.remove('signal','locked');
+    if(mode==='signal'){
+      layer.classList.add('active','signal');
+      checkpointAudio('signal');
+      setTimeout(()=>layer.classList.remove('active','signal'),900);
+      return;
+    }
+    if(mode==='lock'){
+      layer.classList.add('active','locked');
+      checkpointAudio('lock');
+      try{if(typeof navigator.vibrate==='function')navigator.vibrate([24,38,18,62,28,90]);}catch{}
+      setTimeout(()=>layer.classList.remove('active','locked'),1700);
+    }
+  }
+
+  function enterCheckpointHotspot(cp){
+    const id=String(cp?.id||'');
+    if(!id)return;
+    if(checkpointLockId===id)return;
+    checkpointLockId=id;
+    checkpointSignalId=id;
+    checkpointLayer('lock');
+    status.classList.remove('route-error');
+    status.textContent='CHECKPOINT FOUND • SIGNAL LOCKED';
+    next.textContent=id;
+    distance.textContent='YOU ARE HERE';
+    setAction(true,'Open Checkpoint Scanner');
+    action.classList.add('scan-ready');
+    action.onclick=()=>BR.goAfter('checkpoint-scanner.html?v=20261007-26.2','scan',220);
+  }
+
+  function leaveCheckpointHotspot(){
+    checkpointLockId=null;
+    checkpointSignalId=null;
+    const layer=document.getElementById('checkpointLockLayer');
+    layer?.classList.remove('active','signal','locked');
+    action.classList.remove('scan-ready');
   }
 
   async function startNavigation(target){
@@ -306,8 +440,21 @@
     BR.mergePlayer({routeProgress:progress,routeDistance:available[0]?.distance??null,nextCheckpoint:available[0]?.id??null});
     if(navigationStarted){ updateNavigation(pos); return; }
     if(available.length){
+      const hotspot=available[0];
+      const hotspotRadius=Math.max(5,Number(hotspot.radius_meters||CHECKPOINT_HOTSPOT_RADIUS));
+      if(hotspot.distance<=hotspotRadius){
+        enterCheckpointHotspot(hotspot);
+        return;
+      }
+      if(hotspot.distance<=CHECKPOINT_SIGNAL_RADIUS && checkpointSignalId!==hotspot.id){
+        checkpointSignalId=hotspot.id;
+        checkpointLayer('signal');
+      }else if(hotspot.distance>CHECKPOINT_SIGNAL_RADIUS && checkpointSignalId===hotspot.id){
+        checkpointSignalId=null;
+      }
       next.textContent=available[0].name;
       distance.textContent=formatDistance(available[0].distance);
+      if(checkpointLockId && hotspot.distance>hotspotRadius)leaveCheckpointHotspot();
       status.textContent=available.length===1?'CHECKPOINT AVAILABLE':'NEAREST CHECKPOINT • '+available.length+' AVAILABLE';
       status.classList.remove('route-error');
       setAction(true,'Start Walking Navigation to Checkpoint');
@@ -368,7 +515,7 @@
     setInterval(()=>loadLivePlayers(latestPosition),10000);
   }
 
-  window.addEventListener('pagehide',()=>{if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId)});
+  window.addEventListener('pagehide',()=>{if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);leaveCheckpointHotspot()});
   BR.track('checkpoint_route_view');
 })();
 </script>
