@@ -26,6 +26,8 @@
 #routeAction:disabled{pointer-events:none;opacity:.55}
 #routeAction{left:30.2%;top:86.3%;width:64.9%;height:7.4%;z-index:30}
 #routeAction:disabled{pointer-events:none;opacity:.55}
+#routeAction.scan-ready::after{content:"◉  OPEN CHECKPOINT SCANNER";position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);color:#fff;font:900 clamp(13px,3.4vw,25px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-shadow:2px 2px 0 #071b2b,0 0 7px #071b2b;pointer-events:none}
+#routeAction.scan-ready::before{content:"";position:absolute;left:7%;top:50%;width:28px;height:22px;transform:translateY(-50%);border:3px solid #fff;border-radius:6px;box-shadow:0 0 0 2px #071b2b;pointer-events:none}
 #directBarameel{left:30.2%;top:93.9%;width:64.9%;height:6.2%;z-index:31}
 #directBarameel:disabled{pointer-events:none;opacity:.55}
 #navOverlay{position:absolute;left:34.0%;top:29.0%;width:56.5%;height:7.0%;z-index:27;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px;border:2px solid #f4c52f;border-radius:12px;background:rgba(7,27,43,.88);color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-shadow:1px 2px 0 #071b2b;box-shadow:0 3px 0 #071b2b;pointer-events:none;opacity:0;transition:opacity .18s}
@@ -33,6 +35,8 @@
 #navDirection{color:#f4c52f}
 #navDistance{white-space:nowrap}
 #navMode{font-size:.72em;opacity:.9}
+#navCompass{position:absolute;left:36%;top:36%;z-index:29;width:38px;height:38px;border-radius:50%;display:none;place-items:center;background:rgba(7,27,43,.88);border:2px solid #f4c52f;color:#f4c52f;font:900 24px/1 Arial,sans-serif;box-shadow:0 2px 0 #071b2b;pointer-events:none}
+#navCompass.active{display:grid}
 #livePlayers{position:absolute;left:0;top:0;width:100%;height:100%;z-index:26;pointer-events:none}
 .live-player-marker{position:absolute;width:28px;height:28px;border-radius:50%;border:2px solid #f6e7ce;background:#ef2d24;box-shadow:0 0 0 2px #071b2b,0 0 10px rgba(239,45,36,.75);transform:translate(-50%,-50%);display:grid;place-items:center;color:#f6e7ce;font:900 10px/1 'Roboto Condensed',Arial,sans-serif}
 .live-player-marker::after{content:"";position:absolute;top:29px;left:50%;transform:translateX(-50%);width:44px;height:14px;border-radius:999px;background:rgba(246,231,206,.94);border:1px solid #f4c52f;color:#071b2b}
@@ -49,6 +53,7 @@
 <div id="nextCheckpoint" class="route-field">LOADING…</div>
 <div id="distanceNext" class="route-field">—</div>
 <div id="routeStatus" aria-live="polite">PREPARING LIVE ROUTE</div>
+<div id="navCompass" aria-hidden="true">↑</div>
 <div id="navOverlay" aria-live="polite"><span id="navDirection">WALK</span><span id="navDistance"></span><span id="navMode">WALKING</span></div>
 <div id="livePlayers" aria-hidden="true"></div>
 <div id="routeProgress" aria-hidden="true"><div id="routeProgressFill"></div></div>
@@ -65,7 +70,7 @@
   const next=document.getElementById('nextCheckpoint'),distance=document.getElementById('distanceNext');
   const fill=document.getElementById('routeProgressFill'),action=document.getElementById('routeAction');
   const direct=document.getElementById('directBarameel');
-  const navOverlay=document.getElementById('navOverlay'),navDirection=document.getElementById('navDirection'),navDistance=document.getElementById('navDistance');
+  const navOverlay=document.getElementById('navOverlay'),navDirection=document.getElementById('navDirection'),navDistance=document.getElementById('navDistance'),navCompass=document.getElementById('navCompass');
   const livePlayersLayer=document.getElementById('livePlayers');
   const routeBack=document.getElementById('back');
   routeBack.onclick=()=>BR.goAfter('screen04.html','back',180);
@@ -178,6 +183,23 @@
     return 'GO STRAIGHT';
   }
 
+  function nearestUpcomingStep(pos){
+    let best=null,bestD=Infinity;
+    for(const step of navigationSteps){
+      const loc=step?.maneuver?.location;
+      if(!Array.isArray(loc)||loc.length<2)continue;
+      const d=haversine(pos,{lat:Number(loc[1]),lng:Number(loc[0])});
+      if(d<bestD){bestD=d;best={step,distance:d};}
+    }
+    return best;
+  }
+  function bearing(a,b){
+    const rad=Math.PI/180,deg=180/Math.PI;
+    const y=Math.sin((b.lng-a.lng)*rad)*Math.cos(b.lat*rad);
+    const x=Math.cos(a.lat*rad)*Math.sin(b.lat*rad)-Math.sin(a.lat*rad)*Math.cos(b.lat*rad)*Math.cos((b.lng-a.lng)*rad);
+    return (Math.atan2(y,x)*deg+360)%360;
+  }
+
   async function buildWalkingRoute(origin,target){
     if(!target)return false;
     const url='https://routing.openstreetmap.de/routed-foot/route/v1/driving/'+origin.lng+','+origin.lat+';'+target.lng+','+target.lat+'?overview=full&geometries=geojson&steps=true';
@@ -188,17 +210,17 @@
       const route=data?.routes?.[0];
       if(!route?.geometry?.coordinates?.length)throw new Error('NO_WALKING_ROUTE');
       if(routeLine)routeLine.remove();
-      routeLine=L.geoJSON(route.geometry,{style:{color:'#ef2d24',weight:6,opacity:.92,dashArray:'12 8'}}).addTo(map);
+      routeLine=L.geoJSON(route.geometry,{style:{color:'#ef2d24',weight:5,opacity:.92,dashArray:'12 8'}}).addTo(map);
       navigationSteps=Array.isArray(route.legs?.[0]?.steps)?route.legs[0].steps:[];
       lastRouteAt=Date.now();lastRoutePosition={...origin};
       navOverlay.classList.add('active');
-      navDirection.textContent=routeInstruction(navigationSteps[1]||navigationSteps[0]);
-      navDistance.textContent=formatDistance(Number(route.distance||0));
-      navOverlay.title='WALKING ROUTE';
+      navCompass.classList.add('active');
       status.textContent='WALKING NAVIGATION • FOLLOW THE ROUTE';
+      updateNavigation(origin);
       return true;
     }catch(e){
       navOverlay.classList.remove('active');
+      navCompass.classList.remove('active');
       status.textContent='WALKING ROUTE UNAVAILABLE — USE MAP';
       status.classList.add('route-error');
       return false;
@@ -210,26 +232,47 @@
     const remaining=haversine(pos,navigationTarget);
     distance.textContent=formatDistance(remaining);
     next.textContent=navigationTarget.name;
-    if(remaining<=Math.max(25,navigationTarget.radius_meters)){
-      navDirection.textContent='YOU ARE HERE';
-      navDistance.textContent=formatDistance(remaining);
+
+    // Keep the player in the navigation focus, like a walking-navigation map.
+    if(map){
+      map.setView([pos.lat,pos.lng],18,{animate:false});
+      map.invalidateSize({pan:false});
+    }
+
+    const upcoming=nearestUpcomingStep(pos);
+    if(upcoming){
+      navDirection.textContent=routeInstruction(upcoming.step);
+      navDistance.textContent=upcoming.distance<=10?'NOW':'IN '+formatDistance(upcoming.distance);
+    }
+
+    if(lastRoutePosition){
+      const moved=haversine(lastRoutePosition,pos);
+      if(moved>4){
+        const hdg=bearing(lastRoutePosition,pos);
+        navCompass.style.transform='rotate('+hdg+'deg)';
+        lastRoutePosition={...pos};
+      }
+    }
+
+    if(remaining<=Math.max(10,navigationTarget.radius_meters)){
+      navDirection.textContent=navigationTarget.id==='barameel'?'BARAMEEL':'CHECKPOINT';
+      navDistance.textContent='YOU ARE HERE';
       status.classList.remove('route-error');
       if(navigationTarget.id==='barameel'){
-        status.textContent='BARAMEEL AREA REACHED';
+        status.textContent='BARAMEEL AREA REACHED • ARRIVE';
         setAction(true,'Enter Barameel Final Zone');
+        action.classList.remove('scan-ready');
         action.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
       }else{
-        status.textContent='CHECKPOINT AREA REACHED • SCAN QR';
+        status.textContent='CHECKPOINT REACHED • TAP TO OPEN CAMERA';
         setAction(true,'Open Checkpoint Scanner');
+        action.classList.add('scan-ready');
         action.onclick=()=>BR.goAfter('checkpoint-scanner.html?v=20261007-26.2','scan',220);
       }
       return;
     }
-    const first=navigationSteps.find(s=>Number(s?.distance||0)>8);
-    if(first){
-      navDirection.textContent=routeInstruction(first);
-      navDistance.textContent='IN '+formatDistance(Number(first.distance||0));
-    }
+
+    action.classList.remove('scan-ready');
     if(!lastRoutePosition||haversine(pos,lastRoutePosition)>35 || Date.now()-lastRouteAt>20000)buildWalkingRoute(pos,navigationTarget);
   }
 
@@ -238,15 +281,17 @@
     navigationTarget=target;
     navigationStarted=true;
     status.classList.remove('route-error');
+    action.classList.remove('scan-ready');
     navOverlay.classList.add('active');
+    navCompass.classList.add('active');
     navDirection.textContent='CALCULATING';
     navDistance.textContent='WALKING ROUTE';
-    setAction(true,target.id==='barameel'?'Navigate to Barameel':'Open Checkpoint Scanner');
+    setAction(true,target.id==='barameel'?'Navigate to Barameel':'Start Walking Navigation');
     await buildWalkingRoute(latestPosition,target);
     if(navigationTarget.id==='barameel'){
       action.onclick=()=>{ if(haversine(latestPosition,navigationTarget)<=navigationTarget.radius_meters)BR.goAfter('barameel-final-zone.html','confirm',240); else status.textContent='FOLLOW WALKING ROUTE TO BARAMEEL'; };
     }else{
-      action.onclick=()=>{ if(haversine(latestPosition,navigationTarget)<=Math.max(25,navigationTarget.radius_meters))BR.goAfter('checkpoint-scanner.html?v=20261007-26.2','scan',220); else status.textContent='KEEP WALKING TO CHECKPOINT'; };
+      action.onclick=()=>{ if(haversine(latestPosition,navigationTarget)<=Math.max(10,navigationTarget.radius_meters))BR.goAfter('checkpoint-scanner.html?v=20261007-26.2','scan',220); else status.textContent='KEEP WALKING TO CHECKPOINT'; };
     }
   }
 
@@ -266,6 +311,7 @@
       status.textContent=available.length===1?'CHECKPOINT AVAILABLE':'NEAREST CHECKPOINT • '+available.length+' AVAILABLE';
       status.classList.remove('route-error');
       setAction(true,'Start Walking Navigation to Checkpoint');
+      action.classList.remove('scan-ready');
       action.onclick=()=>startNavigation(available[0]);
       return;
     }
