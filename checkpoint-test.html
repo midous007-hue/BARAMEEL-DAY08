@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#071b2b">
+<title>BARAMEEL RUN — CHECKPOINT TEST</title>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
+<style>
+body{display:grid;place-items:center;background:#071b2b}
+.test{width:min(92vw,520px);padding:28px;text-align:center;color:#f6e7ce;border:3px solid #f4c52f;background:#071b2b;box-shadow:8px 8px 0 #ef2d24;font-family:'Roboto Condensed',Arial,sans-serif}
+h1{margin:0 0 10px;font-size:34px}.sub{margin:0 0 24px;opacity:.9}
+button{display:block;width:100%;margin:12px 0;padding:16px;border:0;background:#ef2d24;color:#fff;font:900 22px 'Roboto Condensed',Arial,sans-serif;box-shadow:4px 4px 0 #f4c52f;cursor:pointer}
+small{opacity:.65}
+</style>
+</head>
+<body>
+<section class="test">
+<h1>CHECKPOINT TEST MODE</h1>
+<p class="sub">GPS is bypassed. This is a local visual/flow test only.</p>
+<button onclick="go('CP01')">TEST CP01</button>
+<button onclick="go('CP02')">TEST CP02</button>
+<button onclick="go('CP03')">TEST CP03</button>
+<small>No real checkpoint claim is sent to Supabase.</small>
+</section>
+<script>
+function go(cp){location.href='./route-map.html?test=1&cp='+encodeURIComponent(cp)}
+</script>
+</body>
+</html>
