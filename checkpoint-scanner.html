@@ -75,22 +75,43 @@
       );
     });
   }
+  function testQrCheckpoint(qrToken){
+    const token=String(qrToken||'').toUpperCase();
+    const cps=window.BARAMEEL_ROUTE_CONFIG?.checkpoints||[];
+    const match=token.match(/^BRM-Q1-([0-9]+)$/);
+    if(!match)return null;
+    const n=Number(match[1]);
+    const cp=cps.find(x=>String(x.id||'').toUpperCase()===('CP'+String(n).padStart(2,'0')));
+    return cp||null;
+  }
+
   async function handle(raw){
     if(locked)return;
     const parsed=parse(raw);
     if(!parsed){checkpointValue.textContent='WRONG QR';setStatus('FIND A CHECKPOINT QR','error');BR.play('error');BR.haptic('error');return}
-    const id=parsed.legacyId;
     const qrToken=parsed.qrToken;
+    let id=parsed.legacyId;
+    if(TEST_MODE && qrToken){
+      const testCp=testQrCheckpoint(qrToken);
+      id=testCp?String(testCp.id):null;
+    }
     locked=true;stop();checkpointValue.textContent=id||'VERIFYING';setStatus('VERIFYING…');BR.play('scan');BR.haptic('scan');
     let pos=null;
     if(TEST_MODE){
-      const testCp=(window.BARAMEEL_ROUTE_CONFIG?.checkpoints||[]).find(x=>String(x.id)===id);
-      pos=testCp?{lat:Number(testCp.lat),lng:Number(testCp.lng),accuracy:5}:{lat:31.191153,lng:29.918580,accuracy:5};
+      const testCp=(window.BARAMEEL_ROUTE_CONFIG?.checkpoints||[]).find(x=>String(x.id).toUpperCase()===String(id||'').toUpperCase());
+      const requestedCp=new URLSearchParams(location.search).get('cp');
+      if(!testCp || (requestedCp && String(requestedCp).toUpperCase()!==String(id).toUpperCase())){
+        setStatus('WRONG CHECKPOINT QR','error');BR.play('error');BR.haptic('error');locked=false;return;
+      }
+      pos={lat:Number(testCp.lat),lng:Number(testCp.lng),accuracy:5};
     }else{
       try{pos=await getPosition()}catch(e){setStatus(e.message==='LOCATION_REQUIRED'?'LOCATION ACCESS NEEDED':'LOCATION NOT SUPPORTED','error');BR.play('error');BR.haptic('error');locked=false;return}
     }
     let result;
     if(TEST_MODE){
+      if(!id){
+        result={ok:false,code:'MASTER_QR_INVALID',error:'MASTER_QR_INVALID'};
+      }else{
       const testPoints=10000;
       const existing=Array.isArray(BR.state?.checkpoints)?BR.state.checkpoints.map(String):[];
       const already=existing.includes(id);
@@ -105,6 +126,7 @@
           nextCheckpoint:null
         });
         result={ok:true,checkpoint_id:id,checkpoint_name:id,points_awarded:testPoints,test_mode:true};
+      }
       }
     }else{
       result=await BR.scanCheckpoint({checkpointId:id,qrToken,lat:pos.lat,lng:pos.lng,accuracyMeters:pos.accuracy});
@@ -169,17 +191,14 @@
   }
   if(TEST_MODE){
     const params=new URLSearchParams(location.search);
-    const auto=params.get('auto');
-    if(auto){
-      setTimeout(()=>handle('BARAMEEL-CHECKPOINT-'+String(auto).toUpperCase()),350);
-    }
     const reset=params.get('reset')==='1';
+    const cp=String(params.get('cp')||'CP01').toUpperCase();
     if(reset){
-      const keep=(Array.isArray(BR.state?.checkpoints)?BR.state.checkpoints:[]).map(String).filter(x=>x!=='CP01');
+      const keep=(Array.isArray(BR.state?.checkpoints)?BR.state.checkpoints:[]).map(String).filter(x=>x!==cp);
       BR.mergePlayer({checkpoints:keep});
     }
-    setStatus('TEST MODE — GPS BYPASSED');
-    checkpointValue.textContent='READY';
+    setStatus('TEST MODE — SCAN REAL QR');
+    checkpointValue.textContent=cp+' READY';
     pointsValue.textContent='—';
     document.title='BARAMEEL RUN — CHECKPOINT SCANNER — TEST';
   }
