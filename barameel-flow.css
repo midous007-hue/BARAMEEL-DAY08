@@ -15,7 +15,7 @@
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 
 /* V23.2 exact artwork geometry */
-.flow-stage.art-948x1659{width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659}
+.flow-stage.art-948x1659{width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659}.flow-stage.art-949x1658{width:min(100vw,calc(100dvh*949/1658));height:min(100dvh,calc(100vw*1658/949));aspect-ratio:949/1658}.flow-stage.art-956x1646{width:min(100vw,calc(100dvh*956/1646));height:min(100dvh,calc(100vw*1646/956));aspect-ratio:956/1646}
 .flow-stage.art-941x1672{width:min(100vw,calc(100dvh*941/1672));height:min(100dvh,calc(100vw*1672/941));aspect-ratio:941/1672}
 .flow-data.dynamic-field{display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .flow-field-status{font-size:clamp(13px,3.1vw,27px);font-weight:900}
