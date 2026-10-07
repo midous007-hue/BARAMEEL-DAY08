@@ -1,8 +1,8 @@
-const CACHE='barameel-world-v23.5-redeploy-28.2';
+const CACHE='barameel-world-v23.5-redeploy-28.3';
 const CORE=[
 './','./index.html','./world.html','./how-it-works.html','./start-flash.html','./run.html',
 './screen02.html','./screen04.html','./screen05.html','./screen06.html',
-'./route-map.html','./checkpoint-scanner.html','./checkpoint-found.html','./barameel-final-zone.html',
+'./route-map.html','./checkpoint-test.html','./checkpoint-scanner.html','./checkpoint-found.html','./barameel-final-zone.html',
 './new-collection-piece.html','./receipt-code.html','./verifying-code.html',
 './reveal-barameel-box.html','./your-barameel-drop.html','./rewarded-added.html','./run-complete.html',
 './leaderboard.html','./marks-wallet.html','./barameel-marks.html','./styles.css','./barameel-flow.css',
