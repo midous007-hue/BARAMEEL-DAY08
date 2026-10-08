@@ -277,6 +277,7 @@
   // declarations themselves are hoisted.
   let map=null,watchId=null,playerMarker=null,markers=[],latestPosition=null,routeLine=null;
   let navigationTarget=null,navigationSteps=[],navigationStarted=false,lastRouteAt=0,lastRoutePosition=null;
+  let baseTiles=null,labelTiles=null;
   const liveMarkers=new Map();
   const discovered=new Set((BR.state?.checkpoints||[]).map(String));
 
@@ -319,7 +320,6 @@
     return ordered.slice(0,Math.min(ordered.length,Math.max(1,discovered.size+1)));
   }
 
-  let baseTiles=null,labelTiles=null;
   function initMap(center){
     if(map)return;
     const fallbackCenter=center||destination||{lat:31.190520,lng:29.920547};
