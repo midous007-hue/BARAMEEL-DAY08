@@ -57,7 +57,7 @@
   const params=new URLSearchParams(location.search);
   let collectionId=params.get('collection')||'collection01';
   let requestedImage=params.get('image')||'image01';
-  let index=[],activeCfg=null;
+  let index=[],activeCfg=null,activeImageId=requestedImage;
   const configs=new Map(),masters=new Map();
 
   function getHandoff(){
@@ -126,6 +126,7 @@
   }
 
   async function renderImage(iid){
+    activeImageId=String(iid||requestedImage);
     const im=(activeCfg?.images||[]).find(x=>x.imageId===iid)||activeCfg?.images?.[0];
     if(!im)return;
     renderHero(im);
