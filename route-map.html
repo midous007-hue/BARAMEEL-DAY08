@@ -389,29 +389,72 @@ if('serviceWorker' in navigator){
       preferCanvas:true,
       minZoom:12,
       maxZoom:19
-    }).setView([fallbackCenter.lat,fallbackCenter.lng],14.5);
+    }).setView([fallbackCenter.lat,fallbackCenter.lng],15);
 
     addRasterFallback('BASELINE');
 
-    // BARAMEEL vector game-map layer. MapLibre is placed above the OSM
-    // raster so the custom style is the visible base; OSM remains the safety
-    // fallback if WebGL/style loading fails.
+    // BARAMEEL game-map layer:
+    // fetch the official OpenFreeMap Liberty style, then transform it in-memory.
+    // This avoids depending on a hand-written style subset being accepted by
+    // different MapLibre/Leaflet combinations. OpenFreeMap uses the OpenMapTiles
+    // schema, so we keep its sources/glyphs/sprite and only change visibility/colors.
     try{
       if(typeof window.L?.maplibreGL==='function'){
-        mapLibreLayer=L.maplibreGL({
-          style:new URL('./assets/barameel-map-style.json?v=20261008-6',location.href).href,
-          interactive:false
-        }).addTo(map);
-        mapLibreLayer.on?.('load',()=>{
-          if(baseTiles){map.removeLayer(baseTiles);baseTiles=null;}
-          const el=document.getElementById('mapStatus');
-          if(el && !navigationStarted)el.textContent='BARAMEEL GAME MAP • GPS READY';
-        });
-        mapLibreLayer.on?.('error',(evt)=>{
-          console.error('[BARAMEEL VECTOR MAP ERROR]',evt?.error||evt);
-          const el=document.getElementById('mapStatus');
-          if(el && !navigationStarted)el.textContent='REAL MAP • RASTER FALLBACK';
-        });
+        fetch('https://tiles.openfreemap.org/styles/liberty',{cache:'no-store'})
+          .then(r=>{if(!r.ok)throw new Error('OPENFREEMAP_STYLE_'+r.status);return r.json();})
+          .then(style=>{
+            const tuned=JSON.parse(JSON.stringify(style));
+            tuned.name='BARAMEEL GAME MAP';
+            tuned.layers=(tuned.layers||[]).map(layer=>{
+              const l=layer;
+              const id=String(l.id||'').toLowerCase();
+              l.layout={...(l.layout||{})};
+
+              // Remove every text/icon/POI layer. We will add only our own game labels.
+              if(l.type==='symbol' || l.type==='circle' || l.type==='heatmap' || l.type==='hillshade' || l.type==='fill-extrusion'){
+                l.layout.visibility='none';
+                return l;
+              }
+
+              if(l.type==='background'){
+                l.paint={...(l.paint||{}),'background-color':'#e9dfc7'};
+                return l;
+              }
+
+              if(l.type==='fill'){
+                if(id.includes('water')) l.paint={...(l.paint||{}),'fill-color':'#082b40','fill-opacity':1};
+                else if(id.includes('park')||id.includes('wood')||id.includes('grass')) l.paint={...(l.paint||{}),'fill-color':'#8c9c70','fill-opacity':.42};
+                else if(id.includes('building')) l.paint={...(l.paint||{}),'fill-color':'#c9bea4','fill-opacity':.62};
+                else l.paint={...(l.paint||{}),'fill-color':'#e1d7bd','fill-opacity':.42};
+                return l;
+              }
+
+              if(l.type==='line'){
+                if(id.includes('water')) l.paint={...(l.paint||{}),'line-color':'#0b3852','line-opacity':.85};
+                else if(/motorway|trunk|primary|highway/.test(id)) l.paint={...(l.paint||{}),'line-color':'#d6aa3b','line-opacity':.95};
+                else l.paint={...(l.paint||{}),'line-color':'#e4d6b7','line-opacity':.9};
+              }
+              return l;
+            });
+
+            if(typeof window.L?.maplibreGL!=='function')throw new Error('MAPLIBRE_LEAFLET_ADAPTER_UNAVAILABLE');
+            mapLibreLayer=L.maplibreGL({style:tuned,interactive:false}).addTo(map);
+            mapLibreLayer.on?.('load',()=>{
+              if(baseTiles){map.removeLayer(baseTiles);baseTiles=null;}
+              const el=document.getElementById('mapStatus');
+              if(el && !navigationStarted)el.textContent='BARAMEEL GAME MAP • GPS READY';
+            });
+            mapLibreLayer.on?.('error',evt=>{
+              console.error('[BARAMEEL VECTOR MAP ERROR]',evt?.error||evt);
+              const el=document.getElementById('mapStatus');
+              if(el && !navigationStarted)el.textContent='GAME MAP ERROR • RASTER FALLBACK';
+            });
+          })
+          .catch(err=>{
+            console.error('[BARAMEEL VECTOR STYLE FALLBACK]',err);
+            const el=document.getElementById('mapStatus');
+            if(el && !navigationStarted)el.textContent='REAL MAP • RASTER FALLBACK';
+          });
       }else{
         console.warn('[BARAMEEL VECTOR MAP] maplibreGL adapter unavailable');
       }
@@ -532,11 +575,9 @@ if('serviceWorker' in navigator){
     distance.textContent=formatDistance(remaining);
     next.textContent=navigationTarget.name;
 
-    // Keep the player in the navigation focus, like a walking-navigation map.
-    if(map){
-      map.setView([pos.lat,pos.lng],16.5,{animate:false});
-      map.invalidateSize({pan:false});
-    }
+    // Do not recenter on every GPS update. The player may freely pan/zoom;
+    // the Locate control is the explicit recenter action.
+    if(map) map.invalidateSize({pan:false});
 
     const upcoming=nearestUpcomingStep(pos);
     if(upcoming){
@@ -874,7 +915,7 @@ if('serviceWorker' in navigator){
     status.textContent='TEST MODE • '+TEST_CP_ID+(TEST_INSTANT?' • CHECKPOINT REACHED':TEST_APPROACH?' • APPROACH SIMULATION':' • SIMULATED');
     document.title='BARAMEEL RUN — CHECKPOINT RUN — TEST';
   }
-  BR.track('checkpoint_route_view').catch(()=>{});
+  Promise.resolve(BR.track?.('checkpoint_route_view')).catch(()=>{});
 })().catch(err=>{
   console.error('[BARAMEEL ROUTE MAP BOOT]',err);
   const s=document.getElementById('routeStatus');
