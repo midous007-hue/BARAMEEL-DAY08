@@ -7,6 +7,7 @@
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
 <link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css">
 <style>
 #checkpointLockLayer{position:absolute;inset:0;z-index:44;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .16s ease,visibility 0s linear .16s;background:radial-gradient(circle at 62.85% 37.85%,rgba(244,197,47,.16) 0 8%,rgba(239,45,36,.08) 13%,transparent 30%),linear-gradient(180deg,rgba(7,27,43,0) 0 70%,rgba(239,45,36,.05) 100%);overflow:hidden}
 #checkpointLockLayer.active{opacity:1;visibility:visible;transition:opacity .12s ease}
@@ -256,6 +257,8 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
 <script src="./config.js?v=20261008-1"></script>
 <script>
 if('serviceWorker' in navigator){
@@ -389,6 +392,28 @@ if('serviceWorker' in navigator){
     }).setView([fallbackCenter.lat,fallbackCenter.lng],14.5);
 
     addRasterFallback('BASELINE');
+
+    // BARAMEEL visual vector layer: use the custom OpenFreeMap style when
+    // MapLibre is available; keep the proven OSM raster underneath as fallback.
+    try{
+      if(window.L?.maplibreGL){
+        mapLibreLayer=L.maplibreGL({
+          style:'./assets/barameel-map-style.json',
+          interactive:false
+        }).addTo(map);
+        mapLibreLayer.on?.('load',()=>{
+          if(baseTiles){map.removeLayer(baseTiles);baseTiles=null;}
+          const el=document.getElementById('mapStatus');
+          if(el && !navigationStarted)el.textContent='BARAMEEL GAME MAP • GPS READY';
+        });
+        mapLibreLayer.on?.('error',(evt)=>{
+          console.error('[BARAMEEL VECTOR MAP ERROR]',evt?.error||evt);
+        });
+      }
+    }catch(err){
+      console.error('[BARAMEEL VECTOR MAP FALLBACK]',err);
+      mapLibreLayer=null;
+    }
 
     if(destination)marker(destination.lat,destination.lng,'barameel',destination.name);
     const unlocked=unlockedCheckpoints();
