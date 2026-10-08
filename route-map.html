@@ -244,7 +244,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     const el=document.createElement('div');
     el.id='seaToken';
     el.innerHTML='MEDITERRANEAN<br>SEA';
-    const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([29.8738,31.2188]).addTo(map);
+    const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([29.8850,31.2190]).addTo(map);
     map._barameelSeaToken=m;
   }
   function syncLandmarks(){
@@ -398,7 +398,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         container:'routeMap',
         style:roadStyle,
         center:[c.lng,c.lat],
-        zoom:13.75,
+        zoom:13.05,
         pitch:0,
         bearing:0,
         attributionControl:true,
