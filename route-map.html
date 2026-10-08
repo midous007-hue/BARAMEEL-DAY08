@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261008-44.0">
+<link rel="stylesheet" href="./barameel-flow.css?v=20261008-45.0">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css">
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
@@ -152,11 +152,22 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   #distanceNext{top:64.95%;height:3.65%;font-size:clamp(11px,2.4vw,19px)}
   #routeAction{left:31.7%;top:80.85%;width:64.8%;height:7.15%}
   #directBarameel{left:31.7%;top:88.65%;width:64.8%;height:7.15%}
-}</style>
+}
+/* V45 — LIVE MAP ONLY. No reference/screenshot image is used as a map layer. */
+#routeMap,
+#routeMap .maplibregl-map,
+#routeMap .maplibregl-canvas-container,
+#routeMap .maplibregl-canvas{
+  pointer-events:auto!important;
+}
+#routeMap .maplibregl-canvas-container{touch-action:none!important}
+#routeMap .maplibregl-canvas{touch-action:none!important;cursor:grab}
+#routeMap .maplibregl-canvas:active{cursor:grabbing}
+</style>
 </head>
 <body>
 <main class="flow-stage route-map-stage">
-<img id="routeArtwork" src="./assets/route-map.webp?v=20261008-44.0" alt="" aria-hidden="true">
+<img id="routeArtwork" src="./assets/route-map.webp?v=20261008-45.0" alt="" aria-hidden="true" data-role="approved-screen-artwork">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="mapBrand" aria-hidden="true"></div>
 <div id="mapStatus" aria-hidden="true"></div>
@@ -179,7 +190,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 
 <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
 <script src="./config.js?v=20261008-1"></script>
-<script src="./app.js?v=20261008-44.0"></script>
+<script src="./app.js?v=20261008-45.0"></script>
 
 <script>
 (async()=>{
@@ -239,7 +250,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   let followPlayer=false;
   let firstGpsCentered=false;
 
-  const roadStyle='./assets/barameel-map-style.json?v=20261008-42.0';
+  const roadStyle='./assets/barameel-map-style.json?v=20261008-45.0';
   const landmarks=[
     {id:'qaitbay',name:'QAITBAY CITADEL',short:'QAITBAY CITADEL',lat:31.21375,lng:29.88540,type:'fortress'},
     {id:'roman',name:'ROMAN THEATRE',short:'ROMAN THEATRE',lat:31.19464,lng:29.90405,type:'theatre'},
@@ -497,6 +508,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       });
       map.on('load',()=>{
         mapReady=true;
+        map.on('dragstart',()=>{followPlayer=false;});
+        map.on('wheel',()=>{followPlayer=false;});
+        map.on('touchstart',()=>{followPlayer=false;});
         if(mapBootTimer)clearTimeout(mapBootTimer);
         setMapStatus('BARAMEEL GAME MAP • READY');
         if(destination) addDestinationMarker();
@@ -549,7 +563,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       map.easeTo({center:[pos.lng,pos.lat],zoom:15.7,duration:550,essential:true});
       return;
     }
-    if(navigationStarted && navigationTarget && followPlayer){
+    if(followPlayer){
       map.easeTo({center:[pos.lng,pos.lat],zoom:15.7,duration:500,essential:true});
     }
   }
@@ -593,7 +607,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       try{map.setPaintProperty('walking-route-dots','line-dasharray',[0.1,1.55+phase*.045])}catch{}
     },120);
   }
-  async function buildWalkingRoute(origin,target){
+  async function buildWalkingRoute(origin,target,fitCamera=false){
     if(!origin||!target)return false;
     const url='https://routing.openstreetmap.de/routed-foot/route/v1/driving/'+origin.lng+','+origin.lat+';'+target.lng+','+target.lat+'?overview=full&geometries=geojson&steps=true';
     try{
@@ -606,20 +620,20 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       if(!mapReady)throw new Error('MAP_NOT_READY');
       setRouteGeometry(route.geometry);
       animateRoute();
-      if(mapReady){
+      if(fitCamera&&mapReady){
         const bounds=new maplibregl.LngLatBounds();
         for(const pair of (route.geometry.coordinates||[])){
           if(Array.isArray(pair)&&pair.length>=2)bounds.extend([Number(pair[0]),Number(pair[1])]);
         }
-        if(!bounds.isEmpty())map.fitBounds(bounds,{padding:{top:24,right:28,bottom:24,left:28},maxZoom:15.9,duration:700,essential:true});
+        if(!bounds.isEmpty())map.fitBounds(bounds,{padding:{top:18,right:22,bottom:18,left:22},maxZoom:15.9,duration:650,essential:true});
       }
       navigationSteps=Array.isArray(route.legs?.[0]?.steps)?route.legs[0].steps:[];
       lastRouteAt=Date.now();
       lastRoutePosition={...origin};
-      navOverlay.classList.add('active');
-      navCompass.classList.add('active');
-      navDirection.textContent='START WALKING';
-      navDistance.textContent=formatDistance(Number(route.distance||0));
+      navOverlay?.classList.add('active');
+      navCompass?.classList.add('active');
+      if(navDirection)navDirection.textContent='START WALKING';
+      if(navDistance)navDistance.textContent=formatDistance(Number(route.distance||0));
       status.textContent='WALKING NAVIGATION • FOLLOW THE ROUTE';
       status.classList.remove('route-error');
       // Keep the map-health chip independent from navigation state.
@@ -627,8 +641,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       return true;
     }catch(e){
       console.error('[BARAMEEL WALKING ROUTE]',e);
-      navOverlay.classList.remove('active');
-      navCompass.classList.remove('active');
+      navOverlay?.classList.remove('active');
+      navCompass?.classList.remove('active');
       status.textContent='WALKING ROUTE UNAVAILABLE — USE MAP';
       status.classList.add('route-error');
       return false;
@@ -657,15 +671,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(upcoming){
       const instruction=routeInstruction(upcoming.step);
       const instructionDistance=upcoming.distance<=10?'NOW':'IN '+formatDistance(upcoming.distance);
-      navDirection.textContent=instruction;
-      navDistance.textContent=instructionDistance;
+      if(navDirection)navDirection.textContent=instruction;
+      if(navDistance)navDistance.textContent=instructionDistance;
       next.textContent=String(navigationTarget.name||'TARGET').toUpperCase()+' • '+instruction;
       distance.textContent=instructionDistance;
     }
     if(lastRoutePosition){
       const moved=haversine(lastRoutePosition,pos);
       if(moved>4){
-        navCompass.style.transform='translate(-50%,-50%) rotate('+bearing(lastRoutePosition,pos)+'deg)';
+        if(navCompass)navCompass.style.transform='translate(-50%,-50%) rotate('+bearing(lastRoutePosition,pos)+'deg)';
         lastRoutePosition={...pos};
       }
     }
@@ -681,13 +695,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       startNavCard.disabled=false;
       startNavCard.textContent='ENTER BARAMEEL';
       startNavCard.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
-      navDirection.textContent='BARAMEEL';
-      navDistance.textContent='YOU ARE HERE';
+      if(navDirection)navDirection.textContent='BARAMEEL';
+      if(navDistance)navDistance.textContent='YOU ARE HERE';
       return;
     }
     action.classList.remove('ready');
     action.disabled=true;
-    if(!lastRoutePosition||haversine(pos,lastRoutePosition)>35||Date.now()-lastRouteAt>20000)buildWalkingRoute(pos,navigationTarget);
+    if(!lastRoutePosition||haversine(pos,lastRoutePosition)>35||Date.now()-lastRouteAt>20000)buildWalkingRoute(pos,navigationTarget,false);
   }
   async function startNavigation(target){
     if(!target)return;
@@ -700,16 +714,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }
     navigationTarget=target;
     navigationStarted=true;
+    followPlayer=true;
     if(mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.2,duration:350,essential:true});
     startNavCard.disabled=true;
     startNavCard.textContent=target.id==='barameel'?'NAVIGATING TO BARAMEEL':'NAVIGATING TO '+String(target.name||'CHECKPOINT').toUpperCase();
     status.classList.remove('route-error');
-    navOverlay.classList.add('active');
-    navCompass.classList.add('active');
-    navDirection.textContent='CALCULATING';
-    navDistance.textContent='ROUTE';
+    navOverlay?.classList.add('active');
+    navCompass?.classList.add('active');
+    if(navDirection)navDirection.textContent='CALCULATING';
+    if(navDistance)navDistance.textContent='ROUTE';
     setAction(false);
-    await buildWalkingRoute(latestPosition,target);
+    await buildWalkingRoute(latestPosition,target,true);
   }
   function renderRoutePositionAndState(pos){
     latestPosition=pos;
@@ -875,7 +890,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(latestPosition&&destination)startNavigation(destination);else requestLocation();
   };
   startNavCard.onclick=()=>{if(latestPosition&&destination)startNavigation(destination);else requestLocation();};
-  if(map)map.on('dragstart',()=>{followPlayer=false;});
 
   try{
     initMap({lat:31.214,lng:29.918});
