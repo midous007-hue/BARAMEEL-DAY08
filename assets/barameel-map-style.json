@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "name": "BARAMEEL WORLD • ALEXANDRIA LIVE GAME MAP • V45",
+  "name": "BARAMEEL WORLD • ALEXANDRIA LIVE GAME MAP • V47",
   "sources": {
     "openmaptiles": {
       "type": "vector",
@@ -208,7 +208,8 @@
           ],
           0
         ],
-        "fill-extrusion-opacity": 0.78
+        "fill-extrusion-opacity": 0.9,
+        "fill-extrusion-vertical-gradient": true
       }
     },
     {
@@ -531,12 +532,9 @@
       "source-layer": "transportation",
       "minzoom": 13,
       "filter": [
-        "==",
-        [
-          "get",
-          "subclass"
-        ],
-        "tram"
+        "any",
+        ["==", ["get", "subclass"], "tram"],
+        ["==", ["get", "class"], "tram"]
       ],
       "layout": {
         "line-cap": "round",
@@ -665,6 +663,6 @@
   "light": {
     "anchor": "viewport",
     "color": "#f6e7ce",
-    "intensity": 0.55
+    "intensity": 0.72
   }
 }
