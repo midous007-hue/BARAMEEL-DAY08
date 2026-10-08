@@ -6,314 +6,153 @@
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
 <link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css">
 <style>
-#checkpointLockLayer{position:absolute;inset:0;z-index:44;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .16s ease,visibility 0s linear .16s;background:radial-gradient(circle at 62.85% 37.85%,rgba(244,197,47,.16) 0 8%,rgba(239,45,36,.08) 13%,transparent 30%),linear-gradient(180deg,rgba(7,27,43,0) 0 70%,rgba(239,45,36,.05) 100%);overflow:hidden}
-#checkpointLockLayer.active{opacity:1;visibility:visible;transition:opacity .12s ease}
-#checkpointLockLayer.signal{opacity:.78}
-#checkpointLockLayer.locked{opacity:1}
-#checkpointLockLayer .cp-vignette{position:absolute;inset:-8%;border:0 solid rgba(244,197,47,0);box-shadow:inset 0 0 0 0 rgba(239,45,36,0),inset 0 0 90px rgba(7,27,43,0);animation:none}
-#checkpointLockLayer.active .cp-vignette{animation:cpVignette .9s ease-out both}
-#checkpointLockLayer .cp-ring{position:absolute;left:62.85%;top:37.85%;width:13%;aspect-ratio:1;border:3px solid rgba(244,197,47,.9);border-radius:50%;transform:translate(-50%,-50%) scale(.25);opacity:0;box-shadow:0 0 0 2px rgba(7,27,43,.72),0 0 24px rgba(244,197,47,.42)}
-#checkpointLockLayer .cp-ring.r2{width:24%;border-color:rgba(25,185,210,.62);box-shadow:0 0 0 2px rgba(7,27,43,.55),0 0 32px rgba(25,185,210,.28)}
-#checkpointLockLayer .cp-ring.r3{width:38%;border-color:rgba(239,45,36,.42);box-shadow:0 0 0 2px rgba(7,27,43,.42),0 0 38px rgba(239,45,36,.24)}
-#checkpointLockLayer.active .cp-ring{animation:cpRadarRing 1.15s cubic-bezier(.16,.72,.22,1) both}
-#checkpointLockLayer.active .cp-ring.r2{animation-delay:.08s}
-#checkpointLockLayer.active .cp-ring.r3{animation-delay:.16s}
-#checkpointLockLayer .cp-sweep{position:absolute;left:62.85%;top:37.85%;width:34%;height:34%;transform:translate(-50%,-50%) rotate(-32deg);transform-origin:center;border-radius:50%;opacity:0;background:conic-gradient(from 0deg,transparent 0 318deg,rgba(244,197,47,0) 324deg,rgba(244,197,47,.72) 348deg,rgba(255,255,255,.95) 360deg);filter:blur(.2px)}
-#checkpointLockLayer.active .cp-sweep{animation:cpSweep .95s linear both}
-#checkpointLockLayer .cp-cross{position:absolute;left:62.85%;top:37.85%;width:16%;height:16%;transform:translate(-50%,-50%);opacity:0}
-#checkpointLockLayer.active .cp-cross{animation:cpCross .55s ease-out .16s both}
-#checkpointLockLayer .cp-cross::before,#checkpointLockLayer .cp-cross::after{content:"";position:absolute;left:50%;top:50%;background:#f4c52f;box-shadow:0 0 10px rgba(244,197,47,.85)}
-#checkpointLockLayer .cp-cross::before{width:100%;height:2px;transform:translate(-50%,-50%)}
-#checkpointLockLayer .cp-cross::after{width:2px;height:100%;transform:translate(-50%,-50%)}
-#checkpointLockLayer .cp-lock-badge{position:absolute;left:35%;top:40.2%;width:56.5%;height:5.0%;display:flex;align-items:center;justify-content:center;gap:10px;color:#f4c52f;font:900 clamp(13px,3vw,23px)/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.08em;text-shadow:2px 2px 0 #071b2b,0 0 9px rgba(244,197,47,.7);opacity:0;transform:translateY(6px);white-space:nowrap}
-#checkpointLockLayer.locked .cp-lock-badge{animation:cpBadge .42s cubic-bezier(.2,.8,.2,1) .42s both}
-#checkpointLockLayer.locked .cp-ring.r2{animation:cpReadyPulse 1.8s ease-in-out infinite}
-#checkpointLockLayer.locked .cp-ring.r3{animation:cpReadyPulse 2.4s ease-in-out .2s infinite}
-@keyframes cpReadyPulse{0%,100%{opacity:.18;transform:translate(-50%,-50%) scale(1.0)}50%{opacity:.62;transform:translate(-50%,-50%) scale(1.08)}}
-#checkpointLockLayer .cp-lock-badge::before{content:"◉";font-size:.78em}
-#checkpointLockLayer .cp-scanline{position:absolute;left:31%;top:0;width:38%;height:1px;background:linear-gradient(90deg,transparent,#f4c52f,#fff,#f4c52f,transparent);box-shadow:0 0 12px #f4c52f;opacity:0}
-#checkpointLockLayer.active .cp-scanline{animation:cpScanline 1.05s ease-in-out both}
-#checkpointLockLayer.locked .cp-scanline{animation:cpScanline 1.05s ease-in-out .15s both}
-@keyframes cpRadarRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.55)}}
-@keyframes cpSweep{0%{opacity:0;transform:translate(-50%,-50%) rotate(-32deg)}15%{opacity:.95}100%{opacity:0;transform:translate(-50%,-50%) rotate(328deg)}}
-@keyframes cpCross{0%{opacity:0;transform:translate(-50%,-50%) scale(.35)}45%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:.85;transform:translate(-50%,-50%) scale(1)}}
-@keyframes cpBadge{0%{opacity:0;transform:translateY(6px) scale(.94)}100%{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes cpScanline{0%{top:0;opacity:0}12%{opacity:.9}88%{opacity:.9}100%{top:100%;opacity:0}}
-@keyframes cpVignette{0%{box-shadow:inset 0 0 0 0 rgba(239,45,36,0),inset 0 0 90px rgba(7,27,43,0)}35%{box-shadow:inset 0 0 0 5px rgba(244,197,47,.24),inset 0 0 120px rgba(239,45,36,.12)}100%{box-shadow:inset 0 0 0 0 rgba(244,197,47,0),inset 0 0 90px rgba(7,27,43,0)}}
-#routeAction.scan-ready{z-index:52;filter:drop-shadow(0 0 10px rgba(244,197,47,.42))}
-#routeAction.scan-ready::after{content:"CHECKPOINT READY  •  OPEN SCANNER";position:absolute;left:8%;right:8%;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;height:58%;border-radius:999px;color:#fff;font:900 clamp(11px,2.8vw,21px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:.02em;text-shadow:2px 2px 0 #071b2b,0 0 6px #071b2b;background:rgba(7,27,43,.84);border:2px solid #f4c52f;box-shadow:0 2px 0 #071b2b,0 0 12px rgba(244,197,47,.32);pointer-events:none;animation:cpButtonPulse .95s ease-in-out infinite}
-@keyframes cpButtonPulse{0%,100%{opacity:.82;transform:translateY(-50%) scale(1)}50%{opacity:1;transform:translateY(-50%) scale(1.025)}}
-@media(prefers-reduced-motion:reduce){#checkpointLockLayer.active .cp-ring,#checkpointLockLayer.active .cp-sweep,#checkpointLockLayer.active .cp-cross,#checkpointLockLayer.active .cp-vignette,#checkpointLockLayer.locked .cp-lock-badge,#checkpointLockLayer.active .cp-scanline,#checkpointLockLayer.locked .cp-scanline,#routeAction.scan-ready::after{animation:none!important}}
-#routeMap{position:absolute;left:32.9%;top:28.0%;width:59.9%;height:19.7%;z-index:20;overflow:hidden;border-radius:4.0%;isolation:isolate;background:#071b2b;box-shadow:inset 0 0 0 3px rgba(246,231,206,.9),inset 0 0 0 6px rgba(244,197,47,.28),0 6px 14px rgba(0,0,0,.4)}
-#routeMap .leaflet-container{width:100%;height:100%;background:#071b2b;filter:saturate(.76) contrast(.94) brightness(.9) sepia(.08)}
-#routeMap .leaflet-tile-pane{opacity:.94}
-#routeMap .leaflet-control-attribution{font-size:7px;line-height:1.1;background:rgba(7,27,43,.74)!important;color:#f6e7ce!important}
-#routeMap .leaflet-control-attribution a{color:#f6e7ce!important}
-#routeMap .leaflet-tooltip{font:900 10px/1 'Roboto Condensed',Arial,sans-serif;color:#071b2b;background:#f6e7ce;border:2px solid #f4c52f;box-shadow:0 2px 0 #071b2b}.player-marker{position:relative;width:78px;height:70px}.player-marker-avatar{position:absolute;left:19px;top:0;width:40px;height:40px;border-radius:50%;border:3px solid #f4c52f;box-shadow:0 0 0 3px #071b2b,0 0 14px rgba(244,197,47,.8);background-image:url('./assets/avatar-selection.webp?v=20261007-26.2');background-repeat:no-repeat;background-size:320% 560%;overflow:hidden}.player-marker-name{position:absolute;left:0;top:44px;width:78px;padding:3px 5px;border:2px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 0 #071b2b}
-.route-field{position:absolute;z-index:24;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(11px,2.6vw,21px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2%;pointer-events:none;text-shadow:1px 2px 0 #071b2b,0 0 6px rgba(244,197,47,.22)}
-#currentLocation{left:46.7%;top:53.9%;width:47.0%;height:4.2%}
-#nextCheckpoint{left:46.7%;top:61.3%;width:47.0%;height:4.2%}
-#distanceNext{left:46.7%;top:68.6%;width:47.0%;height:4.2%}
-#routeProgress{position:absolute;left:34.1%;top:79.4%;width:58.1%;height:2.55%;z-index:25;background:rgba(246,231,206,.20);border-radius:99px;overflow:hidden;pointer-events:none}
-#routeProgressFill{height:100%;width:0;background:#ef2d24;border-radius:99px;transition:width .45s ease}
-#routeStatus{position:absolute;left:35.0%;top:44.0%;width:56.5%;height:3.4%;z-index:24;color:#f6e7ce;font:900 clamp(9px,2.15vw,16px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;text-shadow:0 2px 0 #071b2b;pointer-events:none}
-#routeAction{left:30.2%;top:78.8%;width:64.9%;height:7.3%;z-index:30}
-#routeAction:disabled{pointer-events:none;opacity:.55}
-#routeAction{left:30.2%;top:86.3%;width:64.9%;height:7.4%;z-index:30}
-#routeAction:disabled{pointer-events:none;opacity:.55}
-#routeAction.scan-ready::after{content:"◉  OPEN CHECKPOINT SCANNER";position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);color:#fff;font:900 clamp(13px,3.4vw,25px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-shadow:2px 2px 0 #071b2b,0 0 7px #071b2b;pointer-events:none}
-#directBarameel{left:30.2%;top:86.55%;width:64.9%;height:7.1%;z-index:31}
-#directBarameel:disabled{pointer-events:none;opacity:.55}
-#navOverlay{position:absolute;left:34.0%;top:29.0%;width:56.5%;height:7.0%;z-index:27;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px;border:2px solid #f4c52f;border-radius:12px;background:rgba(7,27,43,.88);color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-shadow:1px 2px 0 #071b2b;box-shadow:0 3px 0 #071b2b;pointer-events:none;opacity:0;transition:opacity .18s}
-#navOverlay.active{opacity:1}
-#navDirection{color:#f4c52f}
-#navDistance{white-space:nowrap}
-#navMode{font-size:.72em;opacity:.9}
-#navCompass{position:absolute;left:36%;top:36%;z-index:29;width:38px;height:38px;border-radius:50%;display:none;place-items:center;background:rgba(7,27,43,.88);border:2px solid #f4c52f;color:#f4c52f;font:900 24px/1 Arial,sans-serif;box-shadow:0 2px 0 #071b2b;pointer-events:none}
-#navCompass.active{display:grid}
-#livePlayers{position:absolute;left:0;top:0;width:100%;height:100%;z-index:26;pointer-events:none}
-.live-player-marker{position:absolute;width:28px;height:28px;border-radius:50%;border:2px solid #f6e7ce;background:#ef2d24;box-shadow:0 0 0 2px #071b2b,0 0 10px rgba(239,45,36,.75);transform:translate(-50%,-50%);display:grid;place-items:center;color:#f6e7ce;font:900 10px/1 'Roboto Condensed',Arial,sans-serif}
-.live-player-marker::after{content:"";position:absolute;top:29px;left:50%;transform:translateX(-50%);width:44px;height:14px;border-radius:999px;background:rgba(246,231,206,.94);border:1px solid #f4c52f;color:#071b2b}
-.live-player-marker span{position:absolute;top:31px;left:50%;transform:translateX(-50%);width:64px;text-align:center;color:#f6e7ce;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;text-shadow:1px 1px 0 #071b2b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.route-error{color:#ff9a8f!important}
-@media(prefers-reduced-motion:reduce){#routeProgressFill{transition:none}}
-
-/* PHASE 1 — REAL MAP / BARAMEEL VISUAL LAYER */
-.flow-stage.route-map-stage{
-  position:relative;width:100vw;height:100dvh;max-width:none;max-height:none;
-  aspect-ratio:auto;overflow:hidden;background:#071b2b;
-}
-#mapBackdrop{position:absolute;inset:0;background:#071b2b;z-index:0}
-#routeMap{
-  position:absolute;inset:0;width:auto;height:auto;z-index:1;
-  border-radius:0;overflow:hidden;background:#071b2b;box-shadow:none;
-}
-#routeMap .leaflet-container{
-  width:100%;height:100%;background:#071b2b;
-}
-#routeMap .leaflet-tile-pane{
-  filter:saturate(.58) contrast(1.08) brightness(1.03) sepia(.12);
-  opacity:.94;
-}
-#routeMap::after{
-  content:"";position:absolute;inset:0;z-index:12;pointer-events:none;
-  background:
-    linear-gradient(180deg,rgba(246,231,206,.08),rgba(7,27,43,.06)),
-    repeating-linear-gradient(0deg,rgba(7,27,43,.035) 0 1px,transparent 1px 4px);
-  mix-blend-mode:multiply;
-}
-#routeMap .leaflet-control-zoom{display:none!important}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
+.flow-stage.route-map-stage{position:relative;width:100vw;height:100dvh;max-width:none;max-height:none;overflow:hidden;background:#071b2b}
+#routeMap{position:absolute;inset:0;z-index:1;background:#071b2b;overflow:hidden}
 #routeMap .maplibregl-map,
 #routeMap .maplibregl-canvas-container,
-#routeMap .maplibregl-canvas{
-  width:100%!important;height:100%!important;
-}
-#routeMap .maplibregl-canvas{filter:none!important}
-#routeMap .leaflet-tile-pane{opacity:.96}
-#routeMap .leaflet-control-attribution{
-  font-size:7px;line-height:1.1;background:rgba(7,27,43,.78)!important;
-  color:#f6e7ce!important;border-radius:4px;padding:2px 4px;
-}
-#routeMap .leaflet-control-attribution a{color:#f6e7ce!important}
-#routeMap .leaflet-control-zoom{
-  margin:22px 18px 0 0!important;border:0!important;box-shadow:none!important;
-}
-#routeMap .leaflet-control-zoom a{
-  width:54px;height:54px;line-height:50px;margin-bottom:12px;
-  border:2px solid #f6e7ce!important;border-radius:50%!important;
-  background:rgba(7,27,43,.88)!important;color:#f6e7ce!important;
-  font:900 34px/48px Arial,sans-serif!important;
-  box-shadow:0 3px 0 rgba(0,0,0,.45);
-}
-#routeMap .leaflet-control-zoom a:hover{background:#071b2b!important;color:#f4c52f!important}
-
-#mapBrand{
-  position:absolute;left:24px;top:18px;z-index:60;
-  color:#f6e7ce;font:900 clamp(25px,5vw,52px)/.9 'Roboto Condensed',Arial,sans-serif;
-  letter-spacing:-.045em;text-transform:uppercase;
-  text-shadow:3px 3px 0 #071b2b,0 0 0 #071b2b;
-  pointer-events:none;
-}
-#mapBrand b{color:#ef2d24;text-shadow:3px 3px 0 #071b2b,0 0 0 #071b2b}
-#mapBrand small{
-  display:block;margin-top:7px;color:#f4c52f;
-  font-size:.28em;letter-spacing:.32em;text-indent:.32em;
-}
-.map-control{
-  position:absolute;z-index:61;right:18px;width:54px;height:54px;
-  border:2px solid #f6e7ce;border-radius:50%;
-  background:rgba(7,27,43,.88);color:#f6e7ce;
-  font:900 29px/48px Arial,sans-serif;text-align:center;
-  box-shadow:0 3px 0 rgba(0,0,0,.45);cursor:pointer;
-  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
-}
-#mapLocate{top:152px}
-#mapNorth{top:218px;font-size:24px}
-#mapStatus{
-  position:absolute;left:50%;top:18px;transform:translateX(-50%);
-  z-index:60;min-width:180px;max-width:46vw;padding:10px 18px;
-  border:2px solid #f4c52f;border-radius:999px;
-  background:rgba(7,27,43,.88);color:#f6e7ce;
-  font:900 clamp(10px,2vw,15px)/1 'Roboto Condensed',Arial,sans-serif;
-  text-align:center;text-transform:uppercase;letter-spacing:.04em;
-  box-shadow:0 3px 0 rgba(0,0,0,.45);pointer-events:none;
-}
-#mapDestinationCard{
-  position:absolute;left:24px;bottom:24px;z-index:62;
-  width:min(440px,calc(100vw - 48px));padding:16px;
-  border:2px solid #f6e7ce;border-radius:22px;
-  background:rgba(7,27,43,.94);box-shadow:0 5px 0 rgba(0,0,0,.45);
-  color:#f6e7ce;
-}
-#mapDestinationCard .dest-title{
-  color:#f4c52f;font:900 clamp(20px,3.2vw,32px)/1 'Roboto Condensed',Arial,sans-serif;
-  text-transform:uppercase;
-}
-#mapDestinationCard .dest-meta{
-  display:flex;gap:22px;margin-top:7px;color:#f6e7ce;
-  font:900 clamp(13px,2.2vw,19px)/1 'Roboto Condensed',Arial,sans-serif;
-}
-#mapDestinationCard .dest-action{
-  width:100%;margin-top:13px;padding:13px 16px;border:0;border-radius:999px;
-  background:#f4c52f;color:#071b2b;
-  font:900 clamp(15px,2.5vw,23px)/1 'Roboto Condensed',Arial,sans-serif;
-  text-transform:uppercase;cursor:pointer;
-}
+#routeMap .maplibregl-canvas{width:100%!important;height:100%!important}
+#routeMap .maplibregl-canvas{display:block}
+#routeMap .maplibregl-ctrl-attrib{font:700 8px/1 Arial,sans-serif;background:rgba(7,27,43,.72)!important;color:#f6e7ce!important}
+#routeMap .maplibregl-ctrl-attrib a{color:#f6e7ce!important}
+#routeMap .maplibregl-ctrl-group{display:none}
+#mapBrand{position:absolute;left:24px;top:18px;z-index:20;color:#f6e7ce;font:900 clamp(25px,5vw,52px)/.9 'Roboto Condensed',Arial,sans-serif;letter-spacing:-.045em;text-transform:uppercase;text-shadow:3px 3px 0 #071b2b;pointer-events:none}
+#mapBrand b{color:#ef2d24}
+#mapBrand small{display:block;margin-top:7px;color:#f4c52f;font-size:.28em;letter-spacing:.32em;text-indent:.32em}
+#mapStatus{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:20;min-width:180px;max-width:46vw;padding:10px 18px;border:2px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.88);color:#f6e7ce;font:900 clamp(10px,2vw,15px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;letter-spacing:.04em;box-shadow:0 3px 0 rgba(0,0,0,.45);pointer-events:none}
+.map-control{position:absolute;z-index:21;right:18px;width:54px;height:54px;border:2px solid #f6e7ce;border-radius:50%;background:rgba(7,27,43,.88);color:#f6e7ce;font:900 29px/48px Arial,sans-serif;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.45);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#mapLocate{top:152px}#mapNorth{top:218px;font-size:24px}
+#currentLocation{position:absolute;left:24px;top:92px;z-index:20;padding:8px 12px;border:1px solid rgba(246,231,206,.7);border-radius:999px;background:rgba(7,27,43,.76);color:#f6e7ce;font:900 11px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap;pointer-events:none}
+#navOverlay{position:absolute;left:50%;top:82px;transform:translateX(-50%);z-index:20;display:none;align-items:center;justify-content:center;gap:8px;padding:8px 12px;border:2px solid #f4c52f;border-radius:12px;background:rgba(7,27,43,.88);color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;white-space:nowrap;pointer-events:none}
+#navOverlay.active{display:flex}
+#navDirection{color:#f4c52f}
+#navCompass{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:12;display:none;place-items:center;width:42px;height:42px;border-radius:50%;background:rgba(7,27,43,.82);border:2px solid #f4c52f;color:#f4c52f;font:900 25px/1 Arial,sans-serif;pointer-events:none}
+#navCompass.active{display:grid}
+#mapDestinationCard{position:absolute;left:24px;bottom:24px;z-index:20;width:min(440px,calc(100vw - 48px));padding:16px;border:2px solid #f6e7ce;border-radius:22px;background:rgba(7,27,43,.94);box-shadow:0 5px 0 rgba(0,0,0,.45);color:#f6e7ce}
+#mapDestinationCard .dest-title{color:#f4c52f;font:900 clamp(20px,3.2vw,32px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase}
+#mapDestinationCard .dest-meta{display:flex;gap:22px;margin-top:7px;color:#f6e7ce;font:900 clamp(13px,2.2vw,19px)/1 'Roboto Condensed',Arial,sans-serif}
+#mapDestinationCard .dest-action{width:100%;margin-top:13px;padding:13px 16px;border:0;border-radius:999px;background:#f4c52f;color:#071b2b;font:900 clamp(15px,2.5vw,23px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;cursor:pointer;touch-action:manipulation}
 #mapDestinationCard .dest-action:active{transform:translateY(1px)}
-#currentLocation,#nextCheckpoint,#distanceNext,#routeStatus,#routeProgress,#routeAction,#directBarameel,#navOverlay,#navCompass{
-  /* Repositioned into the new game-map chrome below. */
-}
-#currentLocation{left:24px;top:92px;width:auto;height:auto;z-index:60;justify-content:flex-start;padding:8px 12px;border:1px solid rgba(246,231,206,.7);border-radius:999px;background:rgba(7,27,43,.76);font-size:11px}
-#nextCheckpoint{left:50%;top:auto;bottom:160px;width:auto;height:auto;transform:translateX(-50%);z-index:60;padding:7px 12px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.78);font-size:12px}
-#distanceNext{left:50%;top:auto;bottom:125px;width:auto;height:auto;transform:translateX(-50%);z-index:60;padding:6px 10px;border-radius:999px;background:rgba(7,27,43,.72);font-size:11px}
-#routeStatus{left:50%;top:auto;bottom:88px;width:auto;height:auto;transform:translateX(-50%);z-index:60;padding:6px 10px;border-radius:999px;background:rgba(7,27,43,.72);font-size:10px}
-#routeProgress{left:24px;right:24px;top:auto;bottom:14px;width:auto;height:4px;z-index:63;background:rgba(246,231,206,.25)}
-#routeAction{left:24px;right:24px;bottom:82px;top:auto;width:auto;height:48px;z-index:64}
-#directBarameel{left:24px;right:24px;bottom:24px;top:auto;width:auto;height:52px;z-index:64;opacity:0;pointer-events:none}
-#directBarameel:disabled{opacity:0;pointer-events:none}
-#navOverlay{
-  left:50%;top:82px;width:auto;height:auto;transform:translateX(-50%);
-  z-index:62;border-color:#f4c52f;white-space:nowrap;
-}
-#navCompass{left:50%;top:50%;transform:translate(-50%,-50%);z-index:59}
-#checkpointLockLayer{z-index:58}
-#livePlayers{z-index:57}
-.route-map-stage .flow-hit{
-  position:absolute;z-index:70;border:0;background:transparent;cursor:pointer;
-  touch-action:manipulation;
-}
+#nextCheckpoint,#distanceNext,#routeStatus{position:absolute;left:50%;transform:translateX(-50%);z-index:20;color:#f6e7ce;font:900 11px/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;white-space:nowrap;pointer-events:none}
+#nextCheckpoint{bottom:160px;padding:7px 12px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.78);font-size:12px}
+#distanceNext{bottom:128px;padding:6px 10px;border-radius:999px;background:rgba(7,27,43,.72)}
+#routeStatus{bottom:92px;padding:6px 10px;border-radius:999px;background:rgba(7,27,43,.72)}
+#routeProgress{position:absolute;left:24px;right:24px;bottom:14px;height:4px;z-index:20;background:rgba(246,231,206,.25);border-radius:99px;overflow:hidden;pointer-events:none}
+#routeProgressFill{height:100%;width:0;background:#ef2d24;border-radius:99px;transition:width .35s ease}
+#routeAction{position:absolute;left:24px;right:24px;bottom:82px;top:auto;width:auto;height:48px;z-index:19;opacity:0;pointer-events:none;border:0;background:transparent}
+#routeAction.ready{pointer-events:auto}
+#directBarameel{display:none}
+.map-pin{position:relative;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:3px solid #f6e7ce;background:#071b2b;box-shadow:0 3px 0 rgba(0,0,0,.45),0 0 12px rgba(244,197,47,.55);font:900 10px/1 'Roboto Condensed',Arial,sans-serif;color:#f6e7ce;text-align:center;text-transform:uppercase}
+.map-pin.checkpoint{background:#071b2b;border-color:#f4c52f}
+.map-pin.cleared{background:#f4c52f;color:#071b2b}
+.map-pin.barameel{width:44px;height:44px;background:#ef2d24;border-color:#f4c52f;font-size:11px;box-shadow:0 3px 0 rgba(0,0,0,.5),0 0 18px rgba(239,45,36,.55)}
+.map-pin .pin-label{position:absolute;left:50%;top:39px;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.9);color:#f6e7ce;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
+.map-player{width:48px;height:48px;border-radius:50%;border:3px solid #f4c52f;background:#071b2b;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(244,197,47,.8);overflow:hidden;background-image:url('./assets/avatar-selection.webp?v=20261007-26.2');background-repeat:no-repeat;background-size:320% 560%}
+.map-player-name{position:absolute;top:54px;left:50%;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
+.live-player{width:26px;height:26px;border-radius:50%;border:2px solid #f6e7ce;background:#ef2d24;color:#f6e7ce;box-shadow:0 0 0 2px #071b2b,0 0 10px rgba(239,45,36,.75);font:900 9px/22px 'Roboto Condensed',Arial,sans-serif;text-align:center}
+.live-player-name{position:absolute;top:29px;left:50%;transform:translateX(-50%);color:#f6e7ce;text-shadow:1px 1px 0 #071b2b;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
+.route-error{color:#ff9a8f!important}
 @media(max-width:700px){
   #mapBrand{left:14px;top:13px;font-size:30px}
   #mapStatus{top:13px;right:70px;left:auto;transform:none;min-width:0;max-width:45vw;padding:8px 10px}
   .map-control{right:12px;width:46px;height:46px;line-height:40px}
-  #mapLocate{top:78px}.map-control{font-size:25px}
-  #mapNorth{top:136px;font-size:20px}
-  #currentLocation{left:14px;top:72px;max-width:55vw}
+  #mapLocate{top:78px}#mapNorth{top:136px;font-size:20px}
+  #currentLocation{left:14px;top:72px;max-width:55vw;overflow:hidden;text-overflow:ellipsis}
   #mapDestinationCard{left:12px;right:12px;bottom:12px;width:auto;padding:13px;border-radius:18px}
   #mapDestinationCard .dest-action{padding:12px}
-  #nextCheckpoint{bottom:144px}.distanceNext{bottom:0}
-  #routeAction{left:12px;right:12px;bottom:12px;height:46px}
-  #routeStatus,#distanceNext,#nextCheckpoint{display:none}
-}
-@media(min-width:701px) and (orientation:landscape){
-  #mapDestinationCard{bottom:22px;left:22px}
+  #nextCheckpoint,#distanceNext,#routeStatus{display:none}
 }
 </style>
 </head>
 <body>
 <main class="flow-stage route-map-stage">
-<div id="mapBackdrop" aria-hidden="true"></div>
+<div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="mapBrand">BARAMEEL <b>RUN</b><small>ALEXANDRIA • REAL GAME MAP</small></div>
-<div id="mapStatus">REAL MAP • GPS READY</div>
+<div id="mapStatus">MAP STARTING…</div>
 <button id="mapLocate" class="map-control" aria-label="Center on player">◉</button>
 <button id="mapNorth" class="map-control" aria-label="North up">N</button>
+<div id="currentLocation">LOCATING…</div>
+<div id="navOverlay" aria-live="polite"><span id="navDirection">WALK</span><span id="navDistance"></span><span>WALKING</span></div>
+<div id="navCompass" aria-hidden="true">↑</div>
 <div id="mapDestinationCard">
   <div class="dest-title">BARAMEEL</div>
   <div class="dest-meta"><span id="destDistance">—</span><span id="destTime">—</span></div>
   <button id="startNavCard" class="dest-action">START NAVIGATION</button>
 </div>
-<div id="checkpointLockLayer" aria-hidden="true">
-  <div class="cp-vignette"></div>
-  <div class="cp-ring"></div><div class="cp-ring r2"></div><div class="cp-ring r3"></div>
-  <div class="cp-sweep"></div><div class="cp-cross"></div>
-  <div class="cp-scanline"></div>
-  <div class="cp-lock-badge">CHECKPOINT SIGNAL LOCKED</div>
-</div>
-<div id="routeMap" aria-label="Live checkpoint map"></div>
-<div id="currentLocation" class="route-field">LOCATING…</div>
-<div id="nextCheckpoint" class="route-field">LOADING…</div>
-<div id="distanceNext" class="route-field">—</div>
-<div id="routeStatus" aria-live="polite">PREPARING LIVE ROUTE</div><div id="navCompass" aria-hidden="true">↑</div>
-<div id="navOverlay" aria-live="polite"><span id="navDirection">WALK</span><span id="navDistance"></span><span id="navMode">WALKING</span></div>
-<div id="livePlayers" aria-hidden="true"></div>
+<div id="nextCheckpoint">LOADING…</div>
+<div id="distanceNext">—</div>
+<div id="routeStatus" aria-live="polite">PREPARING ROUTE</div>
 <div id="routeProgress" aria-hidden="true"><div id="routeProgressFill"></div></div>
-<button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back to My Run"></button>
-<button id="routeAction" class="flow-hit" disabled aria-label="Go to Checkpoint"></button>
-<button id="directBarameel" class="flow-hit" aria-label="Direct to Barameel" tabindex="-1"></button>
+<button id="routeAction" aria-label="Open checkpoint scanner"></button>
+<div id="livePlayers" aria-hidden="true"></div>
+<button id="back" aria-label="Back to My Run" style="position:absolute;left:3%;top:1%;width:19%;height:6%;z-index:30;border:0;background:transparent;cursor:pointer"></button>
 </main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
-<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js"></script>
 <script src="./config.js?v=20261008-1"></script>
-<script>
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js?v=20261008-2',{updateViaCache:'none'}).catch(()=>{});
-}
-</script>
-<script src="./app.js?v=20261008-1"></script>
+<script src="./app.js?v=20261007-26.2"></script>
+
 <script>
 (async()=>{
-  const status=document.getElementById('routeStatus'),current=document.getElementById('currentLocation');
-  const next=document.getElementById('nextCheckpoint'),distance=document.getElementById('distanceNext');
-  const fill=document.getElementById('routeProgressFill'),action=document.getElementById('routeAction');
-  const direct=document.getElementById('directBarameel');
-  const navOverlay=document.getElementById('navOverlay'),navDirection=document.getElementById('navDirection'),navDistance=document.getElementById('navDistance'),navCompass=document.getElementById('navCompass');
-  const livePlayersLayer=document.getElementById('livePlayers');
+  const status=document.getElementById('routeStatus');
+  const current=document.getElementById('currentLocation');
+  const next=document.getElementById('nextCheckpoint');
+  const distance=document.getElementById('distanceNext');
+  const fill=document.getElementById('routeProgressFill');
+  const action=document.getElementById('routeAction');
+  const liveLayer=document.getElementById('livePlayers');
+  const navOverlay=document.getElementById('navOverlay');
+  const navDirection=document.getElementById('navDirection');
+  const navDistance=document.getElementById('navDistance');
+  const navCompass=document.getElementById('navCompass');
   const routeBack=document.getElementById('back');
+  const mapStatus=document.getElementById('mapStatus');
+  const destDistance=document.getElementById('destDistance');
+  const destTime=document.getElementById('destTime');
+  const startNavCard=document.getElementById('startNavCard');
+
   routeBack.onclick=()=>BR.goAfter('screen04.html','back',180);
 
-  const TEST_PARAMS=new URLSearchParams(location.search);
-  const TEST_MODE=TEST_PARAMS.get('test')==='1';
-  // Supabase player sync must NEVER block map/GPS startup.
-  // It runs in the background while the map and location services initialize.
-  if(!TEST_MODE){
-    // syncPlayer may be synchronous in some cached app.js builds.
-    // Never let player sync failure abort map/GPS boot.
-    Promise.resolve().then(()=>BR.syncPlayer()).catch(()=>null);
-  }
-  const TEST_CP_ID=String(TEST_PARAMS.get('cp')||'CP01').toUpperCase();
-  const TEST_APPROACH=TEST_MODE && TEST_PARAMS.get('approach')==='1';
-  const TEST_INSTANT=TEST_MODE && TEST_PARAMS.get('instant')==='1';
-  let testApproachTimer=null;
+  const params=new URLSearchParams(location.search);
+  const TEST_MODE=params.get('test')==='1';
+  const TEST_CP_ID=String(params.get('cp')||'CP01').toUpperCase();
+  const TEST_APPROACH=TEST_MODE&&params.get('approach')==='1';
+  const TEST_INSTANT=TEST_MODE&&params.get('instant')==='1';
   const CHECKPOINT_HOTSPOT_RADIUS=10;
   const CHECKPOINT_SIGNAL_RADIUS=35;
+
   const cfg=window.BARAMEEL_ROUTE_CONFIG||{};
   const destination=cfg.destination&&Number.isFinite(Number(cfg.destination.lat))&&Number.isFinite(Number(cfg.destination.lng))
-    ? {lat:Number(cfg.destination.lat),lng:Number(cfg.destination.lng),name:String(cfg.destination.name||'BARAMEEL'),radius_meters:Math.max(20,Number(cfg.destination.radius_meters||120))}
+    ? {id:'barameel',name:String(cfg.destination.name||'BARAMEEL'),lat:Number(cfg.destination.lat),lng:Number(cfg.destination.lng),radius_meters:Math.max(20,Number(cfg.destination.radius_meters||120))}
     : null;
   const checkpoints=Array.isArray(cfg.checkpoints)
-    ? cfg.checkpoints.filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))).map(x=>({id:String(x.id||''),name:String(x.name||'CHECKPOINT'),lat:Number(x.lat),lng:Number(x.lng),order:Number.isFinite(Number(x.order))?Number(x.order):null,radius_meters:Math.max(5,Number(x.radius_meters||CHECKPOINT_HOTSPOT_RADIUS))}))
+    ? cfg.checkpoints.filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng)))
+      .map(x=>({id:String(x.id||''),name:String(x.name||'CHECKPOINT'),lat:Number(x.lat),lng:Number(x.lng),order:Number.isFinite(Number(x.order))?Number(x.order):null,radius_meters:Math.max(5,Number(x.radius_meters||CHECKPOINT_HOTSPOT_RADIUS))}))
     : [];
 
-  // These must exist before initMap() runs. let/const declarations are not
-  // initialized before their declaration (TDZ), even though function
-  // declarations themselves are hoisted.
-  let map=null,watchId=null,playerMarker=null,markers=[],latestPosition=null,routeLine=null;
-  let navigationTarget=null,navigationSteps=[],navigationStarted=false,lastRouteAt=0,lastRoutePosition=null;
+  let map=null;
+  let mapReady=false;
+  let mapLoadFailed=false;
+  let latestPosition=null;
+  let watchId=null;
+  let locationTimer=null;
   let bestGpsAccuracy=Infinity;
-  const GPS_GOOD_ACCURACY=35;
-  let baseTiles=null,labelTiles=null;
-  const liveMarkers=new Map();
-  const discovered=new Set((BR.state?.checkpoints||[]).map(String));
+  let navigationTarget=null;
+  let navigationStarted=false;
+  let navigationSteps=[];
+  let lastRouteAt=0;
+  let lastRoutePosition=null;
+  let routeReadyOnce=false;
+  let playerMarker=null;
+  let destinationMarker=null;
+  let checkpointMarkers=new Map();
+  let liveMarkers=new Map();
+  let testApproachTimer=null;
 
-  // Render the real map immediately after its configuration exists.
-  // GPS and Supabase are intentionally non-blocking.
-  initMap(destination||{lat:31.190520,lng:29.920547});
-  document.getElementById('mapStatus').textContent='REAL MAP • WAITING FOR GPS';
+  const roadStyle='./assets/barameel-map-style.json?v=20261008-32.0';
 
   function haversine(a,b){
     const R=6371000,rad=Math.PI/180;
@@ -322,187 +161,144 @@ if('serviceWorker' in navigator){
     return 2*R*Math.asin(Math.min(1,Math.sqrt(x)));
   }
   function formatDistance(m){return m<1000?Math.max(1,Math.round(m))+' M':(m/1000).toFixed(m<10000?1:0)+' KM'}
-  function setAction(enabled,ariaLabel='Go to Checkpoint'){
+  function setAction(enabled,label='Open Checkpoint Scanner'){
+    action.setAttribute('aria-label',label);
     action.disabled=!enabled;
-    action.setAttribute('aria-label',ariaLabel);
+    action.classList.toggle('ready',!!enabled);
   }
   function avatarPosition(id){
-    const map={avatar01:['0%','24%'],avatar02:['50%','24%'],avatar03:['100%','24%'],avatar04:['0%','78%'],avatar05:['50%','78%'],avatar06:['100%','78%']};
-    return map[id]||map.avatar01;
+    const mapPos={avatar01:['0%','24%'],avatar02:['50%','24%'],avatar03:['100%','24%'],avatar04:['0%','78%'],avatar05:['50%','78%'],avatar06:['100%','78%']};
+    return mapPos[id]||mapPos.avatar01;
   }
-  function playerIcon(){
-    const avatar=BR.selectedAvatar(),name=String(BR.state?.nickname||'PLAYER').toUpperCase().replace(/[&<>"]/g,'');
-    const pos=avatarPosition(avatar);
-    return L.divIcon({className:'',iconSize:[78,70],iconAnchor:[39,35],html:'<div class="player-marker"><div class="player-marker-avatar" style="background-position:'+pos[0]+' '+pos[1]+'"></div><div class="player-marker-name">'+name+'</div></div>'});
-  }
-  function marker(lat,lng,type,text){
-    const fillColor=type==='player'?'#ef2d24':type==='barameel'?'#f4c52f':type==='found'?'#f4c52f':'#071b2b';
-    const m=L.circleMarker([lat,lng],{radius:type==='player'?8:7,color:'#f6e7ce',weight:3,fillColor,fillOpacity:1});
-    m.addTo(map).bindTooltip(text,{direction:'top',offset:[0,-10]});
-    return m;
+  function getDiscovered(){
+    const out=new Set((BR.state?.checkpoints||[]).map(String));
+    return out;
   }
   function unlockedCheckpoints(){
-    const ordered=[...checkpoints].sort((a,b)=>{
-      const ao=Number.isFinite(a.order)?a.order:9999,bo=Number.isFinite(b.order)?b.order:9999;
-      return ao-bo;
-    });
+    const discovered=getDiscovered();
+    const ordered=[...checkpoints].sort((a,b)=>(Number.isFinite(a.order)?a.order:9999)-(Number.isFinite(b.order)?b.order:9999));
     return ordered.slice(0,Math.min(ordered.length,Math.max(1,discovered.size+1)));
   }
-
-  let mapLibreLayer=null;
-  let mapFallbackStarted=false;
-
-  function addRasterFallback(reason=''){
-    if(!map || baseTiles)return;
-    try{
-      baseTiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-        maxZoom:19,
-        attribution:'© OpenStreetMap contributors'
-      });
-      baseTiles.on('load',()=>{
-        const el=document.getElementById('mapStatus');
-        if(el && !navigationStarted)el.textContent='REAL MAP • GPS READY';
-      });
-      baseTiles.on('tileerror',(evt)=>{
-        console.error('[BARAMEEL OSM TILE ERROR]',evt?.error||evt);
-        const el=document.getElementById('mapStatus');
-        if(el && !navigationStarted)el.textContent='MAP TILES UNAVAILABLE • RETRY';
-      });
-      baseTiles.addTo(map);
-      mapFallbackStarted=true;
-    }catch(err){
-      console.error('[BARAMEEL MAP FALLBACK]',err);
-    }
-  }
-
-  function initMap(center){
-    if(map)return;
-    const fallbackCenter=center||destination||{lat:31.190520,lng:29.920547};
-
-    // Stable production baseline: Leaflet + official OSM raster tiles.
-    // MapLibre is temporarily removed from the runtime path until this
-    // navigation baseline is verified independently.
-    map=L.map('routeMap',{
-      zoomControl:true,
-      attributionControl:true,
-      scrollWheelZoom:true,
-      doubleClickZoom:true,
-      touchZoom:true,
-      dragging:true,
-      preferCanvas:true,
-      minZoom:12,
-      maxZoom:19
-    }).setView([fallbackCenter.lat,fallbackCenter.lng],15);
-
-    addRasterFallback('BASELINE');
-
-    // BARAMEEL GAME MAP: use the repository-hosted custom vector style.
-    // This keeps real OpenStreetMap geometry/GPS/routing, but removes labels,
-    // POIs and building clutter from the visual layer.
-    try{
-      if(typeof window.L?.maplibreGL==='function'){
-        const styleUrl='./assets/barameel-map-style.json?v=20261008-31.0';
-        mapLibreLayer=L.maplibreGL({
-          style:styleUrl,
-          interactive:false,
-          attributionControl:false,
-          // Draw the vector game map above the OSM raster fallback.
-          // The adapter defaults to tilePane; overlayPane guarantees the
-          // custom BARAMEEL style is actually visible.
-          pane:'overlayPane'
-        }).addTo(map);
-
-        const gl=mapLibreLayer.getMaplibreMap?.();
-        const onVectorReady=()=>{
-          if(baseTiles){
-            map.removeLayer(baseTiles);
-            baseTiles=null;
-          }
-          const el=document.getElementById('mapStatus');
-          if(el && !navigationStarted)el.textContent='BARAMEEL GAME MAP • GPS READY';
-          console.log('[BARAMEEL VECTOR MAP] custom style loaded');
-        };
-        const onVectorError=(evt)=>{
-          console.error('[BARAMEEL VECTOR MAP ERROR]',evt?.error||evt);
-          const el=document.getElementById('mapStatus');
-          if(el && !navigationStarted)el.textContent='GAME MAP ERROR • RASTER FALLBACK';
-        };
-        if(gl?.once){
-          gl.once('load',onVectorReady);
-          gl.on?.('error',onVectorError);
-        }else{
-          mapLibreLayer.on?.('load',onVectorReady);
-          mapLibreLayer.on?.('error',onVectorError);
-        }
-      }else{
-        console.warn('[BARAMEEL VECTOR MAP] maplibreGL adapter unavailable');
-      }
-    }catch(err){
-      console.error('[BARAMEEL VECTOR MAP FALLBACK]',err);
-      mapLibreLayer=null;
-    }
-
-    if(destination)marker(destination.lat,destination.lng,'barameel',destination.name);
-    const unlocked=unlockedCheckpoints();
-    unlocked.forEach(cp=>markers.push({
-      cp,marker:marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CLEARED':'AVAILABLE')
-    }));
-  }
-  function renderMap(pos){
-    latestPosition=pos;
-    initMap(pos);
-    if(!playerMarker){
-      playerMarker=L.marker([pos.lat,pos.lng],{icon:playerIcon(),keyboard:false,interactive:false}).addTo(map);
-    }else{
-      playerMarker.setLatLng([pos.lat,pos.lng]);
-      playerMarker.setIcon(playerIcon());
-    }
-  }
-
-  function projectLivePlayer(lat,lng,name,avatar){
-    if(!map)return;
-    const point=map.latLngToContainerPoint([lat,lng]);
+  function markerElement(kind,label){
     const el=document.createElement('div');
-    el.className='live-player-marker';
-    el.textContent=(String(name||'P').trim()[0]||'P').toUpperCase();
-    const label=document.createElement('span');label.textContent=String(name||'PLAYER').toUpperCase();el.appendChild(label);
-    el.style.left=point.x+'px';el.style.top=point.y+'px';
-    livePlayersLayer.appendChild(el);
+    el.className='map-pin '+kind;
+    const labelEl=document.createElement('span');
+    labelEl.className='pin-label';
+    labelEl.textContent=label;
+    el.appendChild(labelEl);
+    return el;
+  }
+  function addDestinationMarker(){
+    if(!map||!mapReady||!destination||destinationMarker)return;
+    const el=markerElement('barameel','BARAMEEL');
+    destinationMarker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([destination.lng,destination.lat]).addTo(map);
+  }
+  function syncCheckpointMarkers(){
+    if(!map||!mapReady)return;
+    const discovered=getDiscovered();
+    const allowed=new Set(unlockedCheckpoints().map(x=>x.id));
+    for(const [id,m] of checkpointMarkers){
+      if(!allowed.has(id)){
+        m.remove();
+        checkpointMarkers.delete(id);
+      }
+    }
+    for(const cp of checkpoints){
+      if(!allowed.has(cp.id))continue;
+      const isCleared=discovered.has(cp.id);
+      const existing=checkpointMarkers.get(cp.id);
+      if(existing){
+        existing.getElement().classList.toggle('cleared',isCleared);
+        existing.getElement().classList.toggle('checkpoint',!isCleared);
+        continue;
+      }
+      const el=markerElement(isCleared?'cleared':'checkpoint',cp.name);
+      const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([cp.lng,cp.lat]).addTo(map);
+      checkpointMarkers.set(cp.id,m);
+    }
+  }
+  function playerElement(){
+    const el=document.createElement('div');
+    const avatar=BR.selectedAvatar();
+    const name=String(BR.state?.nickname||'PLAYER').toUpperCase();
+    el.className='map-player';
+    const pos=avatarPosition(avatar);
+    el.style.backgroundPosition=pos[0]+' '+pos[1];
+    const nameEl=document.createElement('span');
+    nameEl.className='map-player-name';
+    nameEl.textContent=name;
+    el.appendChild(nameEl);
+    return el;
+  }
+  function ensurePlayerMarker(){
+    if(!map||!mapReady||!latestPosition)return;
+    if(!playerMarker){
+      playerMarker=new maplibregl.Marker({element:playerElement(),anchor:'center'}).setLngLat([latestPosition.lng,latestPosition.lat]).addTo(map);
+    }else{
+      playerMarker.setLngLat([latestPosition.lng,latestPosition.lat]);
+    }
+  }
+  function projectLivePlayers(list){
+    if(!map||!mapReady)return;
+    const keep=new Set();
+    for(const p of list){
+      const id=String(p.id||p.player_id||'');
+      if(!id||id===String(BR.state?.playerId||''))continue;
+      const lat=Number(p.lat),lng=Number(p.lng);
+      if(!Number.isFinite(lat)||!Number.isFinite(lng))continue;
+      keep.add(id);
+      let marker=liveMarkers.get(id);
+      if(!marker){
+        const el=document.createElement('div');
+        el.className='live-player';
+        const first=(String(p.nickname||p.name||'P').trim()[0]||'P').toUpperCase();
+        el.textContent=first;
+        const label=document.createElement('span');
+        label.className='live-player-name';
+        label.textContent=String(p.nickname||p.name||'PLAYER').toUpperCase();
+        el.appendChild(label);
+        marker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([lng,lat]).addTo(map);
+        liveMarkers.set(id,marker);
+      }else{
+        marker.setLngLat([lng,lat]);
+      }
+    }
+    for(const [id,m] of liveMarkers){
+      if(!keep.has(id)){m.remove();liveMarkers.delete(id);}
+    }
   }
   async function loadLivePlayers(pos=latestPosition){
-    // Live player sharing is non-blocking. Navigation continues even if the
-    // live-player service is temporarily unavailable.
+    if(TEST_MODE||!pos)return;
     try{
-      const payload=pos?{lat:Number(pos.lat),lng:Number(pos.lng),accuracy_meters:Number(pos.accuracy||0)}:{};
-      const r=await BR.api('/live-players',payload);
-      const list=Array.isArray(r?.players)?r.players:[];
-      livePlayersLayer.innerHTML='';
-      for(const p of list){
-        if(!Number.isFinite(Number(p.lat))||!Number.isFinite(Number(p.lng)))continue;
-        if(String(p.id||'')===String(BR.state?.playerId||''))continue;
-        projectLivePlayer(Number(p.lat),Number(p.lng),p.nickname||p.name,p.avatar);
-      }
+      const r=await BR.api('/live-players',{lat:Number(pos.lat),lng:Number(pos.lng),accuracy_meters:Number(pos.accuracy||0)});
+      projectLivePlayers(Array.isArray(r?.players)?r.players:[]);
     }catch{
-      livePlayersLayer.innerHTML='';
+      for(const m of liveMarkers.values())m.remove();
+      liveMarkers.clear();
     }
   }
-
   function routeInstruction(step){
     const m=step?.maneuver||{};
     const modifier=String(m.modifier||'').replace(/_/g,' ').toUpperCase();
     const type=String(m.type||'').toLowerCase();
     if(type==='arrive')return 'ARRIVE';
     if(type==='depart')return modifier?('GO '+modifier):'START WALKING';
-    if(type==='roundabout' || type==='rotary')return modifier?('ROUNDABOUT • '+modifier):'ROUNDABOUT';
+    if(type==='roundabout'||type==='rotary')return modifier?('ROUNDABOUT • '+modifier):'ROUNDABOUT';
     if(modifier.includes('UTURN'))return 'U-TURN';
-    if(modifier.includes('SLIGHT RIGHT'))return 'SLIGHT RIGHT';
-    if(modifier.includes('SLIGHT LEFT'))return 'SLIGHT LEFT';
     if(modifier.includes('SHARP RIGHT'))return 'SHARP RIGHT';
     if(modifier.includes('SHARP LEFT'))return 'SHARP LEFT';
+    if(modifier.includes('SLIGHT RIGHT'))return 'SLIGHT RIGHT';
+    if(modifier.includes('SLIGHT LEFT'))return 'SLIGHT LEFT';
     if(modifier.includes('RIGHT'))return 'TURN RIGHT';
     if(modifier.includes('LEFT'))return 'TURN LEFT';
-    return 'GO STRAIGHT';  }
-
+    return 'GO STRAIGHT';
+  }
+  function bearing(a,b){
+    const rad=Math.PI/180,deg=180/Math.PI;
+    const y=Math.sin((b.lng-a.lng)*rad)*Math.cos(b.lat*rad);
+    const x=Math.cos(a.lat*rad)*Math.sin(b.lat*rad)-Math.sin(a.lat*rad)*Math.cos(b.lat*rad)*Math.cos((b.lng-a.lng)*rad);
+    return (Math.atan2(y,x)*deg+360)%360;
+  }
   function nearestUpcomingStep(pos){
     let best=null,bestD=Infinity;
     for(const step of navigationSteps){
@@ -513,32 +309,125 @@ if('serviceWorker' in navigator){
     }
     return best;
   }
-  function bearing(a,b){
-    const rad=Math.PI/180,deg=180/Math.PI;
-    const y=Math.sin((b.lng-a.lng)*rad)*Math.cos(b.lat*rad);
-    const x=Math.cos(a.lat*rad)*Math.sin(b.lat*rad)-Math.sin(a.lat*rad)*Math.cos(b.lat*rad)*Math.cos((b.lng-a.lng)*rad);
-    return (Math.atan2(y,x)*deg+360)%360;
+  function setMapStatus(textValue,error=false){
+    mapStatus.textContent=textValue;
+    mapStatus.classList.toggle('route-error',error);
   }
-
+  function initMap(center){
+    if(map||typeof window.maplibregl==='undefined'){
+      if(typeof window.maplibregl==='undefined')setMapStatus('MAP ENGINE UNAVAILABLE',true);
+      return;
+    }
+    const c=center||destination||{lat:31.190520,lng:29.920547};
+    try{
+      map=new maplibregl.Map({
+        container:'routeMap',
+        style:roadStyle,
+        center:[c.lng,c.lat],
+        zoom:15,
+        pitch:0,
+        bearing:0,
+        attributionControl:true,
+        cooperativeGestures:false,
+        dragPan:true,
+        scrollZoom:true,
+        doubleClickZoom:true,
+        touchZoomRotate:true,
+        minZoom:12,
+        maxZoom:19,
+        trackResize:true
+      });
+      map.on('load',()=>{
+        mapReady=true;
+        mapLoadFailed=false;
+        routeReadyOnce=true;
+        setMapStatus('BARAMEEL GAME MAP • READY');
+        if(destination) addDestinationMarker();
+        syncCheckpointMarkers();
+        ensurePlayerMarker();
+        if(latestPosition) renderRoutePosition(latestPosition);
+        if(navigationTarget) updateNavigation(latestPosition);
+      });
+      map.on('error',evt=>{
+        console.error('[BARAMEEL MAP ERROR]',evt?.error||evt);
+        if(!mapReady&&!mapLoadFailed){
+          mapLoadFailed=true;
+          setMapStatus('GAME MAP LOAD FAILED',true);
+          status.textContent='MAP STYLE FAILED — RETRY';
+          status.classList.add('route-error');
+        }
+      });
+      map.on('resize',()=>{});
+    }catch(err){
+      console.error('[BARAMEEL MAP INIT ERROR]',err);
+      map=null;
+      mapLoadFailed=true;
+      setMapStatus('GAME MAP INIT FAILED',true);
+      status.textContent='MAP START FAILED — RETRY';
+      status.classList.add('route-error');
+    }
+  }
+  function waitForMap(timeout=8000){
+    if(mapReady)return Promise.resolve(true);
+    if(!map)return Promise.resolve(false);
+    return new Promise(resolve=>{
+      let done=false;
+      const timer=setTimeout(()=>{if(!done){done=true;resolve(false)}},timeout);
+      map.once('load',()=>{if(!done){done=true;clearTimeout(timer);resolve(true)}});
+    });
+  }
+  function renderRoutePosition(pos){
+    latestPosition=pos;
+    if(!mapReady)return;
+    ensurePlayerMarker();
+  }
+  function addRouteSourceAndLayer(){
+    if(!mapReady||map.getSource('walking-route'))return;
+    map.addSource('walking-route',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+    map.addLayer({
+      id:'walking-route-line',
+      type:'line',
+      source:'walking-route',
+      layout:{'line-cap':'round','line-join':'round'},
+      paint:{'line-color':'#ef2d24','line-width':5,'line-opacity':.92,'line-dasharray':[2.2,1.4]}
+    });
+  }
+  function setRouteGeometry(geometry){
+    if(!mapReady||!geometry)return;
+    addRouteSourceAndLayer();
+    map.getSource('walking-route').setData({type:'Feature',properties:{},geometry});
+  }
   async function buildWalkingRoute(origin,target){
-    if(!target)return false;
+    if(!origin||!target)return false;
     const url='https://routing.openstreetmap.de/routed-foot/route/v1/driving/'+origin.lng+','+origin.lat+';'+target.lng+','+target.lat+'?overview=full&geometries=geojson&steps=true';
     try{
-      const res=await fetch(url,{headers:{'Accept':'application/json'}});
+      const res=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store'});
       if(!res.ok)throw new Error('ROUTER_'+res.status);
       const data=await res.json();
       const route=data?.routes?.[0];
       if(!route?.geometry?.coordinates?.length)throw new Error('NO_WALKING_ROUTE');
-      if(routeLine)routeLine.remove();
-      routeLine=L.geoJSON(route.geometry,{style:{color:'#ef2d24',weight:5,opacity:.92,dashArray:'12 8'}}).addTo(map);
+      await waitForMap();
+      if(!mapReady)throw new Error('MAP_NOT_READY');
+      setRouteGeometry(route.geometry);
       navigationSteps=Array.isArray(route.legs?.[0]?.steps)?route.legs[0].steps:[];
-      lastRouteAt=Date.now();lastRoutePosition={...origin};
+      lastRouteAt=Date.now();
+      lastRoutePosition={...origin};
       navOverlay.classList.add('active');
       navCompass.classList.add('active');
-      status.textContent='WALKING NAVIGATION • FOLLOW THE ROUTE';document.getElementById('mapStatus').textContent='WALKING TO '+navigationTarget.name;
-      updateNavigation(origin);
+      navDirection.textContent='START WALKING';
+      navDistance.textContent=formatDistance(Number(route.distance||0));
+      status.textContent='WALKING NAVIGATION • FOLLOW THE ROUTE';
+      status.classList.remove('route-error');
+      setMapStatus('WALKING TO '+navigationTarget.name);
+      if(!routeReadyOnce){
+        const bounds=new maplibregl.LngLatBounds();
+        for(const c of route.geometry.coordinates)bounds.extend(c);
+        map.fitBounds(bounds,{padding:{top:150,bottom:230,left:30,right:30},duration:500,maxZoom:17});
+        routeReadyOnce=true;
+      }
       return true;
     }catch(e){
+      console.error('[BARAMEEL WALKING ROUTE]',e);
       navOverlay.classList.remove('active');
       navCompass.classList.remove('active');
       status.textContent='WALKING ROUTE UNAVAILABLE — USE MAP';
@@ -546,301 +435,185 @@ if('serviceWorker' in navigator){
       return false;
     }
   }
-
+  function enterCheckpointHotspot(cp){
+    if(!cp)return;
+    next.textContent=cp.name;
+    distance.textContent='YOU ARE HERE';
+    status.textContent='CHECKPOINT READY • OPEN SCANNER';
+    status.classList.remove('route-error');
+    setAction(true,'Open Checkpoint Scanner');
+    action.onclick=()=>{
+      const url=TEST_MODE
+        ? 'checkpoint-scanner.html?v=20261008-2&test=1&cp='+encodeURIComponent(cp.id)
+        : 'checkpoint-scanner.html?v=20261008-2';
+      BR.goAfter(url,'scan',220);
+    };
+  }
   function updateNavigation(pos){
-    if(!navigationStarted||!navigationTarget)return;
+    if(!navigationStarted||!navigationTarget||!pos)return;
     const remaining=haversine(pos,navigationTarget);
-    distance.textContent=formatDistance(remaining);
     next.textContent=navigationTarget.name;
-
-    // Do not recenter on every GPS update. The player may freely pan/zoom;
-    // the Locate control is the explicit recenter action.
-    if(map) map.invalidateSize({pan:false});
-
+    distance.textContent=formatDistance(remaining);
     const upcoming=nearestUpcomingStep(pos);
     if(upcoming){
       navDirection.textContent=routeInstruction(upcoming.step);
       navDistance.textContent=upcoming.distance<=10?'NOW':'IN '+formatDistance(upcoming.distance);
     }
-
     if(lastRoutePosition){
       const moved=haversine(lastRoutePosition,pos);
       if(moved>4){
-        const hdg=bearing(lastRoutePosition,pos);
-        navCompass.style.transform='rotate('+hdg+'deg)';
+        navCompass.style.transform='translate(-50%,-50%) rotate('+bearing(lastRoutePosition,pos)+'deg)';
         lastRoutePosition={...pos};
       }
     }
-
-    if(navigationTarget.id!=='barameel' && remaining<=Math.max(5,navigationTarget.radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
+    if(navigationTarget.id!=='barameel'&&remaining<=Math.max(5,navigationTarget.radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
+      navigationStarted=false;
       enterCheckpointHotspot(navigationTarget);
       return;
     }
-    if(remaining<=Math.max(10,navigationTarget.radius_meters)){
-      navDirection.textContent=navigationTarget.id==='barameel'?'BARAMEEL':'CHECKPOINT';
-      navDistance.textContent='YOU ARE HERE';
+    if(navigationTarget.id==='barameel'&&remaining<=Math.max(10,navigationTarget.radius_meters||120)){
+      status.textContent='BARAMEEL AREA REACHED • ARRIVE';
       status.classList.remove('route-error');
-      if(navigationTarget.id==='barameel'){
-        status.textContent='BARAMEEL AREA REACHED • ARRIVE';
-        setAction(true,'Enter Barameel Final Zone');
-        action.classList.remove('scan-ready');
-        action.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
-      }else{
-        enterCheckpointHotspot(navigationTarget);
-      }
+      setAction(false);
+      startNavCard.textContent='ENTER BARAMEEL';
+      startNavCard.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
+      navDirection.textContent='BARAMEEL';
+      navDistance.textContent='YOU ARE HERE';
       return;
     }
-
-    action.classList.remove('scan-ready');
-    if(!lastRoutePosition||haversine(pos,lastRoutePosition)>35 || Date.now()-lastRouteAt>20000)buildWalkingRoute(pos,navigationTarget);
+    action.classList.remove('ready');
+    action.disabled=true;
+    if(!lastRoutePosition||haversine(pos,lastRoutePosition)>35||Date.now()-lastRouteAt>20000)buildWalkingRoute(pos,navigationTarget);
   }
-
-  let checkpointLockId=null;
-  let checkpointSignalId=null;
-
-  function checkpointAudio(kind='lock'){
-    try{
-      if(!window.AudioContext&&!window.webkitAudioContext)return;
-      const Ctx=window.AudioContext||window.webkitAudioContext;
-      if(!checkpointAudio.ctx)checkpointAudio.ctx=new Ctx();
-      const c=checkpointAudio.ctx;
-      if(c.state==='suspended')c.resume().catch(()=>{});
-      const now=c.currentTime;
-      const master=c.createGain();
-      master.gain.setValueAtTime(.0001,now);
-      master.gain.exponentialRampToValueAtTime(kind==='lock'?.20:.085,now+.025);
-      master.gain.exponentialRampToValueAtTime(.0001,now+(kind==='lock'?1.15:.48));
-      master.connect(c.destination);
-
-      const sweep=c.createOscillator(),sg=c.createGain();
-      sweep.type='sine';
-      sweep.frequency.setValueAtTime(kind==='lock'?180:140,now);
-      sweep.frequency.exponentialRampToValueAtTime(kind==='lock'?920:620,now+.72);
-      sg.gain.setValueAtTime(.0001,now);
-      sg.gain.exponentialRampToValueAtTime(1,now+.035);
-      sg.gain.exponentialRampToValueAtTime(.0001,now+.72);
-      sweep.connect(sg).connect(master);sweep.start(now);sweep.stop(now+.75);
-
-      const beeps=kind==='lock'?[0,.16,.34,.55]:[0,.24];
-      beeps.forEach((delay,i)=>{
-        const o=c.createOscillator(),g=c.createGain();
-        o.type=i===beeps.length-1?'triangle':'square';
-        o.frequency.value=kind==='lock'?[660,880,1175,1568][i]:[520,740][i];
-        const t=now+delay;
-        g.gain.setValueAtTime(.0001,t);
-        g.gain.exponentialRampToValueAtTime(kind==='lock'?.14:.075,t+.018);
-        g.gain.exponentialRampToValueAtTime(.0001,t+(i===beeps.length-1?.18:.10));
-        o.connect(g).connect(master);o.start(t);o.stop(t+.22);
-      });
-      if(kind==='lock'){
-        const sub=c.createOscillator(),sg2=c.createGain();
-        sub.type='triangle';sub.frequency.setValueAtTime(72,now);sub.frequency.exponentialRampToValueAtTime(42,now+.7);
-        sg2.gain.setValueAtTime(.0001,now);sg2.gain.exponentialRampToValueAtTime(.11,now+.04);sg2.gain.exponentialRampToValueAtTime(.0001,now+.75);
-        sub.connect(sg2).connect(master);sub.start(now);sub.stop(now+.78);
-      }
-    }catch{}
-  }
-
-  function checkpointLayer(mode){
-    const layer=document.getElementById('checkpointLockLayer');
-    if(!layer)return;
-    layer.classList.remove('signal','locked');
-    if(mode==='signal'){
-      layer.classList.add('active','signal');
-      checkpointAudio('signal');
-      setTimeout(()=>layer.classList.remove('active','signal'),900);
-      return;
-    }
-    if(mode==='lock'){
-      layer.classList.add('active','locked');
-      checkpointAudio('lock');
-      try{if(typeof navigator.vibrate==='function')navigator.vibrate([24,38,18,62,28,90]);}catch{}
-      setTimeout(()=>{if(layer.classList.contains('locked'))layer.classList.remove('active','locked')},4200);
-    }
-  }
-
-  function enterCheckpointHotspot(cp){
-    const id=String(cp?.id||'');
-    if(!id)return;
-    if(checkpointLockId===id)return;
-    checkpointLockId=id;
-    checkpointSignalId=id;
-    checkpointLayer('lock');
-    status.classList.remove('route-error');
-    status.textContent='CHECKPOINT READY • OPEN CAMERA';
-    next.textContent=id;
-    distance.textContent='YOU ARE HERE';
-    setAction(true,'Open Checkpoint Scanner');
-    action.classList.add('scan-ready');
-    const scannerUrl=TEST_MODE
-      ? 'checkpoint-scanner.html?v=20261008-2&test=1&cp='+encodeURIComponent(id)
-      : 'checkpoint-scanner.html?v=20261008-2';
-    action.onclick=()=>BR.goAfter(scannerUrl,'scan',220);
-  }
-
-  function leaveCheckpointHotspot(){
-    checkpointLockId=null;
-    checkpointSignalId=null;
-    const layer=document.getElementById('checkpointLockLayer');
-    layer?.classList.remove('active','signal','locked');
-    action.classList.remove('scan-ready');
-  }
-
   async function startNavigation(target){
-    if(!target||!latestPosition)return;
+    if(!target)return;
+    if(!latestPosition){requestLocation();return;}
     if(Number(latestPosition.accuracy)>80){
-      status.textContent='WAITING FOR MORE ACCURATE GPS • ±'+Math.round(latestPosition.accuracy)+' M';
-      document.getElementById('mapStatus').textContent='GPS TOO WEAK • MOVE OUTDOORS';
+      status.textContent='WAITING FOR MORE ACCURATE GPS';
+      setMapStatus('GPS TOO WEAK • MOVE OUTDOORS',true);
       requestLocation();
       return;
     }
     navigationTarget=target;
     navigationStarted=true;
     status.classList.remove('route-error');
-    action.classList.remove('scan-ready');
     navOverlay.classList.add('active');
     navCompass.classList.add('active');
     navDirection.textContent='CALCULATING';
-    navDistance.textContent='WALKING ROUTE';
-    setAction(true,target.id==='barameel'?'Navigate to Barameel':'Start Walking Navigation');
+    navDistance.textContent='ROUTE';
+    setAction(false);
     await buildWalkingRoute(latestPosition,target);
-    if(navigationTarget.id==='barameel'){
-      action.onclick=()=>{ if(haversine(latestPosition,navigationTarget)<=navigationTarget.radius_meters)BR.goAfter('barameel-final-zone.html','confirm',240); else status.textContent='FOLLOW WALKING ROUTE TO BARAMEEL'; };
-    }else{
-      action.onclick=()=>{ if(haversine(latestPosition,navigationTarget)<=Math.max(10,navigationTarget.radius_meters))BR.goAfter('checkpoint-scanner.html?v=20261007-26.2','scan',220); else status.textContent='KEEP WALKING TO CHECKPOINT'; };
-    }
   }
-
-  function refresh(pos){
-    const acc=Number.isFinite(Number(pos.accuracy))?Number(pos.accuracy):9999;
-    if(latestPosition && acc>bestGpsAccuracy+25 && haversine(pos,latestPosition)>35) return;
-    if(acc<bestGpsAccuracy) bestGpsAccuracy=acc;
-    latestPosition={lat:pos.lat,lng:pos.lng,accuracy:acc};
-    if(!TEST_MODE) renderMap(latestPosition);
-    current.textContent='LIVE • '+pos.lat.toFixed(5)+', '+pos.lng.toFixed(5)+' • ±'+Math.round(acc)+' M';
-    document.getElementById('mapStatus').textContent=acc<=GPS_GOOD_ACCURACY?'GPS LOCKED • ±'+Math.round(acc)+' M':'GPS IMPROVING • ±'+Math.round(acc)+' M';
-    const destDistance=document.getElementById('destDistance'),destTime=document.getElementById('destTime');
+  function renderRoutePositionAndState(pos){
+    latestPosition=pos;
+    renderRoutePosition(pos);
+    current.textContent='LIVE • '+pos.lat.toFixed(5)+', '+pos.lng.toFixed(5)+' • ±'+Math.round(pos.accuracy||0)+' M';
+    const acc=Number(pos.accuracy)||9999;
+    if(acc<bestGpsAccuracy)bestGpsAccuracy=acc;
+    setMapStatus(acc<=35?'GPS LOCKED • ±'+Math.round(acc)+' M':'GPS IMPROVING • ±'+Math.round(acc)+' M');
     if(destination){
       const bd=haversine(pos,destination);
       destDistance.textContent=formatDistance(bd);
-      const mins=Math.max(1,Math.round(bd/80));
-      destTime.textContent=mins+' MIN';
-      if(acc>GPS_GOOD_ACCURACY) destTime.textContent+=' • GPS ±'+Math.round(acc)+'M';
+      destTime.textContent=Math.max(1,Math.round(bd/80))+' MIN';
     }
+    syncCheckpointMarkers();
+    const discovered=getDiscovered();
     const unlocked=unlockedCheckpoints();
     const available=unlocked.filter(cp=>!discovered.has(cp.id)).map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>a.distance-b.distance);
-    const total=checkpoints.length,done=checkpoints.filter(cp=>discovered.has(cp.id)).length;
-    const progress=total?Math.min(100,Math.round(done/total*100)):0;
-    fill.style.width=progress+'%';
-    BR.mergePlayer({routeProgress:progress,routeDistance:available[0]?.distance??null,nextCheckpoint:available[0]?.id??null});
-    if(navigationStarted){ updateNavigation(pos); return; }
-    if(TEST_MODE && TEST_INSTANT){
-      const testCp=checkpoints.find(cp=>String(cp.id).toUpperCase()===TEST_CP_ID);
-      if(!testCp){routeError('TEST CHECKPOINT NOT FOUND');return;}
-      const already=discovered.has(TEST_CP_ID);
-      if(already){
-        const keep=checkpoints.find(cp=>!discovered.has(cp.id));
-        if(keep){next.textContent=keep.name;distance.textContent='TEST RESET REQUIRED';status.textContent='CP01 ALREADY TESTED • USE RESET';}
-        return;
-      }
-      next.textContent=testCp.name;
-      distance.textContent='0 M • YOU ARE HERE';
-      status.textContent='TEST MODE • CHECKPOINT REACHED';
-      setAction(true,'Open Checkpoint Scanner');
-      enterCheckpointHotspot(testCp);
+    const done=checkpoints.filter(cp=>discovered.has(cp.id)).length;
+    fill.style.width=(checkpoints.length?Math.round(done/checkpoints.length*100):0)+'%';
+    BR.mergePlayer({routeProgress:checkpoints.length?Math.round(done/checkpoints.length*100):0,routeDistance:available[0]?.distance??null,nextCheckpoint:available[0]?.id??null});
+    if(navigationStarted){updateNavigation(pos);return;}
+    if(TEST_MODE&&TEST_INSTANT){
+      const cp=checkpoints.find(x=>String(x.id).toUpperCase()===TEST_CP_ID);
+      if(cp){next.textContent=cp.name;distance.textContent='0 M • YOU ARE HERE';enterCheckpointHotspot(cp);}
       return;
     }
+    if(TEST_MODE&&TEST_APPROACH){return;}
     if(available.length){
-      const hotspot=available[0];
-      const hotspotRadius=Math.max(5,Number(hotspot.radius_meters||CHECKPOINT_HOTSPOT_RADIUS));
-      if(hotspot.distance<=hotspotRadius){
-        enterCheckpointHotspot(hotspot);
-        return;
-      }
-      if(hotspot.distance<=CHECKPOINT_SIGNAL_RADIUS && checkpointSignalId!==hotspot.id){
-        checkpointSignalId=hotspot.id;
-        checkpointLayer('signal');
-      }else if(hotspot.distance>CHECKPOINT_SIGNAL_RADIUS && checkpointSignalId===hotspot.id){
-        checkpointSignalId=null;
-      }
       next.textContent=available[0].name;
       distance.textContent=formatDistance(available[0].distance);
-      if(checkpointLockId && hotspot.distance>hotspotRadius)leaveCheckpointHotspot();
-      status.textContent=available.length===1?'CHECKPOINT AVAILABLE':'NEAREST CHECKPOINT • '+available.length+' AVAILABLE';
-      status.classList.remove('route-error');
-      setAction(true,'Start Walking Navigation to Checkpoint');
-      action.classList.remove('scan-ready');
-      action.onclick=()=>startNavigation(available[0]);
+      if(available[0].distance<=Math.max(5,available[0].radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
+        enterCheckpointHotspot(available[0]);
+      }else{
+        status.textContent=available.length===1?'CHECKPOINT AVAILABLE':'NEAREST CHECKPOINT • '+available.length+' AVAILABLE';
+        status.classList.remove('route-error');
+        action.onclick=()=>startNavigation(available[0]);
+        setAction(true,'Start Walking Navigation to Checkpoint');
+      }
       return;
     }
-    next.textContent=destination?destination.name:'ROUTE COMPLETE';
     if(destination){
       const d=haversine(pos,destination);
+      next.textContent='BARAMEEL';
       distance.textContent=formatDistance(d);
-      status.textContent='BARAMEEL AVAILABLE ANYTIME';document.getElementById('mapStatus').textContent='BARAMEEL DESTINATION';
-      setAction(true,'Start Walking Navigation to Barameel');
-      action.onclick=()=>startNavigation({...destination,id:'barameel'});
-    }else{
-      distance.textContent='—';
-      status.textContent='CHECKPOINT RUN COMPLETE';
-      setAction(true,'Finish Run');
-      action.onclick=()=>BR.goAfter('run-complete.html','confirm',220);
+      status.textContent='BARAMEEL AVAILABLE ANYTIME';
+      status.classList.remove('route-error');
+      startNavCard.textContent='START NAVIGATION';
+      startNavCard.onclick=()=>startNavigation(destination);
+      setAction(false);
+      return;
     }
+    next.textContent='ROUTE COMPLETE';
+    distance.textContent='—';
+    status.textContent='CHECKPOINT RUN COMPLETE';
+    setAction(false);
   }
-
+  function refreshPosition(pos){
+    const normalized={lat:Number(pos.lat),lng:Number(pos.lng),accuracy:Number.isFinite(Number(pos.accuracy))?Number(pos.accuracy):9999};
+    if(latestPosition&&normalized.accuracy>bestGpsAccuracy+25&&haversine(normalized,latestPosition)>35)return;
+    renderRoutePositionAndState(normalized);
+    loadLivePlayers(normalized).catch(()=>{});
+  }
   function routeError(message){
-    const inApp=/Instagram|FBAN|FBAV|FB_IAB|musical_ly|BytedanceWebview/i.test(navigator.userAgent||'');
-    status.textContent=inApp&&message.includes('LOCATION')?'OPEN IN SAFARI / CHROME FOR LOCATION ACCESS':message;
+    current.textContent='LOCATION UNAVAILABLE';
+    next.textContent='—';
+    distance.textContent='—';
+    fill.style.width='0%';
+    status.textContent=message;
     status.classList.add('route-error');
-    current.textContent='LOCATION UNAVAILABLE';next.textContent='—';distance.textContent='—';fill.style.width='0%';
-    setAction(true,'Try Again');action.onclick=()=>requestLocation();
+    setMapStatus('GPS ERROR',true);
+    setAction(true,'Try GPS Again');
+    action.onclick=()=>requestLocation();
   }
-
   function testPosition(){
-    const cp=(cfg.checkpoints||[]).find(x=>String(x.id).toUpperCase()===TEST_CP_ID);
-    return cp?{lat:Number(cp.lat),lng:Number(cp.lng),accuracy:5}:null;
+    const cp=checkpoints.find(x=>x.id===TEST_CP_ID);
+    return cp?{lat:cp.lat,lng:cp.lng,accuracy:5}:null;
   }
   function startTestApproach(){
     const target=testPosition();
     if(!target){routeError('TEST CHECKPOINT NOT FOUND');return;}
     if(testApproachTimer)clearInterval(testApproachTimer);
-    // Start ~55m away and move toward the real checkpoint in small GPS-like steps.
-    let metersRemaining=55;
-    const northStep=meters=>meters/111320;
-    let p={lat:target.lat+northStep(metersRemaining),lng:target.lng,accuracy:5};
+    let remaining=55;
     status.textContent='TEST MODE • APPROACHING '+TEST_CP_ID;
-    refresh(p);
+    const step=5/111320;
+    refreshPosition({lat:target.lat+remaining/111320,lng:target.lng,accuracy:5});
     testApproachTimer=setInterval(()=>{
-      metersRemaining=Math.max(0,metersRemaining-5);
-      p={lat:target.lat+northStep(metersRemaining),lng:target.lng,accuracy:5};
-      refresh(p);
-      if(metersRemaining<=0){
-        clearInterval(testApproachTimer);testApproachTimer=null;
-        status.textContent='TEST MODE • CHECKPOINT LOCATION REACHED';
+      remaining=Math.max(0,remaining-5);
+      refreshPosition({lat:target.lat+remaining/111320,lng:target.lng,accuracy:5});
+      if(remaining<=0){
+        clearInterval(testApproachTimer);
+        testApproachTimer=null;
+        enterCheckpointHotspot(target.cp||checkpoints.find(x=>x.id===TEST_CP_ID));
       }
     },650);
   }
-
-  let locationTimer=null;
   function requestLocation(){
     if(TEST_MODE){
-      if(TEST_INSTANT){const p=testPosition();if(!p){routeError('TEST CHECKPOINT NOT FOUND');return;}refresh(p);return;}
       if(TEST_APPROACH){startTestApproach();return;}
       const p=testPosition();
       if(!p){routeError('TEST CHECKPOINT NOT FOUND');return;}
-      status.textContent='TEST MODE • SIMULATED CHECKPOINT';
-      refresh(p);
+      refreshPosition(p);
       return;
     }
     if(!navigator.geolocation){routeError('LOCATION NOT SUPPORTED');return;}
     if(locationTimer)clearTimeout(locationTimer);
     status.textContent='LOCATING YOUR ROUTE…';
     current.textContent='WAITING FOR GPS…';
-    document.getElementById('mapStatus').textContent='LOCATING GPS…';
+    setMapStatus('LOCATING GPS…');
     locationTimer=setTimeout(()=>{
       if(!latestPosition){
         status.textContent='GPS IS TAKING TOO LONG — TAP LOCATE';
-        document.getElementById('mapStatus').textContent='GPS WAITING';
         setAction(true,'Try GPS Again');
         action.onclick=()=>requestLocation();
       }
@@ -849,71 +622,71 @@ if('serviceWorker' in navigator){
       navigator.geolocation.getCurrentPosition(
         p=>{
           if(locationTimer)clearTimeout(locationTimer);
-          const pos={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy};
-          refresh(pos);
+          refreshPosition({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy});
           startWatching();
-          loadLivePlayers(pos).catch(()=>{});
         },
         err=>{
           if(locationTimer)clearTimeout(locationTimer);
-          const code=err?.code===1?'LOCATION PERMISSION REQUIRED':err?.code===2?'GPS POSITION UNAVAILABLE':'GPS TIMEOUT';
-          routeError(code);
-          document.getElementById('mapStatus').textContent='GPS '+code.replace('LOCATION ','');
+          const msg=err?.code===1?'LOCATION PERMISSION REQUIRED':err?.code===2?'GPS POSITION UNAVAILABLE':'GPS TIMEOUT';
+          routeError(msg);
         },
         {enableHighAccuracy:true,timeout:20000,maximumAge:0}
       );
     }catch(err){
       if(locationTimer)clearTimeout(locationTimer);
       console.error('[BARAMEEL GEOLOCATION START ERROR]',err);
-      routeError('GPS START FAILED • TAP TRY AGAIN');
+      routeError('GPS START FAILED');
     }
   }
   function startWatching(){
     if(watchId||!navigator.geolocation)return;
     watchId=navigator.geolocation.watchPosition(
-      p=>{const pos={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy};refresh(pos);loadLivePlayers(pos);},
-      ()=>{status.textContent='GPS SIGNAL WEAK — KEEP LOCATION ON';document.getElementById('mapStatus').textContent='GPS SIGNAL WEAK';},
+      p=>refreshPosition({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy}),
+      ()=>{status.textContent='GPS SIGNAL WEAK — KEEP LOCATION ON';},
       {enableHighAccuracy:true,maximumAge:0,timeout:20000}
     );
   }
 
-  document.getElementById('mapLocate').onclick=()=>{if(latestPosition&&map)map.setView([latestPosition.lat,latestPosition.lng],18,{animate:true});else requestLocation();};
-  document.getElementById('mapNorth').onclick=()=>{if(map)map.setBearing?map.setBearing(0):map.setView(map.getCenter(),map.getZoom(),{animate:true});};
-  document.getElementById('startNavCard').onclick=()=>{if(latestPosition&&destination)startNavigation({...destination,id:'barameel'});else requestLocation();};
-  direct.onclick=()=>{ if(latestPosition&&destination)startNavigation({...destination,id:'barameel'}); else requestLocation(); };
+  document.getElementById('mapLocate').onclick=()=>{
+    if(latestPosition&&mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:18,duration:500});
+    else requestLocation();
+  };
+  document.getElementById('mapNorth').onclick=()=>{if(mapReady)map.easeTo({bearing:0,duration:300});};
+  startNavCard.onclick=()=>{if(latestPosition&&destination)startNavigation(destination);else requestLocation();};
 
-  if(!checkpoints.length&&!destination){
-    current.textContent='LIVE ROUTE NOT CONFIGURED';next.textContent='—';distance.textContent='—';
-    status.textContent='CHECKPOINT DATA NOT ACTIVE YET';status.classList.add('route-error');fill.style.width='0%';
-    setAction(true,'Back to My Run');action.onclick=()=>BR.goAfter('screen04.html','back',180);
-  }else{
+  try{
+    initMap(destination||{lat:31.190520,lng:29.920547});
+    if(!TEST_MODE)Promise.resolve().then(()=>BR.syncPlayer()).catch(()=>null);
+    if(destination){
+      destDistance.textContent='—';
+      destTime.textContent='—';
+    }
+    setAction(false);
     requestLocation();
-    setInterval(()=>{
-      if(latestPosition)loadLivePlayers(latestPosition).catch(()=>{});
-    },10000);
+  }catch(err){
+    console.error('[BARAMEEL ROUTE BOOT]',err);
+    setMapStatus('ROUTE BOOT FAILED',true);
+    status.textContent='ROUTE BOOT FAILED';
+    status.classList.add('route-error');
+    setAction(true,'Retry Route');
+    action.onclick=()=>location.reload();
   }
 
-  window.addEventListener('pagehide',()=>{if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);if(testApproachTimer)clearInterval(testApproachTimer);leaveCheckpointHotspot()});
-  if(TEST_MODE){
-    status.textContent='TEST MODE • '+TEST_CP_ID+(TEST_INSTANT?' • CHECKPOINT REACHED':TEST_APPROACH?' • APPROACH SIMULATION':' • SIMULATED');
-    document.title='BARAMEEL RUN — CHECKPOINT RUN — TEST';
-  }
+  setInterval(()=>{
+    if(latestPosition)loadLivePlayers(latestPosition).catch(()=>{});
+  },10000);
+
+  window.addEventListener('pagehide',()=>{
+    if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);
+    if(testApproachTimer)clearInterval(testApproachTimer);
+  });
   Promise.resolve(BR.track?.('checkpoint_route_view')).catch(()=>{});
-})().catch(err=>{
-  // Never leave the route screen in a fake "MAP RECOVERY MODE".
-  // A map/GPS service error must degrade locally and keep the screen usable.
-  console.error('[BARAMEEL ROUTE MAP BOOT]',err);
-  const s=document.getElementById('routeStatus');
-  const m=document.getElementById('mapStatus');
-  const a=document.getElementById('routeAction');
-  if(s){s.textContent='GPS READY • TAP LOCATE';s.classList.remove('route-error');}
-  if(m)m.textContent='BARAMEEL GAME MAP • READY';
-  if(a){
-    a.disabled=false;
-    a.setAttribute('aria-label','Retry GPS');
-    a.onclick=()=>{try{requestLocation();}catch(e){console.error('[BARAMEEL GPS RETRY]',e);}};
+
+  if(TEST_MODE){
+    document.title='BARAMEEL RUN — CHECKPOINT RUN — TEST';
+    status.textContent='TEST MODE • '+TEST_CP_ID+(TEST_INSTANT?' • CHECKPOINT REACHED':TEST_APPROACH?' • APPROACH SIMULATION':' • SIMULATED');
   }
-});
+})();
 </script>
 </body>
 </html>
