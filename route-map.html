@@ -393,68 +393,39 @@ if('serviceWorker' in navigator){
 
     addRasterFallback('BASELINE');
 
-    // BARAMEEL game-map layer:
-    // fetch the official OpenFreeMap Liberty style, then transform it in-memory.
-    // This avoids depending on a hand-written style subset being accepted by
-    // different MapLibre/Leaflet combinations. OpenFreeMap uses the OpenMapTiles
-    // schema, so we keep its sources/glyphs/sprite and only change visibility/colors.
+    // BARAMEEL GAME MAP: use the repository-hosted custom vector style.
+    // This keeps real OpenStreetMap geometry/GPS/routing, but removes labels,
+    // POIs and building clutter from the visual layer.
     try{
       if(typeof window.L?.maplibreGL==='function'){
-        fetch('https://tiles.openfreemap.org/styles/liberty',{cache:'no-store'})
-          .then(r=>{if(!r.ok)throw new Error('OPENFREEMAP_STYLE_'+r.status);return r.json();})
-          .then(style=>{
-            const tuned=JSON.parse(JSON.stringify(style));
-            tuned.name='BARAMEEL GAME MAP';
-            tuned.layers=(tuned.layers||[]).map(layer=>{
-              const l=layer;
-              const id=String(l.id||'').toLowerCase();
-              l.layout={...(l.layout||{})};
+        const styleUrl='./assets/barameel-map-style.json?v=20261008-30.0';
+        mapLibreLayer=L.maplibreGL({
+          style:styleUrl,
+          interactive:false,
+          attributionControl:false
+        }).addTo(map);
 
-              // Remove every text/icon/POI layer. We will add only our own game labels.
-              if(l.type==='symbol' || l.type==='circle' || l.type==='heatmap' || l.type==='hillshade' || l.type==='fill-extrusion'){
-                l.layout.visibility='none';
-                return l;
-              }
-
-              if(l.type==='background'){
-                l.paint={...(l.paint||{}),'background-color':'#e9dfc7'};
-                return l;
-              }
-
-              if(l.type==='fill'){
-                if(id.includes('water')) l.paint={...(l.paint||{}),'fill-color':'#082b40','fill-opacity':1};
-                else if(id.includes('park')||id.includes('wood')||id.includes('grass')) l.paint={...(l.paint||{}),'fill-color':'#8c9c70','fill-opacity':.42};
-                else if(id.includes('building')) l.paint={...(l.paint||{}),'fill-color':'#c9bea4','fill-opacity':.62};
-                else l.paint={...(l.paint||{}),'fill-color':'#e1d7bd','fill-opacity':.42};
-                return l;
-              }
-
-              if(l.type==='line'){
-                if(id.includes('water')) l.paint={...(l.paint||{}),'line-color':'#0b3852','line-opacity':.85};
-                else if(/motorway|trunk|primary|highway/.test(id)) l.paint={...(l.paint||{}),'line-color':'#d6aa3b','line-opacity':.95};
-                else l.paint={...(l.paint||{}),'line-color':'#e4d6b7','line-opacity':.9};
-              }
-              return l;
-            });
-
-            if(typeof window.L?.maplibreGL!=='function')throw new Error('MAPLIBRE_LEAFLET_ADAPTER_UNAVAILABLE');
-            mapLibreLayer=L.maplibreGL({style:tuned,interactive:false}).addTo(map);
-            mapLibreLayer.on?.('load',()=>{
-              if(baseTiles){map.removeLayer(baseTiles);baseTiles=null;}
-              const el=document.getElementById('mapStatus');
-              if(el && !navigationStarted)el.textContent='BARAMEEL GAME MAP • GPS READY';
-            });
-            mapLibreLayer.on?.('error',evt=>{
-              console.error('[BARAMEEL VECTOR MAP ERROR]',evt?.error||evt);
-              const el=document.getElementById('mapStatus');
-              if(el && !navigationStarted)el.textContent='GAME MAP ERROR • RASTER FALLBACK';
-            });
-          })
-          .catch(err=>{
-            console.error('[BARAMEEL VECTOR STYLE FALLBACK]',err);
-            const el=document.getElementById('mapStatus');
-            if(el && !navigationStarted)el.textContent='REAL MAP • RASTER FALLBACK';
-          });
+        const gl=mapLibreLayer.getMaplibreMap?.();
+        const onVectorReady=()=>{
+          if(baseTiles){
+            map.removeLayer(baseTiles);
+            baseTiles=null;
+          }
+          const el=document.getElementById('mapStatus');
+          if(el && !navigationStarted)el.textContent='BARAMEEL GAME MAP • GPS READY';
+        };
+        const onVectorError=(evt)=>{
+          console.error('[BARAMEEL VECTOR MAP ERROR]',evt?.error||evt);
+          const el=document.getElementById('mapStatus');
+          if(el && !navigationStarted)el.textContent='GAME MAP ERROR • RASTER FALLBACK';
+        };
+        if(gl?.once){
+          gl.once('load',onVectorReady);
+          gl.on?.('error',onVectorError);
+        }else{
+          mapLibreLayer.on?.('load',onVectorReady);
+          mapLibreLayer.on?.('error',onVectorError);
+        }
       }else{
         console.warn('[BARAMEEL VECTOR MAP] maplibreGL adapter unavailable');
       }
