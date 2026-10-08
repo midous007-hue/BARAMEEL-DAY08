@@ -7,7 +7,7 @@
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
 <link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css">
 <style>
 #checkpointLockLayer{position:absolute;inset:0;z-index:44;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .16s ease,visibility 0s linear .16s;background:radial-gradient(circle at 62.85% 37.85%,rgba(244,197,47,.16) 0 8%,rgba(239,45,36,.08) 13%,transparent 30%),linear-gradient(180deg,rgba(7,27,43,0) 0 70%,rgba(239,45,36,.05) 100%);overflow:hidden}
 #checkpointLockLayer.active{opacity:1;visibility:visible;transition:opacity .12s ease}
@@ -246,8 +246,7 @@
 <div id="currentLocation" class="route-field">LOCATING…</div>
 <div id="nextCheckpoint" class="route-field">LOADING…</div>
 <div id="distanceNext" class="route-field">—</div>
-<div id="routeStatus" aria-live="polite">PREPARING LIVE ROUTE</div>
-<div id="navCompass" aria-hidden="true">↑</div>
+<div id="routeStatus" aria-live="polite">PREPARING LIVE ROUTE</div><div id="navCompass" aria-hidden="true">↑</div>
 <div id="navOverlay" aria-live="polite"><span id="navDirection">WALK</span><span id="navDistance"></span><span id="navMode">WALKING</span></div>
 <div id="livePlayers" aria-hidden="true"></div>
 <div id="routeProgress" aria-hidden="true"><div id="routeProgressFill"></div></div>
@@ -257,8 +256,8 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
-<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
+<script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js"></script>
 <script src="./config.js?v=20261008-1"></script>
 <script>
 if('serviceWorker' in navigator){
@@ -402,7 +401,7 @@ if('serviceWorker' in navigator){
     // POIs and building clutter from the visual layer.
     try{
       if(typeof window.L?.maplibreGL==='function'){
-        const styleUrl='./assets/barameel-map-style.json?v=20261008-30.0';
+        const styleUrl='./assets/barameel-map-style.json?v=20261008-31.0';
         mapLibreLayer=L.maplibreGL({
           style:styleUrl,
           interactive:false,
@@ -497,8 +496,7 @@ if('serviceWorker' in navigator){
     if(modifier.includes('SHARP LEFT'))return 'SHARP LEFT';
     if(modifier.includes('RIGHT'))return 'TURN RIGHT';
     if(modifier.includes('LEFT'))return 'TURN LEFT';
-    return 'GO STRAIGHT';
-  }
+    return 'GO STRAIGHT';  }
 
   function nearestUpcomingStep(pos){
     let best=null,bestD=Infinity;
@@ -797,7 +795,6 @@ if('serviceWorker' in navigator){
     const cp=(cfg.checkpoints||[]).find(x=>String(x.id).toUpperCase()===TEST_CP_ID);
     return cp?{lat:Number(cp.lat),lng:Number(cp.lng),accuracy:5}:null;
   }
-
   function startTestApproach(){
     const target=testPosition();
     if(!target){routeError('TEST CHECKPOINT NOT FOUND');return;}
@@ -843,22 +840,28 @@ if('serviceWorker' in navigator){
         action.onclick=()=>requestLocation();
       }
     },8000);
-    navigator.geolocation.getCurrentPosition(
-      p=>{
-        if(locationTimer)clearTimeout(locationTimer);
-        const pos={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy};
-        refresh(pos);
-        startWatching();
-        loadLivePlayers(pos).catch(()=>{});
-      },
-      err=>{
-        if(locationTimer)clearTimeout(locationTimer);
-        const code=err?.code===1?'LOCATION PERMISSION REQUIRED':err?.code===2?'GPS POSITION UNAVAILABLE':'GPS TIMEOUT';
-        routeError(code);
-        document.getElementById('mapStatus').textContent='GPS '+code.replace('LOCATION ','');
-      },
-      {enableHighAccuracy:true,timeout:20000,maximumAge:0}
-    );
+    try{
+      navigator.geolocation.getCurrentPosition(
+        p=>{
+          if(locationTimer)clearTimeout(locationTimer);
+          const pos={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy};
+          refresh(pos);
+          startWatching();
+          loadLivePlayers(pos).catch(()=>{});
+        },
+        err=>{
+          if(locationTimer)clearTimeout(locationTimer);
+          const code=err?.code===1?'LOCATION PERMISSION REQUIRED':err?.code===2?'GPS POSITION UNAVAILABLE':'GPS TIMEOUT';
+          routeError(code);
+          document.getElementById('mapStatus').textContent='GPS '+code.replace('LOCATION ','');
+        },
+        {enableHighAccuracy:true,timeout:20000,maximumAge:0}
+      );
+    }catch(err){
+      if(locationTimer)clearTimeout(locationTimer);
+      console.error('[BARAMEEL GEOLOCATION START ERROR]',err);
+      routeError('GPS START FAILED • TAP TRY AGAIN');
+    }
   }
   function startWatching(){
     if(watchId||!navigator.geolocation)return;
@@ -892,19 +895,18 @@ if('serviceWorker' in navigator){
   }
   Promise.resolve(BR.track?.('checkpoint_route_view')).catch(()=>{});
 })().catch(err=>{
+  // Never leave the route screen in a fake "MAP RECOVERY MODE".
+  // A map/GPS service error must degrade locally and keep the screen usable.
   console.error('[BARAMEEL ROUTE MAP BOOT]',err);
   const s=document.getElementById('routeStatus');
   const m=document.getElementById('mapStatus');
-  if(s){s.textContent='MAP RECOVERY MODE';s.classList.remove('route-error');}
-  if(m)m.textContent='REAL MAP • RECOVERING';
   const a=document.getElementById('routeAction');
-  if(a){a.disabled=false;a.setAttribute('aria-label','Retry Route Map');a.onclick=()=>location.reload();}
-  try{
-    const target=window.BARAMEEL_ROUTE_CONFIG?.destination||{lat:31.190520,lng:29.920547};
-    if(!map)initMap(target);
-    requestLocation();
-  }catch(recoveryErr){
-    console.error('[BARAMEEL ROUTE RECOVERY]',recoveryErr);
+  if(s){s.textContent='GPS READY • TAP LOCATE';s.classList.remove('route-error');}
+  if(m)m.textContent='BARAMEEL GAME MAP • READY';
+  if(a){
+    a.disabled=false;
+    a.setAttribute('aria-label','Retry GPS');
+    a.onclick=()=>{try{requestLocation();}catch(e){console.error('[BARAMEEL GPS RETRY]',e);}};
   }
 });
 </script>
