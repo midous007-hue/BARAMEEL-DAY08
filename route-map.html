@@ -152,7 +152,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   let liveMarkers=new Map();
   let testApproachTimer=null;
 
-  const roadStyle='./assets/barameel-map-style.json?v=20261008-38.0';
+  const roadStyle='./assets/barameel-map-style.json?v=20261008-39.0';
   const landmarks=[
     {id:'qaitbay',name:'QAITBAY CITADEL',short:'QAITBAY CITADEL',lat:31.21375,lng:29.88540,type:'fortress'},
     {id:'roman',name:'ROMAN THEATRE',short:'ROMAN THEATRE',lat:31.19464,lng:29.90405,type:'theatre'},
@@ -239,8 +239,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     return el;
   }
   function addSeaToken(){
-    if(!map||!mapReady||map.getLayer('walking-route-line')){}
-    if(map?._barameelSeaToken)return;
+    if(!map||!mapReady)return;
+    if(map._barameelSeaToken)return;
     const el=document.createElement('div');
     el.id='seaToken';
     el.innerHTML='MEDITERRANEAN<br>SEA';
@@ -599,7 +599,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function renderRoutePositionAndState(pos){
     latestPosition=pos;
     renderRoutePosition(pos);
-    current.textContent='LIVE • '+pos.lat.toFixed(5)+', '+pos.lng.toFixed(5)+' • ±'+Math.round(pos.accuracy||0)+' M';
+    current.textContent='LIVE • '+Math.round(pos.accuracy||0)+' M GPS';
     const acc=Number(pos.accuracy)||9999;
     if(acc<bestGpsAccuracy)bestGpsAccuracy=acc;
     if(!mapLoadFailed)setMapStatus(acc<=35?'GPS LOCKED • ±'+Math.round(acc)+' M':'GPS IMPROVING • ±'+Math.round(acc)+' M');
