@@ -254,9 +254,6 @@
 
   const TEST_PARAMS=new URLSearchParams(location.search);
   const TEST_MODE=TEST_PARAMS.get('test')==='1';
-  // Initialize the map immediately. GPS/Supabase must never block map rendering.
-  initMap();
-  document.getElementById('mapStatus').textContent='REAL MAP • WAITING FOR GPS';
   // Test mode must not wait for backend player sync.
   if(!TEST_MODE) await BR.syncPlayer().catch(()=>null);
   const TEST_CP_ID=String(TEST_PARAMS.get('cp')||'CP01').toUpperCase();
@@ -272,6 +269,11 @@
   const checkpoints=Array.isArray(cfg.checkpoints)
     ? cfg.checkpoints.filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))).map(x=>({id:String(x.id||''),name:String(x.name||'CHECKPOINT'),lat:Number(x.lat),lng:Number(x.lng),order:Number.isFinite(Number(x.order))?Number(x.order):null,radius_meters:Math.max(5,Number(x.radius_meters||CHECKPOINT_HOTSPOT_RADIUS))}))
     : [];
+
+  // Render the real map immediately after its configuration exists.
+  // GPS and Supabase are intentionally non-blocking.
+  initMap(destination||{lat:31.190520,lng:29.920547});
+  document.getElementById('mapStatus').textContent='REAL MAP • WAITING FOR GPS';
 
   function haversine(a,b){
     const R=6371000,rad=Math.PI/180;
