@@ -254,6 +254,9 @@
 
   const TEST_PARAMS=new URLSearchParams(location.search);
   const TEST_MODE=TEST_PARAMS.get('test')==='1';
+  // Initialize the map immediately. GPS/Supabase must never block map rendering.
+  initMap();
+  document.getElementById('mapStatus').textContent='REAL MAP • WAITING FOR GPS';
   // Test mode must not wait for backend player sync.
   if(!TEST_MODE) await BR.syncPlayer().catch(()=>null);
   const TEST_CP_ID=String(TEST_PARAMS.get('cp')||'CP01').toUpperCase();
@@ -731,8 +734,6 @@
   document.getElementById('mapLocate').onclick=()=>{if(latestPosition&&map)map.setView([latestPosition.lat,latestPosition.lng],18,{animate:true});else requestLocation();};
   document.getElementById('mapNorth').onclick=()=>{if(map)map.setBearing?map.setBearing(0):map.setView(map.getCenter(),map.getZoom(),{animate:true});};
   document.getElementById('startNavCard').onclick=()=>{if(latestPosition&&destination)startNavigation({...destination,id:'barameel'});else requestLocation();};
-  initMap(destination||{lat:31.190520,lng:29.920547});
-  document.getElementById('mapStatus').textContent='REAL MAP • WAITING FOR GPS';
   direct.onclick=()=>{ if(latestPosition&&destination)startNavigation({...destination,id:'barameel'}); else requestLocation(); };
 
   if(!checkpoints.length&&!destination){
