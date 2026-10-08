@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
+<link rel="stylesheet" href="./barameel-flow.css?v=20261008-44.0">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css">
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
@@ -63,83 +63,123 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   #nextCheckpoint,#distanceNext,#routeStatus{display:none}
 }
 
-/* V43 — LIVE MAP IS THE ONLY MOVING WORLD LAYER. ARTWORK IS A FIXED FRAME. */
+/* V44 — ARTWORK-FIRST ROUTE MAP. MAP LIVES ONLY INSIDE THE ARTWORK MAP WINDOW. */
+.flow-stage.route-map-stage{
+  position:relative;
+  width:min(100vw,calc(100dvh*948/1659));
+  height:min(100dvh,calc(100vw*1659/948));
+  aspect-ratio:948/1659;
+  margin:auto;
+  max-width:none;max-height:none;
+  overflow:hidden;background:#071b2b;
+}
 #routeArtwork{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:0;pointer-events:none}
-#routeMap{left:5.5%;right:5.5%;top:18.2%;bottom:29.2%;inset:auto;z-index:2;border:3px solid #f4c52f;border-radius:18px;overflow:hidden;background:#07334a;box-shadow:0 0 0 3px #071b2b,0 0 22px rgba(244,197,47,.22)}
+#routeMap{
+  position:absolute;left:34.45%;top:27.75%;width:57.55%;height:20.25%;
+  right:auto;bottom:auto;inset:auto;z-index:2;
+  border:0;border-radius:24px;overflow:hidden;background:#07334a;
+  box-shadow:none;
+}
 #routeMap .maplibregl-map,#routeMap .maplibregl-canvas-container,#routeMap .maplibregl-canvas{width:100%!important;height:100%!important}
 #routeMap .maplibregl-canvas{display:block}
-#routeMap .maplibregl-ctrl-attrib{font:700 7px/1 Arial,sans-serif;background:rgba(7,27,43,.72)!important;color:#f6e7ce!important}
+#routeMap .maplibregl-ctrl-attrib{font:700 6px/1 Arial,sans-serif;background:rgba(7,27,43,.58)!important;color:#f6e7ce!important;right:2px!important;bottom:2px!important}
 #routeMap .maplibregl-ctrl-group{display:none}
-.route-map-stage::after{content:"";position:absolute;left:5.5%;right:5.5%;top:18.2%;bottom:29.2%;z-index:8;border:2px solid rgba(246,231,206,.35);border-radius:18px;box-shadow:inset 0 0 28px rgba(7,27,43,.28),0 0 0 2px rgba(7,27,43,.6);pointer-events:none}
-#mapBrand{left:7%;top:4.4%;z-index:20;font-size:clamp(28px,7vw,54px)}
-#mapBrand small{margin-top:7px}
-#mapStatus{top:4.8%;right:7%;left:auto;transform:none;z-index:22;min-width:0;max-width:43%;padding:8px 12px}
-#mapControls{right:7%;top:24%;z-index:25;gap:9px}
-.map-control{width:48px;height:48px;line-height:42px;font-size:25px}
-#currentLocation{left:7%;top:24.2%;z-index:22}
-#cityCompass{left:7%;top:31%;z-index:22}
-#navOverlay{top:12.8%;z-index:24}
-#mapDestinationCard{left:7%;right:7%;bottom:4.5%;width:auto;z-index:25;padding:11px 13px;border-radius:16px}
-#mapDestinationCard .dest-title{font-size:clamp(20px,5.5vw,32px)}
-#mapDestinationCard .dest-meta{margin-top:6px}
-#mapDestinationCard .dest-action{margin-top:8px;padding:11px 14px}
-#routeProgress{left:7%;right:7%;bottom:2.6%;z-index:27}
-#nextCheckpoint,#distanceNext,#routeStatus{z-index:25}
-.map-pin{width:30px;height:30px;font-size:9px}
-.map-pin .pin-label{top:34px;font-size:8px}
-.map-pin.barameel{width:48px;height:48px;font-size:10px}
-.landmark-pin{width:86px;height:70px;transform:scale(.62);transform-origin:center bottom;opacity:.94;pointer-events:none}
-.landmark-art{width:76px;height:50px}
-.landmark-pin .landmark-label{font-size:8px;padding:3px 5px}
-.map-player{width:50px;height:50px}
-.live-player{width:22px;height:22px}
-@media(max-width:700px){
- #routeMap{left:4.5%;right:4.5%;top:17.2%;bottom:27.8%;border-radius:16px}
- .route-map-stage::after{left:4.5%;right:4.5%;top:17.2%;bottom:27.8%;border-radius:16px}
- #mapBrand{left:7%;top:3.7%;font-size:29px}
- #mapStatus{top:4%;right:7%;padding:7px 9px;max-width:42%;font-size:10px}
- #mapControls{right:6.5%;top:25%;gap:7px}
- .map-control{width:44px;height:44px;line-height:38px;font-size:23px}
- #currentLocation{left:7%;top:24.5%;padding:7px 10px}
- #cityCompass{left:7%;top:31%;width:56px;height:56px}
- #mapDestinationCard{left:7%;right:7%;bottom:4.2%;padding:10px 11px}
- #mapDestinationCard .dest-action{padding:11px}
- #routeProgress{left:7%;right:7%;bottom:2.5%}
- .landmark-pin{transform:scale(.52)}
+
+/* The artwork already contains the logo, compass/crosshair, map arrow and all static chrome. */
+#mapBrand,#mapControls,#mapStatus,#mapDestinationCard,#navOverlay,#navCompass{display:none!important}
+#currentLocation,#nextCheckpoint,#distanceNext{
+  position:absolute;z-index:22;transform:none;left:46.2%;width:48.0%;
+  display:flex;align-items:center;justify-content:center;
+  padding:0;border:0;border-radius:0;background:transparent;
+  color:#f6e7ce;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font:900 clamp(12px,2.5vw,22px)/1 'Roboto Condensed',Arial,sans-serif;
+  letter-spacing:.035em;text-transform:uppercase;text-shadow:2px 2px 0 #071b2b;
+  pointer-events:none;
 }
-</style>
+#currentLocation{top:52.35%;height:3.55%}
+#nextCheckpoint{top:58.05%;height:3.45%;color:#f4c52f}
+#distanceNext{top:64.95%;height:3.65%}
+#routeStatus{display:none!important}
+#routeProgress{
+  position:absolute;left:40.4%;right:auto;top:75.25%;bottom:auto;
+  width:49.3%;height:4px;z-index:23;background:transparent;border-radius:99px;
+  overflow:hidden;pointer-events:none;
+}
+#routeProgressFill{height:100%;width:0;background:#f4c52f;border-radius:99px;box-shadow:0 0 7px rgba(244,197,47,.75);transition:width .35s ease}
+#routeAction,#directBarameel{
+  position:absolute;left:31.7%;width:64.8%;height:7.15%;
+  z-index:30;top:auto;bottom:auto;border:0;background:transparent;
+  opacity:1;pointer-events:auto;cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+#routeAction{top:80.85%}
+#directBarameel{top:88.65%}
+#routeAction:disabled,#directBarameel:disabled{pointer-events:none}
+#mapLocate,#mapFollow{
+  position:absolute;z-index:32;border:0;background:transparent;padding:0;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+#mapLocate{left:84.4%;top:27.85%;width:7.3%;height:4.4%}
+#mapFollow{left:84.0%;top:43.9%;width:8.0%;height:4.5%}
+
+/* Real geo markers stay inside MapLibre, so panning/zooming moves them with the map. */
+.maplibregl-marker{z-index:60}
+.map-pin{position:relative;display:grid;place-items:center;width:31px;height:31px;border-radius:50%;border:3px solid #f6e7ce;background:#071b2b;box-shadow:0 2px 0 rgba(0,0,0,.45),0 0 10px rgba(244,197,47,.5);font:900 9px/1 'Roboto Condensed',Arial,sans-serif;color:#f6e7ce;text-align:center;text-transform:uppercase}
+.map-pin.checkpoint{background:#071b2b;border-color:#f4c52f}
+.map-pin.cleared{background:#f4c52f;color:#071b2b}
+.map-pin.barameel{width:48px;height:48px;background:#ef2d24;border:3px solid #f4c52f;font-size:9px;box-shadow:0 3px 0 #071b2b,0 0 18px rgba(239,45,36,.6);border-radius:50% 50% 50% 12%}
+.map-pin.barameel::before{content:"B";font:900 20px/1 'Roboto Condensed',Arial,sans-serif;color:#f6e7ce}
+.map-pin .pin-label{position:absolute;left:50%;top:35px;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.92);color:#f6e7ce;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
+.map-player{position:relative;width:48px;height:58px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 3px 0 #071b2b);pointer-events:none}
+.map-player::before{content:"";position:absolute;top:0;left:50%;width:38px;height:38px;transform:translateX(-50%);border-radius:50%;border:4px solid #f6e7ce;background:#19b9d2;box-shadow:0 0 0 3px #071b2b,0 0 14px rgba(25,185,210,.75)}
+.map-player::after{content:"YOU";position:absolute;left:50%;bottom:0;transform:translateX(-50%);padding:4px 9px;border:2px solid #071b2b;border-radius:999px;background:#1967d2;color:#fff;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.06em}
+.map-player .player-arrow{position:absolute;top:12px;left:50%;z-index:2;width:0;height:0;transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:15px solid #f4c52f;filter:drop-shadow(1px 2px 0 #071b2b);pointer-events:none}
+.map-player-name{display:none}
+.live-player{width:22px;height:22px;border-radius:50%;border:2px solid #f6e7ce;background:#ef2d24;color:#f6e7ce;box-shadow:0 0 0 2px #071b2b,0 0 8px rgba(239,45,36,.7);font:900 8px/18px 'Roboto Condensed',Arial,sans-serif;text-align:center}
+.live-player-name{display:none}
+.landmark-pin{width:58px;height:48px;transform:none;opacity:.96;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(7,27,43,.4))}
+.landmark-art{width:52px;height:34px}
+.landmark-pin .landmark-label{display:none}
+
+/* Invisible navigation state lives on the artwork buttons. */
+.route-map-stage::after{content:"";position:absolute;inset:0;z-index:8;border:0;box-shadow:none;pointer-events:none;border-radius:0}
+@media(max-width:700px){
+  .flow-stage.route-map-stage{width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948))}
+  #routeMap{left:34.45%;top:27.75%;width:57.55%;height:20.25%;border-radius:20px}
+  #currentLocation,#nextCheckpoint,#distanceNext{left:46.2%;width:48.0%}
+  #currentLocation{top:52.35%;height:3.55%;font-size:clamp(11px,2.4vw,19px)}
+  #nextCheckpoint{top:58.05%;height:3.45%;font-size:clamp(11px,2.4vw,19px)}
+  #distanceNext{top:64.95%;height:3.65%;font-size:clamp(11px,2.4vw,19px)}
+  #routeAction{left:31.7%;top:80.85%;width:64.8%;height:7.15%}
+  #directBarameel{left:31.7%;top:88.65%;width:64.8%;height:7.15%}
+}</style>
 </head>
 <body>
 <main class="flow-stage route-map-stage">
-<img id="routeArtwork" src="./assets/route-map.webp?v=20261008-43.0" alt="" aria-hidden="true">
+<img id="routeArtwork" src="./assets/route-map.webp?v=20261008-44.0" alt="" aria-hidden="true">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
-<div id="mapBrand"><span>BARAMEEL</span> <b>RUN</b><small>ALEXANDRIA</small></div>
-<div id="mapStatus">MAP STARTING…</div>
-<div id="mapControls" aria-label="Map controls">
-  <button id="mapZoomIn" class="map-control" aria-label="Zoom in">+</button>
-  <button id="mapZoomOut" class="map-control" aria-label="Zoom out">−</button>
-  <button id="mapLocate" class="map-control" aria-label="Center on player">◎</button>
+<div id="mapBrand" aria-hidden="true"></div>
+<div id="mapStatus" aria-hidden="true"></div>
+<div id="mapControls" aria-hidden="true">
+  <button id="mapZoomIn" class="map-control" type="button" aria-label="Zoom in"></button>
+  <button id="mapZoomOut" class="map-control" type="button" aria-label="Zoom out"></button>
 </div>
 <div id="currentLocation">LOCATING…</div>
-<div id="cityCompass" aria-hidden="true"><span>N</span><b>▲</b></div>
-<div id="navOverlay" aria-live="polite"><span id="navDirection">WALK</span><span id="navDistance"></span><span>WALKING</span></div>
-<div id="navCompass" aria-hidden="true">↑</div>
-<div id="mapDestinationCard">
-  <div class="dest-title">BARAMEEL</div>
-  <div class="dest-meta"><span id="destDistance">—</span><span id="destTime">—</span></div>
-  <button id="startNavCard" class="dest-action">START NAVIGATION</button>
-</div>
 <div id="nextCheckpoint">LOADING…</div>
 <div id="distanceNext">—</div>
-<div id="routeStatus" aria-live="polite">PREPARING ROUTE</div>
+<div id="routeStatus" aria-live="polite"></div>
 <div id="routeProgress" aria-hidden="true"><div id="routeProgressFill"></div></div>
-<button id="routeAction" aria-label="Open checkpoint scanner"></button>
+<button id="routeAction" aria-label="Go to checkpoint"></button>
+<button id="directBarameel" aria-label="Direct to Barameel"></button>
+<button id="mapLocate" aria-label="Center map on my location"></button>
+<button id="mapFollow" aria-label="Follow my location"></button>
+<div id="mapDestinationCard" aria-hidden="true"><button id="startNavCard" type="button" tabindex="-1">START</button><div id="destDistance"></div><div id="destTime"></div></div>
 <button id="back" aria-label="Back to My Run" style="position:absolute;left:3%;top:1%;width:19%;height:6%;z-index:30;border:0;background:transparent;cursor:pointer"></button>
 </main>
 
 <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
 <script src="./config.js?v=20261008-1"></script>
-<script src="./app.js?v=20261007-26.2"></script>
+<script src="./app.js?v=20261008-44.0"></script>
 
 <script>
 (async()=>{
@@ -196,6 +236,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   let landmarkMarkers=new Map();
   let liveMarkers=new Map();
   let testApproachTimer=null;
+  let followPlayer=false;
+  let firstGpsCentered=false;
 
   const roadStyle='./assets/barameel-map-style.json?v=20261008-42.0';
   const landmarks=[
@@ -297,7 +339,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     for(const item of landmarks){
       if(landmarkMarkers.has(item.id))continue;
       const el=landmarkElement(item);
-      const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([item.lng,item.lat]).addTo(map); m.getElement().style.zIndex='55';
+      const m=new maplibregl.Marker({element:el,anchor:'center',pitchAlignment:'map',rotationAlignment:'map'}).setLngLat([item.lng,item.lat]).addTo(map); m.getElement().style.zIndex='55';
       landmarkMarkers.set(item.id,m);
     }
   }
@@ -327,19 +369,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         continue;
       }
       const el=markerElement(isCleared?'cleared':'checkpoint',cp.name);
-      const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([cp.lng,cp.lat]).addTo(map); m.getElement().style.zIndex='70';
+      const m=new maplibregl.Marker({element:el,anchor:'center',pitchAlignment:'map',rotationAlignment:'map'}).setLngLat([cp.lng,cp.lat]).addTo(map); m.getElement().style.zIndex='70';
       checkpointMarkers.set(cp.id,m);
     }
   }
   function playerElement(){
     const el=document.createElement('div');
-    const avatar=BR.selectedAvatar();
     const name=String(BR.state?.nickname||'PLAYER').toUpperCase();
     el.className='map-player';
     const arrow=document.createElement('span');
     arrow.className='player-arrow';
-    const pos=avatarPosition(avatar);
-    el.style.backgroundPosition=pos[0]+' '+pos[1];
     el.appendChild(arrow);
     const nameEl=document.createElement('span');
     nameEl.className='map-player-name';
@@ -350,7 +389,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function ensurePlayerMarker(){
     if(!map||!mapReady||!latestPosition)return;
     if(!playerMarker){
-      playerMarker=new maplibregl.Marker({element:playerElement(),anchor:'center'}).setLngLat([latestPosition.lng,latestPosition.lat]).addTo(map); playerMarker.getElement().style.zIndex='95';
+      playerMarker=new maplibregl.Marker({element:playerElement(),anchor:'bottom',pitchAlignment:'map',rotationAlignment:'map'}).setLngLat([latestPosition.lng,latestPosition.lat]).addTo(map); playerMarker.getElement().style.zIndex='95';
     }else{
       playerMarker.setLngLat([latestPosition.lng,latestPosition.lat]); playerMarker.getElement().style.zIndex='95';
     }
@@ -374,7 +413,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         label.className='live-player-name';
         label.textContent=String(p.nickname||p.name||'PLAYER').toUpperCase();
         el.appendChild(label);
-        marker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([lng,lat]).addTo(map);
+        marker=new maplibregl.Marker({element:el,anchor:'center',pitchAlignment:'map',rotationAlignment:'map'}).setLngLat([lng,lat]).addTo(map);
         liveMarkers.set(id,marker);
       }else{
         marker.setLngLat([lng,lat]);
@@ -505,9 +544,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     latestPosition=pos;
     if(!mapReady)return;
     ensurePlayerMarker();
-    if(navigationStarted && navigationTarget){
-      const z=map.getZoom();
-      map.easeTo({center:[pos.lng,pos.lat],zoom:Math.max(15.8,Math.min(17.2,z)),duration:650,essential:true});
+    if(!firstGpsCentered){
+      firstGpsCentered=true;
+      map.easeTo({center:[pos.lng,pos.lat],zoom:15.7,duration:550,essential:true});
+      return;
+    }
+    if(navigationStarted && navigationTarget && followPlayer){
+      map.easeTo({center:[pos.lng,pos.lat],zoom:15.7,duration:500,essential:true});
     }
   }
   function addRouteSourceAndLayer(){
@@ -563,6 +606,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       if(!mapReady)throw new Error('MAP_NOT_READY');
       setRouteGeometry(route.geometry);
       animateRoute();
+      if(mapReady){
+        const bounds=new maplibregl.LngLatBounds();
+        for(const pair of (route.geometry.coordinates||[])){
+          if(Array.isArray(pair)&&pair.length>=2)bounds.extend([Number(pair[0]),Number(pair[1])]);
+        }
+        if(!bounds.isEmpty())map.fitBounds(bounds,{padding:{top:24,right:28,bottom:24,left:28},maxZoom:15.9,duration:700,essential:true});
+      }
       navigationSteps=Array.isArray(route.legs?.[0]?.steps)?route.legs[0].steps:[];
       lastRouteAt=Date.now();
       lastRoutePosition={...origin};
@@ -646,7 +696,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }
     navigationTarget=target;
     navigationStarted=true;
-    if(mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:16.2,duration:500,essential:true});
+    if(mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.2,duration:350,essential:true});
     startNavCard.disabled=true;
     startNavCard.textContent=target.id==='barameel'?'NAVIGATING TO BARAMEEL':'NAVIGATING TO '+String(target.name||'CHECKPOINT').toUpperCase();
     status.classList.remove('route-error');
@@ -685,6 +735,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(TEST_MODE&&TEST_APPROACH){return;}
     if(available.length){
       next.textContent=available[0].name;
+      next.dataset.cp=available[0].id;
       distance.textContent=formatDistance(available[0].distance);
       if(available[0].distance<=Math.max(5,available[0].radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
         enterCheckpointHotspot(available[0]);
@@ -699,6 +750,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(destination){
       const d=haversine(pos,destination);
       next.textContent='BARAMEEL';
+      next.dataset.cp='';
       distance.textContent=formatDistance(d);
       status.textContent='BARAMEEL AVAILABLE ANYTIME';
       status.classList.remove('route-error');
@@ -803,13 +855,27 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   document.getElementById('mapZoomIn').onclick=()=>{if(mapReady)map.zoomIn({duration:300});};
   document.getElementById('mapZoomOut').onclick=()=>{if(mapReady)map.zoomOut({duration:300});};
   document.getElementById('mapLocate').onclick=()=>{
-    if(latestPosition&&mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:17,duration:500});
+    if(latestPosition&&mapReady){followPlayer=true;map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.7,duration:500,essential:true});}
     else requestLocation();
   };
+  document.getElementById('mapFollow').onclick=()=>{
+    if(latestPosition&&mapReady){followPlayer=true;map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.7,duration:500,essential:true});}
+    else requestLocation();
+  };
+  document.getElementById('routeAction').onclick=()=>{
+    const cp=checkpoints.find(x=>String(x.id)===String(document.getElementById('nextCheckpoint').dataset.cp||''));
+    if(cp)startNavigation(cp);
+    else if(latestPosition&&checkpoints.length)startNavigation(checkpoints.find(x=>!getDiscovered().has(x.id))||checkpoints[0]);
+  };
+  document.getElementById('directBarameel').onclick=()=>{
+    if(latestPosition&&destination)startNavigation(destination);else requestLocation();
+  };
   startNavCard.onclick=()=>{if(latestPosition&&destination)startNavigation(destination);else requestLocation();};
+  if(map)map.on('dragstart',()=>{followPlayer=false;});
 
   try{
     initMap({lat:31.214,lng:29.918});
+    requestAnimationFrame(()=>{try{map?.resize()}catch{}});
     if(!TEST_MODE)Promise.resolve().then(()=>BR.syncPlayer()).catch(()=>null);
     if(destination){
       destDistance.textContent='—';
