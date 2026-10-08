@@ -655,8 +655,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     distance.textContent=formatDistance(remaining);
     const upcoming=nearestUpcomingStep(pos);
     if(upcoming){
-      navDirection.textContent=routeInstruction(upcoming.step);
-      navDistance.textContent=upcoming.distance<=10?'NOW':'IN '+formatDistance(upcoming.distance);
+      const instruction=routeInstruction(upcoming.step);
+      const instructionDistance=upcoming.distance<=10?'NOW':'IN '+formatDistance(upcoming.distance);
+      navDirection.textContent=instruction;
+      navDistance.textContent=instructionDistance;
+      next.textContent=String(navigationTarget.name||'TARGET').toUpperCase()+' • '+instruction;
+      distance.textContent=instructionDistance;
     }
     if(lastRoutePosition){
       const moved=haversine(lastRoutePosition,pos);
