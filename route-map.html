@@ -103,7 +103,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   const distance=document.getElementById('distanceNext');
   const fill=document.getElementById('routeProgressFill');
   const action=document.getElementById('routeAction');
-  const liveLayer=document.getElementById('livePlayers');
   const navOverlay=document.getElementById('navOverlay');
   const navDirection=document.getElementById('navDirection');
   const navDistance=document.getElementById('navDistance');
@@ -122,7 +121,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   const TEST_APPROACH=TEST_MODE&&params.get('approach')==='1';
   const TEST_INSTANT=TEST_MODE&&params.get('instant')==='1';
   const CHECKPOINT_HOTSPOT_RADIUS=10;
-  const CHECKPOINT_SIGNAL_RADIUS=35;
 
   const cfg=window.BARAMEEL_ROUTE_CONFIG||{};
   const destination=cfg.destination&&Number.isFinite(Number(cfg.destination.lat))&&Number.isFinite(Number(cfg.destination.lng))
@@ -135,7 +133,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 
   let map=null;
   let mapReady=false;
-  let mapLoadFailed=false;
   let latestPosition=null;
   let watchId=null;
   let locationTimer=null;
@@ -145,7 +142,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   let navigationSteps=[];
   let lastRouteAt=0;
   let lastRoutePosition=null;
-  let routeReadyOnce=false;
+  let routeHasFit=false;
+  let didInitialCenter=false;
   let playerMarker=null;
   let destinationMarker=null;
   let checkpointMarkers=new Map();
@@ -339,8 +337,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       });
       map.on('load',()=>{
         mapReady=true;
-        mapLoadFailed=false;
-        routeReadyOnce=true;
+        routeHasFit=false;
         setMapStatus('BARAMEEL GAME MAP • READY');
         if(destination) addDestinationMarker();
         syncCheckpointMarkers();
@@ -380,6 +377,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     latestPosition=pos;
     if(!mapReady)return;
     ensurePlayerMarker();
+    if(!didInitialCenter){
+      map.easeTo({center:[pos.lng,pos.lat],zoom:16,duration:350});
+      didInitialCenter=true;
+    }
   }
   function addRouteSourceAndLayer(){
     if(!mapReady||map.getSource('walking-route'))return;
@@ -419,11 +420,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       status.textContent='WALKING NAVIGATION • FOLLOW THE ROUTE';
       status.classList.remove('route-error');
       setMapStatus('WALKING TO '+navigationTarget.name);
-      if(!routeReadyOnce){
+      if(!routeHasFit){
         const bounds=new maplibregl.LngLatBounds();
         for(const c of route.geometry.coordinates)bounds.extend(c);
         map.fitBounds(bounds,{padding:{top:150,bottom:230,left:30,right:30},duration:500,maxZoom:17});
-        routeReadyOnce=true;
+        routeHasFit=true;
       }
       return true;
     }catch(e){
@@ -586,7 +587,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(testApproachTimer)clearInterval(testApproachTimer);
     let remaining=55;
     status.textContent='TEST MODE • APPROACHING '+TEST_CP_ID;
-    const step=5/111320;
     refreshPosition({lat:target.lat+remaining/111320,lng:target.lng,accuracy:5});
     testApproachTimer=setInterval(()=>{
       remaining=Math.max(0,remaining-5);
@@ -594,7 +594,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       if(remaining<=0){
         clearInterval(testApproachTimer);
         testApproachTimer=null;
-        enterCheckpointHotspot(target.cp||checkpoints.find(x=>x.id===TEST_CP_ID));
+        enterCheckpointHotspot(checkpoints.find(x=>x.id===TEST_CP_ID));
       }
     },650);
   }
