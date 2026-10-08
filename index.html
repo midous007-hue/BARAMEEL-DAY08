@@ -107,15 +107,6 @@
     haptic('light');
   }
 
-  async function warmAsset(url) {
-    try {
-      const response = await fetch(url, { cache: 'force-cache' });
-      if (!response.ok) return false;
-      const blob = await response.blob();
-      return !!blob.size;
-    } catch { return false; }
-  }
-
   function enterWorld() {
     if (finished) return;
     finished = true;
@@ -171,18 +162,7 @@
     await new Promise(r => requestAnimationFrame(r));
     setProgress(18);
 
-    const tasks = [
-      splashArt.decode ? splashArt.decode().catch(() => {}) : Promise.resolve(),
-      warmAsset('./assets/barameel-world.webp?v=' + VERSION),
-      warmAsset('./audio/confirm.wav?v=' + VERSION)
-    ];
-
-    let done = 0;
-    tasks.forEach(p => p.finally(() => {
-      done += 1;
-      setProgress(18 + done * 22);
-    }));
-
+    const tasks = [splashArt.decode ? splashArt.decode().catch(() => {}) : Promise.resolve()];
     await Promise.allSettled(tasks);
     setProgress(86);
 
