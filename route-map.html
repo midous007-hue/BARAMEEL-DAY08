@@ -18,12 +18,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 #routeMap .maplibregl-ctrl-attrib{font:700 8px/1 Arial,sans-serif;background:rgba(7,27,43,.72)!important;color:#f6e7ce!important}
 #routeMap .maplibregl-ctrl-attrib a{color:#f6e7ce!important}
 #routeMap .maplibregl-ctrl-group{display:none}
-#mapBrand{position:absolute;left:24px;top:18px;z-index:20;width:min(350px,42vw);padding:16px 18px 14px;color:#f6e7ce;font:900 clamp(27px,5.3vw,54px)/.88 'Roboto Condensed',Arial,sans-serif;letter-spacing:-.055em;text-transform:uppercase;text-shadow:3px 3px 0 #071b2b,0 0 18px rgba(244,197,47,.18);pointer-events:none;background:rgba(7,27,43,.94);border:2px solid #f6e7ce;border-radius:4px;box-shadow:0 4px 0 #071b2b,0 0 24px rgba(7,27,43,.18);clip-path:polygon(0 0,100% 0,100% 90%,96% 100%,0 100%)}#mapBrand::before{content:"";position:absolute;left:0;top:0;width:100%;height:5px;background:#ef2d24}#mapBrand span{position:relative}#mapBrand span::after{content:"";position:absolute;left:0;bottom:-7px;width:42%;height:4px;background:#f4c52f;box-shadow:2px 2px 0 #071b2b}
+#mapBrand{position:absolute;left:28px;top:20px;z-index:20;color:#f6e7ce;font:900 clamp(30px,5.6vw,58px)/.82 'Roboto Condensed',Arial,sans-serif;letter-spacing:-.06em;text-transform:uppercase;text-shadow:4px 4px 0 #071b2b,0 0 22px rgba(7,27,43,.3);pointer-events:none}#mapBrand span{position:relative}#mapBrand span::after{content:"";position:absolute;left:0;bottom:-8px;width:38%;height:4px;background:#f4c52f;box-shadow:2px 2px 0 #071b2b}#mapBrand b{color:#ef2d24}#mapBrand small{display:block;margin-top:11px;color:#f4c52f;font-size:.25em;letter-spacing:.34em;text-indent:.34em;text-shadow:2px 2px 0 #071b2b}
 #mapBrand b{color:#ef2d24}
 #mapBrand small{display:block;margin-top:7px;color:#f4c52f;font-size:.28em;letter-spacing:.32em;text-indent:.32em}
 #mapStatus{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:20;min-width:200px;max-width:46vw;padding:10px 18px;border:2px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.92);color:#f6e7ce;font:900 clamp(10px,2vw,15px)/1 'Roboto Condensed',Arial,sans-serif;text-align:center;text-transform:uppercase;letter-spacing:.055em;box-shadow:0 3px 0 rgba(0,0,0,.45),0 0 18px rgba(244,197,47,.12);pointer-events:none}
-#mapControls{position:absolute;right:18px;top:28px;z-index:21;display:flex;flex-direction:column;gap:12px}.map-control{position:relative;z-index:21;width:54px;height:54px;border:2px solid #f6e7ce;border-radius:50%;background:rgba(7,27,43,.90);color:#f6e7ce;font:900 30px/48px Arial,sans-serif;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.45),0 0 14px rgba(7,27,43,.22);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.map-control:hover{color:#f4c52f;border-color:#f4c52f}.map-control:active{transform:translateY(1px)}
-#currentLocation{position:absolute;left:24px;top:118px;z-index:20;padding:8px 13px;border:1px solid rgba(246,231,206,.7);border-radius:999px;background:rgba(7,27,43,.82);color:#f6e7ce;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap;letter-spacing:.035em;box-shadow:0 3px 0 rgba(0,0,0,.35);pointer-events:none}.route-map-stage::after{content:"";position:absolute;inset:9px;z-index:6;border:1px solid rgba(246,231,206,.2);box-shadow:inset 0 0 35px rgba(7,27,43,.06);pointer-events:none;border-radius:6px}#cityCompass{position:absolute;left:30px;top:245px;z-index:20;width:74px;height:74px;border:2px solid rgba(246,231,206,.82);border-radius:50%;background:rgba(7,27,43,.83);color:#f6e7ce;display:grid;place-items:center;box-shadow:0 3px 0 rgba(0,0,0,.4);pointer-events:none}#cityCompass span{position:absolute;top:7px;font:900 13px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.12em}.cityCompassDummy{}#cityCompass b{font:900 34px/1 Arial,sans-serif;color:#f4c52f;text-shadow:2px 2px 0 #071b2b}#seaLabel{position:absolute;left:29%;top:33%;z-index:9;color:rgba(25,185,210,.72);font:900 clamp(13px,2vw,23px)/1.08 'Roboto Condensed',Arial,sans-serif;letter-spacing:.32em;text-align:center;text-transform:uppercase;transform:rotate(-9deg);pointer-events:none;text-shadow:1px 2px 0 rgba(7,27,43,.25)}
+#mapControls{position:absolute;right:20px;top:28px;z-index:21;display:flex;flex-direction:column;gap:12px}.map-control{position:relative;z-index:21;width:56px;height:56px;border:2px solid #f6e7ce;border-radius:50%;background:rgba(7,27,43,.90);color:#f6e7ce;font:900 31px/50px Arial,sans-serif;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.45),0 0 14px rgba(7,27,43,.24);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.map-control:hover{color:#f4c52f;border-color:#f4c52f}.map-control:active{transform:translateY(1px)}
+#currentLocation{position:absolute;left:24px;top:118px;z-index:20;padding:8px 13px;border:1px solid rgba(246,231,206,.7);border-radius:999px;background:rgba(7,27,43,.82);color:#f6e7ce;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap;letter-spacing:.035em;box-shadow:0 3px 0 rgba(0,0,0,.35);pointer-events:none}.route-map-stage::after{content:"";position:absolute;inset:9px;z-index:6;border:2px solid rgba(246,231,206,.30);box-shadow:inset 0 0 0 2px rgba(7,27,43,.08),inset 0 0 42px rgba(7,27,43,.08);pointer-events:none;border-radius:6px}#seaToken{position:relative;width:160px;height:74px;display:grid;place-items:center;color:#35b7d1;font:900 17px/1.05 'Roboto Condensed',Arial,sans-serif;letter-spacing:.28em;text-align:center;text-transform:uppercase;transform:rotate(-8deg);text-shadow:2px 2px 0 rgba(7,27,43,.18);pointer-events:none}#seaToken::before,#seaToken::after{content:"〰";position:absolute;left:8px;right:8px;color:#2c92ad;font-size:35px;letter-spacing:.18em;opacity:.65}#seaToken::before{top:-8px}#seaToken::after{bottom:-9px}#cityCompass{position:absolute;left:30px;top:245px;z-index:20;width:74px;height:74px;border:2px solid rgba(246,231,206,.82);border-radius:50%;background:rgba(7,27,43,.83);color:#f6e7ce;display:grid;place-items:center;box-shadow:0 3px 0 rgba(0,0,0,.4);pointer-events:none}#cityCompass span{position:absolute;top:7px;font:900 13px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.12em}.cityCompassDummy{}#cityCompass b{font:900 34px/1 Arial,sans-serif;color:#f4c52f;text-shadow:2px 2px 0 #071b2b}#seaLabel{position:absolute;left:29%;top:33%;z-index:9;color:rgba(25,185,210,.72);font:900 clamp(13px,2vw,23px)/1.08 'Roboto Condensed',Arial,sans-serif;letter-spacing:.32em;text-align:center;text-transform:uppercase;transform:rotate(-9deg);pointer-events:none;text-shadow:1px 2px 0 rgba(7,27,43,.25)}
 #navOverlay{position:absolute;left:50%;top:82px;transform:translateX(-50%);z-index:20;display:none;align-items:center;justify-content:center;gap:8px;padding:8px 12px;border:2px solid #f4c52f;border-radius:12px;background:rgba(7,27,43,.88);color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;white-space:nowrap;pointer-events:none}
 #navOverlay.active{display:flex}
 #navDirection{color:#f4c52f}
@@ -47,20 +47,20 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .map-pin.checkpoint{background:#071b2b;border-color:#f4c52f}
 .map-pin.cleared{background:#f4c52f;color:#071b2b}
 .map-pin.barameel{width:58px;height:58px;background:#ef2d24;border:3px solid #f4c52f;font-size:12px;box-shadow:0 4px 0 #071b2b,0 0 24px rgba(239,45,36,.62);border-radius:18px 18px 50% 50%;transform:rotate(-3deg)}.map-pin.barameel::before{content:"BAR";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font:900 13px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.04em;color:#f6e7ce}.map-pin.barameel::after{content:"";position:absolute;left:50%;top:-11px;width:30px;height:12px;transform:translateX(-50%);border:2px solid #071b2b;border-radius:50%;background:#9a5c24;box-shadow:0 2px 0 #071b2b}
-.map-pin .pin-label{position:absolute;left:50%;top:39px;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.9);color:#f6e7ce;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}.landmark-pin{position:relative;width:42px;height:42px;display:grid;place-items:center;border:2px solid #f6e7ce;border-radius:12px;background:#071b2b;box-shadow:0 3px 0 rgba(0,0,0,.42),0 0 18px rgba(244,197,47,.18);color:#f4c52f;font:900 12px/1 'Roboto Condensed',Arial,sans-serif;transform:rotate(-3deg)}.landmark-pin::before{content:"";position:absolute;inset:4px;border:1px solid rgba(244,197,47,.6);border-radius:8px}.landmark-pin.fortress{border-radius:50%;transform:none}.landmark-pin.bridge{border-radius:50%;transform:rotate(3deg)}.landmark-pin.theatre{border-radius:50%}.landmark-pin .landmark-glyph{position:relative;z-index:1}.landmark-pin .landmark-label{position:absolute;left:50%;top:46px;transform:translateX(-50%);padding:4px 7px;border:1px solid rgba(244,197,47,.7);border-radius:999px;background:rgba(7,27,43,.9);color:#f6e7ce;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.05em;white-space:nowrap}.landmark-pin .landmark-label::before{content:"◆ ";color:#f4c52f}
-.map-player{position:relative;width:48px;height:48px;border-radius:50%;border:3px solid #19b9d2;background:#071b2b;box-shadow:0 0 0 3px #071b2b,0 0 0 6px rgba(25,185,210,.24),0 0 18px rgba(25,185,210,.72),0 0 30px rgba(244,197,47,.18);overflow:visible;background-image:url('./assets/avatar-selection.webp?v=20261007-26.2');background-repeat:no-repeat;background-size:320% 560%;animation:playerPulse 1.9s ease-in-out infinite}.map-player::before{content:"";position:absolute;inset:-12px;border:2px solid rgba(25,185,210,.48);border-radius:50%;box-shadow:0 0 0 7px rgba(25,185,210,.06);pointer-events:none;animation:playerRing 1.9s ease-out infinite}.map-player::after{content:"YOU ARE HERE";position:absolute;left:50%;top:-27px;transform:translateX(-50%);padding:4px 8px;border:1px solid #19b9d2;border-radius:999px;background:#071b2b;color:#f4c52f;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.10em}.player-arrow{position:absolute;left:50%;top:50%;z-index:2;width:0;height:0;transform:translate(-50%,-68%);border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:16px solid #f6e7ce;filter:drop-shadow(1px 2px 0 #071b2b);pointer-events:none}.map-player-name{position:absolute;top:54px;left:50%;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}@keyframes playerPulse{0%,100%{box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(244,197,47,.8),0 0 28px rgba(239,45,36,.16)}50%{box-shadow:0 0 0 3px #071b2b,0 0 18px rgba(244,197,47,1),0 0 34px rgba(239,45,36,.3)}}@keyframes playerRing{0%{opacity:.75;transform:scale(.72)}100%{opacity:0;transform:scale(1.22)}}
+.map-pin .pin-label{position:absolute;left:50%;top:39px;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.9);color:#f6e7ce;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}.landmark-pin{position:relative;width:92px;height:76px;display:grid;place-items:end center;background:transparent;color:#071b2b;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;filter:drop-shadow(0 4px 0 rgba(7,27,43,.38))}.landmark-art{width:70px;height:52px;position:relative;display:grid;place-items:end center}.landmark-pin .landmark-label{position:relative;z-index:2;margin-bottom:-3px;padding:5px 8px;border:2px solid #071b2b;border-radius:7px;background:#f6e7ce;color:#071b2b;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.03em;white-space:nowrap;box-shadow:3px 3px 0 #071b2b}.landmark-pin .landmark-label::before{content:"";display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#f4c52f;border:1px solid #071b2b;vertical-align:1px}.landmark-pin.fortress .landmark-art,.landmark-pin.theatre .landmark-art,.landmark-pin.station .landmark-art,.landmark-pin.bridge .landmark-art{border:2px solid #071b2b;background:#d7a462}.landmark-pin.fortress .landmark-art{clip-path:polygon(8% 100%,8% 38%,18% 38%,18% 26%,30% 26%,30% 38%,42% 38%,42% 15%,54% 15%,54% 38%,66% 38%,66% 24%,78% 24%,78% 38%,92% 38%,92% 100%)}.landmark-pin.theatre .landmark-art{border-radius:50% 50% 8% 8%;background:radial-gradient(circle at 50% 55%,#071b2b 0 18%,#d7a462 19% 31%,#8f6a42 32% 44%,#d7a462 45% 62%,transparent 63%)}.landmark-pin.station .landmark-art{background:#d7a462;box-shadow:inset 0 -8px 0 #8b6b45}.landmark-pin.station .landmark-art::before,.landmark-pin.station .landmark-art::after{content:"";position:absolute;top:8px;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:13px solid #f4d07e}.landmark-pin.station .landmark-art::before{left:2px}.landmark-pin.station .landmark-art::after{right:2px}.landmark-pin.bridge .landmark-art{background:linear-gradient(180deg,transparent 0 36%,#8b6b45 37% 58%,transparent 59%),linear-gradient(90deg,#d7a462 0 14%,transparent 15% 85%,#d7a462 86%);border:none;height:44px}.landmark-pin.bridge .landmark-art::before{content:"";position:absolute;left:6px;right:6px;top:10px;height:22px;border:5px solid #d7a462;border-top-width:6px;border-bottom:0;border-radius:50% 50% 0 0}.landmark-pin.bridge .landmark-art::after{content:"";position:absolute;left:15px;right:15px;bottom:6px;border-bottom:5px solid #d7a462}.landmark-pin .landmark-art::marker{display:none}
+.map-player{position:relative;width:58px;height:58px;border-radius:50%;border:3px solid #19b9d2;background:#071b2b;box-shadow:0 0 0 3px #071b2b,0 0 0 6px rgba(25,185,210,.24),0 0 18px rgba(25,185,210,.72),0 0 30px rgba(244,197,47,.18);overflow:visible;background-image:url('./assets/avatar-selection.webp?v=20261007-26.2');background-repeat:no-repeat;background-size:320% 560%;animation:playerPulse 1.9s ease-in-out infinite}.map-player::before{content:"";position:absolute;inset:-12px;border:2px solid rgba(25,185,210,.48);border-radius:50%;box-shadow:0 0 0 7px rgba(25,185,210,.06);pointer-events:none;animation:playerRing 1.9s ease-out infinite}.map-player::after{content:"YOU ARE HERE";position:absolute;left:50%;top:-27px;transform:translateX(-50%);padding:4px 8px;border:1px solid #19b9d2;border-radius:999px;background:#071b2b;color:#f4c52f;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.10em}.player-arrow{position:absolute;left:50%;top:50%;z-index:2;width:0;height:0;transform:translate(-50%,-68%);border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:20px solid #f6e7ce;filter:drop-shadow(1px 2px 0 #071b2b);pointer-events:none}.map-player-name{position:absolute;top:54px;left:50%;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}@keyframes playerPulse{0%,100%{box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(244,197,47,.8),0 0 28px rgba(239,45,36,.16)}50%{box-shadow:0 0 0 3px #071b2b,0 0 18px rgba(244,197,47,1),0 0 34px rgba(239,45,36,.3)}}@keyframes playerRing{0%{opacity:.75;transform:scale(.72)}100%{opacity:0;transform:scale(1.22)}}
 .map-player-name{position:absolute;top:54px;left:50%;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
 .live-player{width:26px;height:26px;border-radius:50%;border:2px solid #f6e7ce;background:#ef2d24;color:#f6e7ce;box-shadow:0 0 0 2px #071b2b,0 0 10px rgba(239,45,36,.75);font:900 9px/22px 'Roboto Condensed',Arial,sans-serif;text-align:center}
 .live-player-name{position:absolute;top:29px;left:50%;transform:translateX(-50%);color:#f6e7ce;text-shadow:1px 1px 0 #071b2b;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
 .route-error{color:#ff9a8f!important}
 .route-map-stage::after{content:"";position:absolute;inset:10px;z-index:5;border:1px solid rgba(246,231,206,.14);box-shadow:inset 0 0 0 1px rgba(7,27,43,.16);border-radius:8px;pointer-events:none}
 @media(max-width:700px){
-  #mapBrand{left:14px;top:13px;width:min(290px,55vw);padding:12px 13px;font-size:30px}
-  #mapStatus{top:13px;right:118px;left:auto;transform:none;min-width:0;max-width:42vw;padding:8px 10px}
+  #mapBrand{left:14px;top:13px;font-size:31px}
+  #mapStatus{top:13px;right:82px;left:auto;transform:none;min-width:0;max-width:42vw;padding:8px 10px}
   #mapControls{right:12px;top:76px;gap:8px}
   .map-control{width:46px;height:46px;line-height:40px;font-size:24px}
-  #currentLocation{left:14px;top:100px;max-width:55vw;overflow:hidden;text-overflow:ellipsis}
-  #cityCompass{left:14px;top:195px;width:58px;height:58px}
+  #currentLocation{left:14px;top:87px;max-width:55vw;overflow:hidden;text-overflow:ellipsis}
+  #cityCompass{left:14px;top:165px;width:58px;height:58px}
   #cityCompass b{font-size:28px}
   #mapDestinationCard{left:12px;right:12px;bottom:12px;width:auto;padding:13px;border-radius:18px}
   #mapDestinationCard .dest-action{padding:12px}
@@ -71,7 +71,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 <body>
 <main class="flow-stage route-map-stage">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
-<div id="mapBrand"><span>BARAMEEL</span> <b>RUN</b><small>ALEXANDRIA • REAL GAME MAP</small></div>
+<div id="mapBrand"><span>BARAMEEL</span> <b>RUN</b><small>ALEXANDRIA</small></div>
 <div id="mapStatus">MAP STARTING…</div>
 <div id="mapControls" aria-label="Map controls">
   <button id="mapZoomIn" class="map-control" aria-label="Zoom in">+</button>
@@ -80,7 +80,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 </div>
 <div id="currentLocation">LOCATING…</div>
 <div id="cityCompass" aria-hidden="true"><span>N</span><b>▲</b></div>
-<div id="seaLabel" aria-hidden="true">MEDITERRANEAN<br>SEA</div>
 <div id="navOverlay" aria-live="polite"><span id="navDirection">WALK</span><span id="navDistance"></span><span>WALKING</span></div>
 <div id="navCompass" aria-hidden="true">↑</div>
 <div id="mapDestinationCard">
@@ -150,7 +149,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   let navigationSteps=[];
   let lastRouteAt=0;
   let lastRoutePosition=null;
-  let routeHasFit=false;
   let didInitialCenter=false;
   let playerMarker=null;
   let destinationMarker=null;
@@ -198,15 +196,23 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function landmarkElement(item){
     const el=document.createElement('div');
     el.className='landmark-pin '+item.type;
-    const glyph=document.createElement('span');
-    glyph.className='landmark-glyph';
-    glyph.textContent=item.type==='fortress'?'✦':item.type==='theatre'?'◉':item.type==='station'?'▦':'∿';
-    el.appendChild(glyph);
+    const art=document.createElement('div');
+    art.className='landmark-art';
+    el.appendChild(art);
     const label=document.createElement('span');
     label.className='landmark-label';
     label.textContent=item.short;
     el.appendChild(label);
     return el;
+  }
+  function addSeaToken(){
+    if(!map||!mapReady||map.getLayer('walking-route-line')){}
+    if(map?._barameelSeaToken)return;
+    const el=document.createElement('div');
+    el.id='seaToken';
+    el.innerHTML='MEDITERRANEAN<br>SEA';
+    const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([29.8738,31.2188]).addTo(map);
+    map._barameelSeaToken=m;
   }
   function syncLandmarks(){
     if(!map||!mapReady)return;
@@ -374,11 +380,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       });
       map.on('load',()=>{
         mapReady=true;
-        routeHasFit=false;
         if(mapBootTimer)clearTimeout(mapBootTimer);
         setMapStatus('BARAMEEL GAME MAP • READY');
         if(destination) addDestinationMarker();
         syncLandmarks();
+        addSeaToken();
         syncCheckpointMarkers();
         ensurePlayerMarker();
         if(latestPosition) renderRoutePosition(latestPosition);
@@ -474,12 +480,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       status.textContent='WALKING NAVIGATION • FOLLOW THE ROUTE';
       status.classList.remove('route-error');
       // Keep the map-health chip independent from navigation state.
-      if(!routeHasFit){
-        const bounds=new maplibregl.LngLatBounds();
-        for(const c of route.geometry.coordinates)bounds.extend(c);
-        map.fitBounds(bounds,{padding:{top:150,bottom:230,left:330,right:30},duration:500,maxZoom:17});
-        routeHasFit=true;
-      }
+      // Keep the city overview fixed while walking. The player controls the camera.
       return true;
     }catch(e){
       console.error('[BARAMEEL WALKING ROUTE]',e);
@@ -713,7 +714,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   startNavCard.onclick=()=>{if(latestPosition&&destination)startNavigation(destination);else requestLocation();};
 
   try{
-    initMap({lat:31.213,lng:29.916});
+    initMap({lat:31.213,lng:29.917});
     if(!TEST_MODE)Promise.resolve().then(()=>BR.syncPlayer()).catch(()=>null);
     if(destination){
       destDistance.textContent='—';
