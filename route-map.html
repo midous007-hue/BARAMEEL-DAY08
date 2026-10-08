@@ -309,16 +309,41 @@
     return ordered.slice(0,Math.min(ordered.length,Math.max(1,discovered.size+1)));
   }
 
+  let baseTiles=null,labelTiles=null;
+  function initMap(center){
+    if(map)return;
+    const fallbackCenter=center||destination||{lat:31.190520,lng:29.920547};
+    map=L.map('routeMap',{zoomControl:true,attributionControl:true,scrollWheelZoom:true,doubleClickZoom:true,touchZoom:true,dragging:true})
+      .setView([fallbackCenter.lat,fallbackCenter.lng],15);
+    baseTiles=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
+      maxZoom:20,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'
+    }).addTo(map);
+    labelTiles=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{
+      maxZoom:20,subdomains:'abcd',opacity:.78,attribution:''
+    }).addTo(map);
+    let fallbackUsed=false;
+    baseTiles.on('tileerror',()=>{
+      if(fallbackUsed)return;
+      fallbackUsed=true;
+      try{map.removeLayer(labelTiles)}catch{}
+      try{map.removeLayer(baseTiles)}catch{}
+      baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+        maxZoom:19,attribution:'© OpenStreetMap'
+      }).addTo(map);
+      document.getElementById('mapStatus').textContent='REAL MAP • STANDARD TILES';
+    });
+    if(destination)marker(destination.lat,destination.lng,'barameel',destination.name);
+    const unlocked=unlockedCheckpoints();
+    unlocked.forEach(cp=>markers.push({
+      cp,marker:marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CLEARED':'AVAILABLE')
+    }));
+  }
+
   function renderMap(pos){
     latestPosition=pos;
-    if(!map){
-      map=L.map('routeMap',{zoomControl:true,attributionControl:true,scrollWheelZoom:true,doubleClickZoom:true,touchZoom:true,dragging:true}).setView([pos.lat,pos.lng],15);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{maxZoom:20,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'}).addTo(map);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:20,subdomains:'abcd',opacity:.78,attribution:''}).addTo(map);
+    initMap(pos);
+    if(!playerMarker){
       playerMarker=L.marker([pos.lat,pos.lng],{icon:playerIcon(),keyboard:false,interactive:false}).addTo(map);
-      if(destination) marker(destination.lat,destination.lng,'barameel',destination.name);
-      const unlocked=unlockedCheckpoints();
-      unlocked.forEach(cp=>markers.push({cp,marker:marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CLEARED':'AVAILABLE')}));
     }else{
       playerMarker.setLatLng([pos.lat,pos.lng]);
       playerMarker.setIcon(playerIcon());
@@ -706,6 +731,8 @@
   document.getElementById('mapLocate').onclick=()=>{if(latestPosition&&map)map.setView([latestPosition.lat,latestPosition.lng],18,{animate:true});else requestLocation();};
   document.getElementById('mapNorth').onclick=()=>{if(map)map.setBearing?map.setBearing(0):map.setView(map.getCenter(),map.getZoom(),{animate:true});};
   document.getElementById('startNavCard').onclick=()=>{if(latestPosition&&destination)startNavigation({...destination,id:'barameel'});else requestLocation();};
+  initMap(destination||{lat:31.190520,lng:29.920547});
+  document.getElementById('mapStatus').textContent='REAL MAP • WAITING FOR GPS';
   direct.onclick=()=>{ if(latestPosition&&destination)startNavigation({...destination,id:'barameel'}); else requestLocation(); };
 
   if(!checkpoints.length&&!destination){
