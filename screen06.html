@@ -113,7 +113,7 @@
       }
       b.appendChild(grid);thumbs.appendChild(b);
       b.onclick=()=>{BR.play('tap');BR.haptic('tap');renderImage(im.imageId)};
-      loadMaster(im.masterFile).then(img=>{if(img){const bg='url("' + img.src + '")';[...grid.children].forEach(cell=>cell.style.backgroundImage=bg)}})
+      if(im.imageId===activeImageId){loadMaster(im.masterFile).then(img=>{if(img){const bg='url("' + img.src + '")';[...grid.children].forEach(cell=>cell.style.backgroundImage=bg)}})}
     }
   }
 
