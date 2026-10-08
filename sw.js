@@ -1,30 +1,13 @@
-const CACHE='barameel-world-v23.5-redeploy-42.0';
-const CORE=[
-'./','./index.html','./world.html','./how-it-works.html','./start-flash.html','./run.html',
-'./screen02.html','./screen04.html','./screen05.html','./screen06.html',
-'./route-map.html','./checkpoint-scanner.html','./checkpoint-found.html','./barameel-final-zone.html',
-'./new-collection-piece.html','./receipt-code.html','./verifying-code.html',
-'./reveal-barameel-box.html','./your-barameel-drop.html','./rewarded-added.html','./run-complete.html',
-'./leaderboard.html','./marks-wallet.html','./barameel-marks.html','./styles.css','./barameel-flow.css',
-'./barameel-flow.js','./config.js','./app.js?v=20261007-26.2','./assets/collections/index.json',
-'./assets/barameel-map-style.json?v=20261008-42.0'
-];
-self.addEventListener('install',event=>event.waitUntil(
-  caches.open(CACHE)
-    .then(cache=>Promise.allSettled(CORE.map(url=>cache.add(url).catch(()=>null))))
-    .then(()=>self.skipWaiting())
-));
-self.addEventListener('activate',event=>event.waitUntil(
-  caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))
-    .then(()=>self.clients.claim())
-));
+const CACHE='barameel-world-performance-1';
+const CORE=['./','./index.html','./world.html','./styles.css','./barameel-flow.css','./barameel-flow.js','./config.js','./app.js','./assets/barameel-world-splash.webp','./assets/barameel-world.webp','./assets/barameel-map-style.json'];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE).catch(()=>{})).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET')return;
-  event.respondWith(
-    fetch(event.request).then(response=>{
-      const copy=response.clone();
-      caches.open(CACHE).then(cache=>cache.put(event.request,copy)).catch(()=>{});
-      return response;
-    }).catch(()=>caches.match(event.request))
-  );
+ if(event.request.method!=='GET') return;
+ const req=event.request,url=new URL(req.url);
+ if(url.origin!==location.origin) return;
+ event.respondWith(caches.match(req).then(cached=>{
+   const network=fetch(req).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(req,copy)).catch(()=>{});}return response;}).catch(()=>cached);
+   return cached||network;
+ }));
 });
