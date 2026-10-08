@@ -277,6 +277,8 @@
   // declarations themselves are hoisted.
   let map=null,watchId=null,playerMarker=null,markers=[],latestPosition=null,routeLine=null;
   let navigationTarget=null,navigationSteps=[],navigationStarted=false,lastRouteAt=0,lastRoutePosition=null;
+  let bestGpsAccuracy=Infinity;
+  const GPS_GOOD_ACCURACY=35;
   let baseTiles=null,labelTiles=null;
   const liveMarkers=new Map();
   const discovered=new Set((BR.state?.checkpoints||[]).map(String));
@@ -579,6 +581,12 @@
 
   async function startNavigation(target){
     if(!target||!latestPosition)return;
+    if(Number(latestPosition.accuracy)>80){
+      status.textContent='WAITING FOR MORE ACCURATE GPS • ±'+Math.round(latestPosition.accuracy)+' M';
+      document.getElementById('mapStatus').textContent='GPS TOO WEAK • MOVE OUTDOORS';
+      requestLocation();
+      return;
+    }
     navigationTarget=target;
     navigationStarted=true;
     status.classList.remove('route-error');
@@ -597,14 +605,20 @@
   }
 
   function refresh(pos){
-    if(!TEST_MODE) renderMap(pos);
-    current.textContent='LIVE • '+pos.lat.toFixed(5)+', '+pos.lng.toFixed(5);
+    const acc=Number.isFinite(Number(pos.accuracy))?Number(pos.accuracy):9999;
+    if(latestPosition && acc>bestGpsAccuracy+25 && haversine(pos,latestPosition)>35) return;
+    if(acc<bestGpsAccuracy) bestGpsAccuracy=acc;
+    latestPosition={lat:pos.lat,lng:pos.lng,accuracy:acc};
+    if(!TEST_MODE) renderMap(latestPosition);
+    current.textContent='LIVE • '+pos.lat.toFixed(5)+', '+pos.lng.toFixed(5)+' • ±'+Math.round(acc)+' M';
+    document.getElementById('mapStatus').textContent=acc<=GPS_GOOD_ACCURACY?'GPS LOCKED • ±'+Math.round(acc)+' M':'GPS IMPROVING • ±'+Math.round(acc)+' M';
     const destDistance=document.getElementById('destDistance'),destTime=document.getElementById('destTime');
     if(destination){
       const bd=haversine(pos,destination);
       destDistance.textContent=formatDistance(bd);
       const mins=Math.max(1,Math.round(bd/80));
       destTime.textContent=mins+' MIN';
+      if(acc>GPS_GOOD_ACCURACY) destTime.textContent+=' • GPS ±'+Math.round(acc)+'M';
     }
     const unlocked=unlockedCheckpoints();
     const available=unlocked.filter(cp=>!discovered.has(cp.id)).map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>a.distance-b.distance);
@@ -739,7 +753,7 @@
         routeError(code);
         document.getElementById('mapStatus').textContent='GPS '+code.replace('LOCATION ','');
       },
-      {enableHighAccuracy:true,timeout:10000,maximumAge:3000}
+      {enableHighAccuracy:true,timeout:20000,maximumAge:0}
     );
   }
   function startWatching(){
@@ -747,7 +761,7 @@
     watchId=navigator.geolocation.watchPosition(
       p=>{const pos={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy};refresh(pos);loadLivePlayers(pos);},
       ()=>{status.textContent='GPS SIGNAL WEAK — KEEP LOCATION ON';document.getElementById('mapStatus').textContent='GPS SIGNAL WEAK';},
-      {enableHighAccuracy:true,maximumAge:3000,timeout:12000}
+      {enableHighAccuracy:true,maximumAge:0,timeout:20000}
     );
   }
 
