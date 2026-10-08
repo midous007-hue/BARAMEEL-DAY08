@@ -7,6 +7,7 @@
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
 <link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css">
 <script src="./config.js?v=20261007-26.3"></script>
 <style>
 #checkpointLockLayer{position:absolute;inset:0;z-index:44;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .16s ease,visibility 0s linear .16s;background:radial-gradient(circle at 62.85% 37.85%,rgba(244,197,47,.16) 0 8%,rgba(239,45,36,.08) 13%,transparent 30%),linear-gradient(180deg,rgba(7,27,43,0) 0 70%,rgba(239,45,36,.05) 100%);overflow:hidden}
@@ -93,8 +94,13 @@
 }
 #routeMap .leaflet-container{
   width:100%;height:100%;background:#071b2b;
-  filter:saturate(.72) contrast(1.04) brightness(.78) sepia(.10);
 }
+#routeMap .maplibregl-map,
+#routeMap .maplibregl-canvas-container,
+#routeMap .maplibregl-canvas{
+  width:100%!important;height:100%!important;
+}
+#routeMap .maplibregl-canvas{filter:none!important}
 #routeMap .leaflet-tile-pane{opacity:.96}
 #routeMap .leaflet-control-attribution{
   font-size:7px;line-height:1.1;background:rgba(7,27,43,.78)!important;
@@ -240,6 +246,8 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
 <script src="./config.js?v=20261008-1"></script>
 <script src="./app.js?v=20261008-1"></script>
 <script>
@@ -322,25 +330,46 @@
     return ordered.slice(0,Math.min(ordered.length,Math.max(1,discovered.size+1)));
   }
 
+  let mapLibreLayer=null;
   function initMap(center){
     if(map)return;
     const fallbackCenter=center||destination||{lat:31.190520,lng:29.920547};
     map=L.map('routeMap',{zoomControl:true,attributionControl:true,scrollWheelZoom:true,doubleClickZoom:true,touchZoom:true,dragging:true})
       .setView([fallbackCenter.lat,fallbackCenter.lng],15);
-    // Use OpenStreetMap tiles directly. CARTO's basemap endpoint requires
-    // an API key in this environment and was causing the blank map.
-    baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-      maxZoom:19,
-      attribution:'© OpenStreetMap contributors'
-    }).addTo(map);
-    labelTiles=null;
+
+    // BARAMEEL visual map: real OpenStreetMap geometry rendered through
+    // OpenFreeMap vector tiles, with our own simplified cream/navy style.
+    if(typeof L.maplibreGL==='function'){
+      mapLibreLayer=L.maplibreGL({
+        style:'./assets/barameel-map-style.json',
+        interactive:false,
+        attribution:'© OpenStreetMap contributors · OpenFreeMap'
+      }).addTo(map);
+
+      try{
+        const gl=mapLibreLayer.getMaplibreMap();
+        gl.on('error',()=>{
+          if(!mapLibreLayer)return;
+          try{map.removeLayer(mapLibreLayer)}catch{}
+          mapLibreLayer=null;
+          baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+            maxZoom:19,attribution:'© OpenStreetMap contributors'
+          }).addTo(map);
+          document.getElementById('mapStatus').textContent='REAL MAP • STANDARD STYLE';
+        });
+      }catch{}
+    }else{
+      baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+        maxZoom:19,attribution:'© OpenStreetMap contributors'
+      }).addTo(map);
+    }
+
     if(destination)marker(destination.lat,destination.lng,'barameel',destination.name);
     const unlocked=unlockedCheckpoints();
     unlocked.forEach(cp=>markers.push({
       cp,marker:marker(cp.lat,cp.lng,discovered.has(cp.id)?'found':'checkpoint',discovered.has(cp.id)?'CLEARED':'AVAILABLE')
     }));
   }
-
   function renderMap(pos){
     latestPosition=pos;
     initMap(pos);
