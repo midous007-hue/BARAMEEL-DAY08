@@ -405,7 +405,11 @@ if('serviceWorker' in navigator){
         mapLibreLayer=L.maplibreGL({
           style:styleUrl,
           interactive:false,
-          attributionControl:false
+          attributionControl:false,
+          // Draw the vector game map above the OSM raster fallback.
+          // The adapter defaults to tilePane; overlayPane guarantees the
+          // custom BARAMEEL style is actually visible.
+          pane:'overlayPane'
         }).addTo(map);
 
         const gl=mapLibreLayer.getMaplibreMap?.();
@@ -416,6 +420,7 @@ if('serviceWorker' in navigator){
           }
           const el=document.getElementById('mapStatus');
           if(el && !navigationStarted)el.textContent='BARAMEEL GAME MAP • GPS READY';
+          console.log('[BARAMEEL VECTOR MAP] custom style loaded');
         };
         const onVectorError=(evt)=>{
           console.error('[BARAMEEL VECTOR MAP ERROR]',evt?.error||evt);
