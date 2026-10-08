@@ -46,6 +46,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .map-pin .pin-label{position:absolute;left:50%;top:39px;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.9);color:#f6e7ce;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}.landmark-pin{position:relative;width:140px;height:110px;display:grid;place-items:end center;background:transparent;color:#071b2b;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;filter:drop-shadow(0 4px 0 rgba(7,27,43,.38))}.landmark-art{width:100px;height:68px;position:relative;display:grid;place-items:end center}.landmark-art svg{width:100%;height:100%;display:block;filter:drop-shadow(2px 2px 0 rgba(7,27,43,.35))}.landmark-pin .landmark-label{position:relative;z-index:2;margin-bottom:-3px;padding:5px 8px;border:2px solid #071b2b;border-radius:7px;background:#f6e7ce;color:#071b2b;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.03em;white-space:nowrap;box-shadow:3px 3px 0 #071b2b}.landmark-pin .landmark-label::before{content:"";display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#f4c52f;border:1px solid #071b2b;vertical-align:1px}.landmark-pin.fortress .landmark-art,.landmark-pin.theatre .landmark-art,.landmark-pin.station .landmark-art,.landmark-pin.bridge .landmark-art{border:2px solid #071b2b;background:#d7a462}.landmark-pin.fortress .landmark-art{clip-path:polygon(8% 100%,8% 38%,18% 38%,18% 26%,30% 26%,30% 38%,42% 38%,42% 15%,54% 15%,54% 38%,66% 38%,66% 24%,78% 24%,78% 38%,92% 38%,92% 100%)}.landmark-pin.theatre .landmark-art{border-radius:50% 50% 8% 8%;background:radial-gradient(circle at 50% 55%,#071b2b 0 18%,#d7a462 19% 31%,#8f6a42 32% 44%,#d7a462 45% 62%,transparent 63%)}.landmark-pin.station .landmark-art{background:#d7a462;box-shadow:inset 0 -8px 0 #8b6b45}.landmark-pin.station .landmark-art::before,.landmark-pin.station .landmark-art::after{content:"";position:absolute;top:8px;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:13px solid #f4d07e}.landmark-pin.station .landmark-art::before{left:2px}.landmark-pin.station .landmark-art::after{right:2px}.landmark-pin.bridge .landmark-art{background:linear-gradient(180deg,transparent 0 36%,#8b6b45 37% 58%,transparent 59%),linear-gradient(90deg,#d7a462 0 14%,transparent 15% 85%,#d7a462 86%);border:none;height:44px}.landmark-pin.bridge .landmark-art::before{content:"";position:absolute;left:6px;right:6px;top:10px;height:22px;border:5px solid #d7a462;border-top-width:6px;border-bottom:0;border-radius:50% 50% 0 0}.landmark-pin.bridge .landmark-art::after{content:"";position:absolute;left:15px;right:15px;bottom:6px;border-bottom:5px solid #d7a462}.landmark-pin .landmark-art::marker{display:none}
 .map-player{position:relative;width:58px;height:58px;border-radius:50%;border:3px solid #19b9d2;background:#071b2b;box-shadow:0 0 0 3px #071b2b,0 0 0 6px rgba(25,185,210,.24),0 0 18px rgba(25,185,210,.72),0 0 30px rgba(244,197,47,.18);overflow:visible;animation:playerPulse 1.9s ease-in-out infinite}.map-player::before{content:"";position:absolute;inset:-12px;border:2px solid rgba(25,185,210,.48);border-radius:50%;box-shadow:0 0 0 7px rgba(25,185,210,.06);pointer-events:none;animation:playerRing 1.9s ease-out infinite}.map-player::after{content:"YOU ARE HERE";position:absolute;left:50%;top:-27px;transform:translateX(-50%);padding:4px 8px;border:1px solid #19b9d2;border-radius:999px;background:#071b2b;color:#f4c52f;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.10em}.player-arrow{position:absolute;left:50%;top:50%;z-index:2;width:0;height:0;transform:translate(-50%,-68%);border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:20px solid #f6e7ce;filter:drop-shadow(1px 2px 0 #071b2b);pointer-events:none}.map-player-name{position:absolute;top:54px;left:50%;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}@keyframes playerPulse{0%,100%{box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(244,197,47,.8),0 0 28px rgba(239,45,36,.16)}50%{box-shadow:0 0 0 3px #071b2b,0 0 18px rgba(244,197,47,1),0 0 34px rgba(239,45,36,.3)}}@keyframes playerRing{0%{opacity:.75;transform:scale(.72)}100%{opacity:0;transform:scale(1.22)}}
 .map-player-name{position:absolute;top:54px;left:50%;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
+.map-pin.barameel{width:112px;height:108px;background:transparent;border:0;box-shadow:none;border-radius:0;display:block;position:relative}
+.barameel-store-body{position:absolute;left:8px;bottom:6px;width:96px;height:52px;border:3px solid #071b2b;border-radius:9px 9px 5px 5px;background:linear-gradient(180deg,#ef2d24 0 28%,#f4c52f 29% 35%,#8d3d24 36% 100%);box-shadow:5px 6px 0 #071b2b,0 0 20px rgba(239,45,36,.55);transform:skewY(-2deg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:5px}
+.barameel-store-body b{font:900 13px/1 'Roboto Condensed',Arial,sans-serif;color:#f6e7ce;letter-spacing:.02em;text-shadow:2px 2px 0 #071b2b}
+.barameel-store-body span{font:900 6px/1 'Roboto Condensed',Arial,sans-serif;color:#071b2b;background:#f4c52f;padding:2px 4px;margin-top:4px}
+.barameel-store-roof{position:absolute;left:14px;bottom:52px;width:84px;height:23px;background:#ef2d24;border:3px solid #071b2b;border-radius:50% 50% 14% 14%;transform:skewY(-2deg);box-shadow:5px 4px 0 #071b2b}
+.barameel-store-roof::after{content:"";position:absolute;left:17px;top:-20px;width:46px;height:26px;border:4px solid #071b2b;border-bottom:0;border-radius:50% 50% 0 0;background:#a7652a;box-shadow:inset 0 -8px 0 #6d3c1e}
+.barameel-store-barrel{position:absolute;left:39px;top:5px;width:34px;height:40px;border:3px solid #071b2b;border-radius:50% 50% 42% 42%;background:linear-gradient(90deg,#6e351d 0 18%,#c7792e 19% 80%,#6e351d 81%);color:#f6e7ce;font:900 15px/34px 'Roboto Condensed',Arial,sans-serif;text-align:center;z-index:4;box-shadow:3px 3px 0 #071b2b}
+.map-pin.barameel .pin-label{left:56px;top:109px;transform:translateX(-50%);z-index:8}
 .live-player{width:26px;height:26px;border-radius:50%;border:2px solid #f6e7ce;background:#ef2d24;color:#f6e7ce;box-shadow:0 0 0 2px #071b2b,0 0 10px rgba(239,45,36,.75);font:900 9px/22px 'Roboto Condensed',Arial,sans-serif;text-align:center}
 .live-player-name{position:absolute;top:29px;left:50%;transform:translateX(-50%);color:#f6e7ce;text-shadow:1px 1px 0 #071b2b;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
 .route-error{color:#ff9a8f!important}
@@ -96,9 +104,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   letter-spacing:.035em;text-transform:uppercase;text-shadow:2px 2px 0 #071b2b;
   pointer-events:none;
 }
-#currentLocation{top:52.35%;height:3.55%}
-#nextCheckpoint{top:58.05%;height:3.45%;color:#f4c52f}
-#distanceNext{top:64.95%;height:3.65%}
+#currentLocation{top:51.45%;height:5.25%}
+#nextCheckpoint{top:59.55%;height:5.15%;color:#f4c52f}
+#distanceNext{top:67.15%;height:5.10%}
 #routeStatus{display:none!important}
 #routeProgress{
   position:absolute;left:40.4%;right:auto;top:75.25%;bottom:auto;
@@ -107,14 +115,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 }
 #routeProgressFill{height:100%;width:0;background:#f4c52f;border-radius:99px;box-shadow:0 0 7px rgba(244,197,47,.75);transition:width .35s ease}
 #routeAction,#directBarameel{
-  position:absolute;left:31.7%;width:64.8%;height:7.15%;
+  position:absolute;left:31.0%;width:66.0%;height:7.55%;
   z-index:30;top:auto;bottom:auto;border:0;background:transparent;
   opacity:1;pointer-events:auto;cursor:pointer;
   touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
-#routeAction{top:80.85%}
-#directBarameel{top:88.65%}
-#routeAction:disabled,#directBarameel:disabled{pointer-events:none}
+#routeAction{top:80.35%}
+#directBarameel{top:88.20%}
+#routeAction:disabled,#directBarameel:disabled{pointer-events:auto;opacity:1}
 #mapLocate,#mapFollow{
   position:absolute;z-index:32;border:0;background:transparent;padding:0;
   cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
@@ -130,8 +138,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .map-pin.barameel{width:48px;height:48px;background:#ef2d24;border:3px solid #f4c52f;font-size:9px;box-shadow:0 3px 0 #071b2b,0 0 18px rgba(239,45,36,.6);border-radius:50% 50% 50% 12%}
 .map-pin.barameel::before{content:"B";font:900 20px/1 'Roboto Condensed',Arial,sans-serif;color:#f6e7ce}
 .map-pin .pin-label{position:absolute;left:50%;top:35px;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.92);color:#f6e7ce;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
-.map-player{position:relative;width:48px;height:58px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 3px 0 #071b2b);pointer-events:none}
-.map-player::before{content:"";position:absolute;top:0;left:50%;width:38px;height:38px;transform:translateX(-50%);border-radius:50%;border:4px solid #f6e7ce;background:#19b9d2;box-shadow:0 0 0 3px #071b2b,0 0 14px rgba(25,185,210,.75)}
+.map-player{position:relative;width:54px;height:66px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 3px 0 #071b2b);pointer-events:none}
+.map-player .player-avatar{position:absolute;top:0;left:50%;width:42px;height:42px;transform:translateX(-50%);border-radius:50%;border:3px solid #f6e7ce;background-color:#19b9d2;background-image:url('./assets/avatar-selection.webp?v=20261009-46.0');background-repeat:no-repeat;background-size:300% 300%;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(25,185,210,.75);overflow:hidden}
+.map-player .player-avatar::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 -10px 14px rgba(7,27,43,.22)}
+.map-player::before{content:"";position:absolute;top:0;left:50%;width:48px;height:48px;transform:translateX(-50%);border-radius:50%;border:2px solid rgba(244,197,47,.85);box-shadow:0 0 0 2px #071b2b,0 0 16px rgba(244,197,47,.45);pointer-events:none}
 .map-player::after{content:"YOU";position:absolute;left:50%;bottom:0;transform:translateX(-50%);padding:4px 9px;border:2px solid #071b2b;border-radius:999px;background:#1967d2;color:#fff;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.06em}
 .map-player .player-arrow{position:absolute;top:12px;left:50%;z-index:2;width:0;height:0;transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:15px solid #f4c52f;filter:drop-shadow(1px 2px 0 #071b2b);pointer-events:none}
 .map-player-name{display:none}
@@ -167,7 +177,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 </head>
 <body>
 <main class="flow-stage route-map-stage">
-<img id="routeArtwork" src="./assets/route-map.webp?v=20261008-45.0" alt="" aria-hidden="true" data-role="approved-screen-artwork">
+<img id="routeArtwork" src="./assets/route-map.webp?v=20261009-46.0" alt="" aria-hidden="true" data-role="approved-screen-artwork">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="mapBrand" aria-hidden="true"></div>
 <div id="mapStatus" aria-hidden="true"></div>
@@ -189,8 +199,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 </main>
 
 <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
-<script src="./config.js?v=20261008-1"></script>
-<script src="./app.js?v=20261008-45.0"></script>
+<script src="./config.js?v=20261009-46.0"></script>
+<script src="./app.js?v=20261009-46.0"></script>
 
 <script>
 (async()=>{
@@ -250,7 +260,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   let followPlayer=false;
   let firstGpsCentered=false;
 
-  const roadStyle='./assets/barameel-map-style.json?v=20261008-45.0';
+  const roadStyle='./assets/barameel-map-style.json?v=20261009-46.0';
   const landmarks=[
     {id:'qaitbay',name:'QAITBAY CITADEL',short:'QAITBAY CITADEL',lat:31.21375,lng:29.88540,type:'fortress'},
     {id:'roman',name:'ROMAN THEATRE',short:'ROMAN THEATRE',lat:31.19464,lng:29.90405,type:'theatre'},
@@ -286,6 +296,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function markerElement(kind,label){
     const el=document.createElement('div');
     el.className='map-pin '+kind;
+    if(kind==='barameel'){
+      el.innerHTML='<div class="barameel-store-roof"></div><div class="barameel-store-barrel">B</div><div class="barameel-store-body"><b>BARAMEEL</b><span>FOOD • ALEXANDRIA</span></div><span class="pin-label">BARAMEEL</span>';
+      return el;
+    }
     const labelEl=document.createElement('span');
     labelEl.className='pin-label';
     labelEl.textContent=label;
@@ -350,7 +364,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     for(const item of landmarks){
       if(landmarkMarkers.has(item.id))continue;
       const el=landmarkElement(item);
-      const m=new maplibregl.Marker({element:el,anchor:'center',pitchAlignment:'map',rotationAlignment:'map'}).setLngLat([item.lng,item.lat]).addTo(map); m.getElement().style.zIndex='55';
+      const m=new maplibregl.Marker({element:el,anchor:'bottom',pitchAlignment:'map',rotationAlignment:'map'}).setLngLat([item.lng,item.lat]).addTo(map); m.getElement().style.zIndex='55';
       landmarkMarkers.set(item.id,m);
     }
   }
@@ -364,6 +378,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(!map||!mapReady)return;
     const discovered=getDiscovered();
     const allowed=new Set(unlockedCheckpoints().map(x=>x.id));
+    // CP01 is the first live checkpoint and remains visible as the map anchor.
+    if(checkpoints.some(x=>x.id==='CP01'))allowed.add('CP01');
     for(const [id,m] of checkpointMarkers){
       if(!allowed.has(id)){
         m.remove();
@@ -388,6 +404,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     const el=document.createElement('div');
     const name=String(BR.state?.nickname||'PLAYER').toUpperCase();
     el.className='map-player';
+    const avatar=document.createElement('span');
+    avatar.className='player-avatar';
+    const avatarId=String(BR.state?.avatar||'avatar01').toLowerCase();
+    const avatarPos=avatarPosition(avatarId);
+    avatar.style.backgroundPosition=avatarPos.join(' ');
+    el.appendChild(avatar);
     const arrow=document.createElement('span');
     arrow.className='player-arrow';
     el.appendChild(arrow);
@@ -883,14 +905,21 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(latestPosition&&mapReady){followPlayer=true;map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.7,duration:500,essential:true});}
     else requestLocation();
   };
-  document.getElementById('routeAction').onclick=()=>{
+  const routeButton=document.getElementById('routeAction');
+  const runCheckpoint=()=>{
     const cp=checkpoints.find(x=>String(x.id)===String(document.getElementById('nextCheckpoint').dataset.cp||''));
     if(cp)startNavigation(cp);
     else if(latestPosition&&checkpoints.length)startNavigation(checkpoints.find(x=>!getDiscovered().has(x.id))||checkpoints[0]);
   };
-  document.getElementById('directBarameel').onclick=()=>{
-    if(latestPosition&&destination)startNavigation(destination);else requestLocation();
+  routeButton.onclick=runCheckpoint;
+  routeButton.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse'){e.preventDefault();runCheckpoint();}},{passive:false});
+  const directButton=document.getElementById('directBarameel');
+  const runDirect=()=>{
+    if(latestPosition&&destination)startNavigation(destination);
+    else requestLocation();
   };
+  directButton.onclick=runDirect;
+  directButton.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse'){e.preventDefault();runDirect();}},{passive:false});
   startNavCard.onclick=()=>{if(latestPosition&&destination)startNavigation(destination);else requestLocation();};
 
   try{
