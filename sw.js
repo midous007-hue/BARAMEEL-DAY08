@@ -1,5 +1,5 @@
-const CACHE='barameel-world-performance-1';
-const CORE=['./','./index.html','./world.html','./styles.css','./barameel-flow.css','./barameel-flow.js','./config.js','./app.js?v=20261008-performance-1','./assets/barameel-world-splash.webp','./assets/barameel-world.webp','./assets/barameel-map-style.json?v=20261008-performance-1'];
+const CACHE='barameel-world-performance-2';
+const CORE=['./','./index.html','./world.html','./styles.css','./barameel-flow.css','./barameel-flow.js','./config.js','./app.js?v=20261008-performance-1','./assets/barameel-world-splash.webp','./assets/barameel-world.webp','./assets/barameel-map-style.json?v=20261008-performance-2','./route-map.html?v=20261008-44.0','./assets/route-map.webp?v=20261008-43.0'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE).catch(()=>{})).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
