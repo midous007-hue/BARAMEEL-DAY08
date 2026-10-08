@@ -3,13 +3,14 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261007-26.2';
+  const VERSION = '20261008-performance-1';
   const STORAGE = 'barameel.world.player.v23.6';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
   const SUPABASE_KEY = String(window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY || '');
   let supa = null;
   let authPromise = null;
+  let supabaseLoaderPromise = null;
   const AVATARS = ['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06'];
   const LEGACY_AVATAR_MAP = {rookie:'avatar01',skater:'avatar02',brona:'avatar03',racer:'avatar04',chiller:'avatar05',dreamer:'avatar06'};
   const DEFAULTS = {playerId:null,playerCode:null,nickname:'',avatar:'avatar01',runner:'avatar01',points:0,weeklyPoints:0,rank:null,playerCount:0,checkpoints:[],collected:{collection01:{}},totalScans:0,lastReward:null,runHowItWorksSeen:false,routeProgress:0,routeDistance:null,nextCheckpoint:null,activePath:null,lastSeen:null};
@@ -228,11 +229,17 @@
   function preloadAll(xs){xs.forEach(preload);}
   function flash(target=document.body){let el=target.querySelector?.('.barameel-flash');if(!el){el=document.createElement('div');el.className='barameel-flash';target.appendChild(el);}el.classList.remove('on');void el.offsetWidth;el.classList.add('on');}
 
+  async function loadSupabaseClient(){
+    if(window.supabase?.createClient) return true;
+    if(supabaseLoaderPromise) return supabaseLoaderPromise;
+    supabaseLoaderPromise=new Promise(resolve=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.async=true;s.onload=()=>resolve(!!window.supabase?.createClient);s.onerror=()=>resolve(false);document.head.appendChild(s);});
+    return supabaseLoaderPromise;
+  }
   async function ensureAuth(){
     if(!SUPABASE_URL||!SUPABASE_KEY)return null;
     if(authPromise)return authPromise;
     authPromise=(async()=>{try{
-      if(!window.supabase?.createClient)throw new Error('SUPABASE_CLIENT_UNAVAILABLE');
+      if(!await loadSupabaseClient())throw new Error('SUPABASE_CLIENT_UNAVAILABLE');
       if(!supa)supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
       let {data:{session},error:getError}=await supa.auth.getSession();
       if(getError)throw getError;
@@ -352,5 +359,5 @@
 
   window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,AVATARS,RARITY,get state(){return state},setNickname,setAvatar,setRunner,selectedAvatar,selected,playSelect,playAvatarSelect,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,scanCheckpoint,duoLink,fetchCollection,listCollections,parseUniversalQR,saveState,ensureAuth,API_BASE};
   if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v='+VERSION,{updateViaCache:'none'}).catch(()=>{});}
-  idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
+  if(document.body?.dataset?.backend==='required') idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
 })();
