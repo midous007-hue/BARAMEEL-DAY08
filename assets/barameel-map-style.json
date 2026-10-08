@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "name": "BARAMEEL GAME MAP",
+  "name": "BARAMEEL GAME MAP • ALEXANDRIA",
   "sources": {
     "openmaptiles": {
       "type": "vector",
@@ -13,6 +13,55 @@
       "type": "background",
       "paint": {
         "background-color": "#e9dfc7"
+      }
+    },
+    {
+      "id": "building-fill",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "building",
+      "minzoom": 14.7,
+      "paint": {
+        "fill-color": "#d2c6ab",
+        "fill-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14.7,
+          0.04,
+          16,
+          0.12,
+          18,
+          0.18
+        ]
+      }
+    },
+    {
+      "id": "building-outline",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "building",
+      "minzoom": 15,
+      "paint": {
+        "line-color": "#b9ab92",
+        "line-opacity": 0.12,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          15,
+          0.35,
+          18,
+          0.8
+        ]
       }
     },
     {
@@ -94,7 +143,7 @@
       "source": "openmaptiles",
       "source-layer": "water",
       "paint": {
-        "fill-color": "#082b40"
+        "fill-color": "#07283b"
       }
     },
     {
@@ -108,7 +157,7 @@
       },
       "paint": {
         "line-color": "#0d405b",
-        "line-opacity": 0.7,
+        "line-opacity": 0.78,
         "line-width": [
           "interpolate",
           [
@@ -121,6 +170,42 @@
           0.45,
           16,
           2.2
+        ]
+      }
+    },
+    {
+      "id": "roads-major-casing",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": [
+        "in",
+        "class",
+        "motorway",
+        "trunk",
+        "primary"
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#071b2b",
+        "line-opacity": 0.18,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          11,
+          2.2,
+          14,
+          4.8,
+          18,
+          11
         ]
       }
     },
@@ -212,7 +297,7 @@
       },
       "paint": {
         "line-color": "#f4ead8",
-        "line-opacity": 0.46,
+        "line-opacity": 0.58,
         "line-width": [
           "interpolate",
           [
@@ -222,9 +307,9 @@
             "zoom"
           ],
           14.8,
-          0.45,
+          0.5,
           18,
-          1.7
+          1.9
         ]
       }
     },
