@@ -1,4 +1,4 @@
-const CACHE='barameel-world-v23.5-redeploy-29.3';
+const CACHE='barameel-world-v23.5-redeploy-29.4';
 const CORE=[
 './','./index.html','./world.html','./how-it-works.html','./start-flash.html','./run.html',
 './screen02.html','./screen04.html','./screen05.html','./screen06.html',
