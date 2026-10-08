@@ -139,7 +139,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .map-pin.barameel::before{content:"B";font:900 20px/1 'Roboto Condensed',Arial,sans-serif;color:#f6e7ce}
 .map-pin .pin-label{position:absolute;left:50%;top:35px;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.92);color:#f6e7ce;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
 .map-player{position:relative;width:54px;height:66px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 3px 0 #071b2b);pointer-events:none}
-.map-player .player-avatar{position:absolute;top:0;left:50%;width:42px;height:42px;transform:translateX(-50%);border-radius:50%;border:3px solid #f6e7ce;background-color:#19b9d2;background-image:url('./assets/avatar-selection.webp?v=20261009-46.0');background-repeat:no-repeat;background-size:300% 300%;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(25,185,210,.75);overflow:hidden}
+.map-player .player-avatar{position:absolute;top:0;left:50%;width:42px;height:42px;transform:translateX(-50%);border-radius:50%;border:3px solid #f6e7ce;background-color:#19b9d2;background-image:url('./assets/avatar-selection.webp?v=20261009-46.0');background-repeat:no-repeat;background-size:300% 200%;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(25,185,210,.75);overflow:hidden}
 .map-player .player-avatar::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 -10px 14px rgba(7,27,43,.22)}
 .map-player::before{content:"";position:absolute;top:0;left:50%;width:48px;height:48px;transform:translateX(-50%);border-radius:50%;border:2px solid rgba(244,197,47,.85);box-shadow:0 0 0 2px #071b2b,0 0 16px rgba(244,197,47,.45);pointer-events:none}
 .map-player::after{content:"YOU";position:absolute;left:50%;bottom:0;transform:translateX(-50%);padding:4px 9px;border:2px solid #071b2b;border-radius:999px;background:#1967d2;color:#fff;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.06em}
@@ -177,7 +177,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 </head>
 <body>
 <main class="flow-stage route-map-stage">
-<img id="routeArtwork" src="./assets/route-map.webp?v=20261009-46.0" alt="" aria-hidden="true" data-role="approved-screen-artwork">
+<img id="routeArtwork" src="./assets/route-map.webp?v=20261009-46.0" alt="" aria-hidden="true" data-role="approved-screen-artwork" loading="eager" decoding="async" fetchpriority="low">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="mapBrand" aria-hidden="true"></div>
 <div id="mapStatus" aria-hidden="true"></div>
@@ -738,7 +738,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }
     navigationTarget=target;
     navigationStarted=true;
-    followPlayer=true;
+    // Show the whole route after calculation; follow mode is opt-in via the artwork target/follow control.
+    followPlayer=false;
     if(mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.2,duration:350,essential:true});
     startNavCard.disabled=true;
     startNavCard.textContent=target.id==='barameel'?'NAVIGATING TO BARAMEEL':'NAVIGATING TO '+String(target.name||'CHECKPOINT').toUpperCase();
@@ -905,6 +906,20 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(latestPosition&&mapReady){followPlayer=true;map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.7,duration:500,essential:true});}
     else requestLocation();
   };
+  document.getElementById('mapLocate').addEventListener('pointerup',e=>{
+    if(e.pointerType!=='mouse'){
+      e.preventDefault();
+      if(latestPosition&&mapReady){followPlayer=true;map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.7,duration:500,essential:true});}
+      else requestLocation();
+    }
+  },{passive:false});
+  document.getElementById('mapFollow').addEventListener('pointerup',e=>{
+    if(e.pointerType!=='mouse'){
+      e.preventDefault();
+      if(latestPosition&&mapReady){followPlayer=true;map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.7,duration:500,essential:true});}
+      else requestLocation();
+    }
+  },{passive:false});
   const routeButton=document.getElementById('routeAction');
   const runCheckpoint=()=>{
     const cp=checkpoints.find(x=>String(x.id)===String(document.getElementById('nextCheckpoint').dataset.cp||''));
