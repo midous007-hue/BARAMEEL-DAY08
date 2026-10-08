@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "name": "BARAMEEL GAME MAP • CINEMATIC",
+  "name": "BARAMEEL GAME MAP • ILLUSTRATED ALEXANDRIA",
   "sources": {
     "openmaptiles": {
       "type": "vector",
@@ -12,7 +12,7 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#e9dfc7"
+        "background-color": "#e8ddc2"
       }
     },
     {
@@ -69,13 +69,31 @@
       }
     },
     {
+      "id": "landuse-green",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landuse",
+      "filter": [
+        "in",
+        "class",
+        "recreation_ground",
+        "garden",
+        "cemetery",
+        "golf_course"
+      ],
+      "paint": {
+        "fill-color": "#87996a",
+        "fill-opacity": 0.32
+      }
+    },
+    {
       "id": "park",
       "type": "fill",
       "source": "openmaptiles",
       "source-layer": "park",
       "paint": {
-        "fill-color": "#81936a",
-        "fill-opacity": 0.34
+        "fill-color": "#70885b",
+        "fill-opacity": 0.48
       }
     },
     {
@@ -104,8 +122,8 @@
         "grass"
       ],
       "paint": {
-        "fill-color": "#a2af82",
-        "fill-opacity": 0.17
+        "fill-color": "#9eac78",
+        "fill-opacity": 0.24
       }
     },
     {
@@ -119,8 +137,8 @@
         "sand"
       ],
       "paint": {
-        "fill-color": "#e0c98f",
-        "fill-opacity": 0.34
+        "fill-color": "#e0c68c",
+        "fill-opacity": 0.4
       }
     },
     {
@@ -129,7 +147,7 @@
       "source": "openmaptiles",
       "source-layer": "water",
       "paint": {
-        "fill-color": "#07283b"
+        "fill-color": "#062b40"
       }
     },
     {
