@@ -252,7 +252,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     for(const item of landmarks){
       if(landmarkMarkers.has(item.id))continue;
       const el=landmarkElement(item);
-      const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([item.lng,item.lat]).addTo(map);
+      const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([item.lng,item.lat]).addTo(map); m.getElement().style.zIndex='55';
       landmarkMarkers.set(item.id,m);
     }
   }
@@ -260,7 +260,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function addDestinationMarker(){
     if(!map||!mapReady||!destination||destinationMarker)return;
     const el=markerElement('barameel','BARAMEEL');
-    destinationMarker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([destination.lng,destination.lat]).addTo(map);
+    destinationMarker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([destination.lng,destination.lat]).addTo(map); destinationMarker.getElement().style.zIndex='80';
   }
   function syncCheckpointMarkers(){
     if(!map||!mapReady)return;
@@ -282,7 +282,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         continue;
       }
       const el=markerElement(isCleared?'cleared':'checkpoint',cp.name);
-      const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([cp.lng,cp.lat]).addTo(map);
+      const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([cp.lng,cp.lat]).addTo(map); m.getElement().style.zIndex='70';
       checkpointMarkers.set(cp.id,m);
     }
   }
@@ -305,7 +305,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function ensurePlayerMarker(){
     if(!map||!mapReady||!latestPosition)return;
     if(!playerMarker){
-      playerMarker=new maplibregl.Marker({element:playerElement(),anchor:'center'}).setLngLat([latestPosition.lng,latestPosition.lat]).addTo(map);
+      playerMarker=new maplibregl.Marker({element:playerElement(),anchor:'center'}).setLngLat([latestPosition.lng,latestPosition.lat]).addTo(map); playerMarker.getElement().style.zIndex='95';
     }else{
       playerMarker.setLngLat([latestPosition.lng,latestPosition.lat]);
     }
