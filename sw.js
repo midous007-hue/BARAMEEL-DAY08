@@ -1,4 +1,4 @@
-const CACHE='barameel-world-v23.5-redeploy-29.9';
+const CACHE='barameel-world-v23.5-redeploy-30.0';
 const CORE=[
 './','./index.html','./world.html','./how-it-works.html','./start-flash.html','./run.html',
 './screen02.html','./screen04.html','./screen05.html','./screen06.html',
@@ -7,7 +7,7 @@ const CORE=[
 './reveal-barameel-box.html','./your-barameel-drop.html','./rewarded-added.html','./run-complete.html',
 './leaderboard.html','./marks-wallet.html','./barameel-marks.html','./styles.css','./barameel-flow.css',
 './barameel-flow.js','./config.js','./app.js?v=20261007-26.2','./assets/collections/index.json',
-'./assets/barameel-map-style.json?v=20261008-30.0'
+'./assets/barameel-map-style.json?v=20261008-31.0'
 ];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(async cache=>{
   await Promise.allSettled(CORE.map(url=>cache.add(url).catch(()=>null)));
