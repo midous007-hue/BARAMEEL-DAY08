@@ -48,8 +48,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .map-pin.checkpoint{background:#071b2b;border-color:#f4c52f}
 .map-pin.cleared{background:#f4c52f;color:#071b2b}
 .map-pin.barameel{width:44px;height:44px;background:#ef2d24;border-color:#f4c52f;font-size:11px;box-shadow:0 3px 0 rgba(0,0,0,.5),0 0 18px rgba(239,45,36,.55)}
-.map-pin .pin-label{position:absolute;left:50%;top:39px;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.9);color:#f6e7ce;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
-.map-player{width:48px;height:48px;border-radius:50%;border:3px solid #f4c52f;background:#071b2b;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(244,197,47,.8);overflow:hidden;background-image:url('./assets/avatar-selection.webp?v=20261007-26.2');background-repeat:no-repeat;background-size:320% 560%}
+.map-pin .pin-label{position:absolute;left:50%;top:39px;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:rgba(7,27,43,.9);color:#f6e7ce;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}.landmark-pin{position:relative;width:42px;height:42px;display:grid;place-items:center;border:2px solid #f6e7ce;border-radius:12px;background:#071b2b;box-shadow:0 3px 0 rgba(0,0,0,.42),0 0 18px rgba(244,197,47,.18);color:#f4c52f;font:900 12px/1 'Roboto Condensed',Arial,sans-serif;transform:rotate(-3deg)}.landmark-pin::before{content:"";position:absolute;inset:4px;border:1px solid rgba(244,197,47,.6);border-radius:8px}.landmark-pin.fortress{border-radius:50%;transform:none}.landmark-pin.bridge{border-radius:50%;transform:rotate(3deg)}.landmark-pin.theatre{border-radius:50%}.landmark-pin .landmark-glyph{position:relative;z-index:1}.landmark-pin .landmark-label{position:absolute;left:50%;top:46px;transform:translateX(-50%);padding:4px 7px;border:1px solid rgba(244,197,47,.7);border-radius:999px;background:rgba(7,27,43,.9);color:#f6e7ce;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.05em;white-space:nowrap}.landmark-pin .landmark-label::before{content:"◆ ";color:#f4c52f}
+.map-player{position:relative;width:48px;height:48px;border-radius:50%;border:3px solid #f4c52f;background:#071b2b;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(244,197,47,.8),0 0 28px rgba(239,45,36,.22);overflow:visible;background-image:url('./assets/avatar-selection.webp?v=20261007-26.2');background-repeat:no-repeat;background-size:320% 560%;animation:playerPulse 1.9s ease-in-out infinite}.map-player::before{content:"";position:absolute;inset:-11px;border:2px solid rgba(244,197,47,.48);border-radius:50%;box-shadow:0 0 0 7px rgba(244,197,47,.06);pointer-events:none;animation:playerRing 1.9s ease-out infinite}.map-player::after{content:"YOU";position:absolute;left:50%;top:-23px;transform:translateX(-50%);padding:3px 7px;border:1px solid #f4c52f;border-radius:999px;background:#071b2b;color:#f4c52f;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.12em}.map-player-name{position:absolute;top:54px;left:50%;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}@keyframes playerPulse{0%,100%{box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(244,197,47,.8),0 0 28px rgba(239,45,36,.16)}50%{box-shadow:0 0 0 3px #071b2b,0 0 18px rgba(244,197,47,1),0 0 34px rgba(239,45,36,.3)}}@keyframes playerRing{0%{opacity:.75;transform:scale(.72)}100%{opacity:0;transform:scale(1.22)}}
 .map-player-name{position:absolute;top:54px;left:50%;transform:translateX(-50%);padding:3px 6px;border:1px solid #f4c52f;border-radius:999px;background:#f6e7ce;color:#071b2b;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
 .live-player{width:26px;height:26px;border-radius:50%;border:2px solid #f6e7ce;background:#ef2d24;color:#f6e7ce;box-shadow:0 0 0 2px #071b2b,0 0 10px rgba(239,45,36,.75);font:900 9px/22px 'Roboto Condensed',Arial,sans-serif;text-align:center}
 .live-player-name{position:absolute;top:29px;left:50%;transform:translateX(-50%);color:#f6e7ce;text-shadow:1px 1px 0 #071b2b;font:900 8px/1 'Roboto Condensed',Arial,sans-serif;white-space:nowrap}
@@ -149,6 +149,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   let playerMarker=null;
   let destinationMarker=null;
   let checkpointMarkers=new Map();
+  let landmarkMarkers=new Map();
   let liveMarkers=new Map();
   let testApproachTimer=null;
 
@@ -188,6 +189,29 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     el.appendChild(labelEl);
     return el;
   }
+  function landmarkElement(item){
+    const el=document.createElement('div');
+    el.className='landmark-pin '+item.type;
+    const glyph=document.createElement('span');
+    glyph.className='landmark-glyph';
+    glyph.textContent=item.type==='fortress'?'✦':item.type==='theatre'?'◉':item.type==='station'?'▦':'∿';
+    el.appendChild(glyph);
+    const label=document.createElement('span');
+    label.className='landmark-label';
+    label.textContent=item.short;
+    el.appendChild(label);
+    return el;
+  }
+  function syncLandmarks(){
+    if(!map||!mapReady)return;
+    for(const item of landmarks){
+      if(landmarkMarkers.has(item.id))continue;
+      const el=landmarkElement(item);
+      const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([item.lng,item.lat]).addTo(map);
+      landmarkMarkers.set(item.id,m);
+    }
+  }
+
   function addDestinationMarker(){
     if(!map||!mapReady||!destination||destinationMarker)return;
     const el=markerElement('barameel','BARAMEEL');
@@ -326,7 +350,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         container:'routeMap',
         style:roadStyle,
         center:[c.lng,c.lat],
-        zoom:15,
+        zoom:14.15,
         pitch:0,
         bearing:0,
         attributionControl:true,
@@ -345,6 +369,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         if(mapBootTimer)clearTimeout(mapBootTimer);
         setMapStatus('BARAMEEL GAME MAP • READY');
         if(destination) addDestinationMarker();
+        syncLandmarks();
         syncCheckpointMarkers();
         ensurePlayerMarker();
         if(latestPosition) renderRoutePosition(latestPosition);
@@ -396,11 +421,18 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(!mapReady||map.getSource('walking-route'))return;
     map.addSource('walking-route',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
     map.addLayer({
+      id:'walking-route-glow',
+      type:'line',
+      source:'walking-route',
+      layout:{'line-cap':'round','line-join':'round'},
+      paint:{'line-color':'#ef2d24','line-width':11,'line-opacity':.16,'line-blur':2.2}
+    });
+    map.addLayer({
       id:'walking-route-line',
       type:'line',
       source:'walking-route',
       layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':'#ef2d24','line-width':5,'line-opacity':.92,'line-dasharray':[2.2,1.4]}
+      paint:{'line-color':'#ef2d24','line-width':4,'line-opacity':.96,'line-dasharray':[2.2,1.4]}
     });
   }
   function setRouteGeometry(geometry){
@@ -433,7 +465,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       if(!routeHasFit){
         const bounds=new maplibregl.LngLatBounds();
         for(const c of route.geometry.coordinates)bounds.extend(c);
-        map.fitBounds(bounds,{padding:{top:150,bottom:230,left:30,right:30},duration:500,maxZoom:17});
+        map.fitBounds(bounds,{padding:{top:150,bottom:230,left:330,right:30},duration:500,maxZoom:17});
         routeHasFit=true;
       }
       return true;
