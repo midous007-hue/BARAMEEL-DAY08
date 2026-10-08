@@ -331,37 +331,79 @@
   }
 
   let mapLibreLayer=null;
+  let mapFallbackStarted=false;
+  function addRasterFallback(reason=''){
+    if(!map || baseTiles || mapFallbackStarted)return;
+    mapFallbackStarted=true;
+    try{
+      if(mapLibreLayer){
+        try{map.removeLayer(mapLibreLayer)}catch{}
+        mapLibreLayer=null;
+      }
+      baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+        maxZoom:19,
+        attribution:'© OpenStreetMap contributors'
+      }).addTo(map);
+      const el=document.getElementById('mapStatus');
+      if(el)el.textContent=reason?'REAL MAP • STANDARD STYLE':'REAL MAP • FALLBACK STYLE';
+    }catch(err){
+      console.error('[BARAMEEL MAP FALLBACK]',err);
+    }
+  }
+
   function initMap(center){
     if(map)return;
     const fallbackCenter=center||destination||{lat:31.190520,lng:29.920547};
-    map=L.map('routeMap',{zoomControl:true,attributionControl:true,scrollWheelZoom:true,doubleClickZoom:true,touchZoom:true,dragging:true})
-      .setView([fallbackCenter.lat,fallbackCenter.lng],15);
+    map=L.map('routeMap',{
+      zoomControl:true,
+      attributionControl:true,
+      scrollWheelZoom:true,
+      doubleClickZoom:true,
+      touchZoom:true,
+      dragging:true,
+      preferCanvas:true
+    }).setView([fallbackCenter.lat,fallbackCenter.lng],15);
 
-    // BARAMEEL visual map: real OpenStreetMap geometry rendered through
-    // OpenFreeMap vector tiles, with our own simplified cream/navy style.
-    if(typeof L.maplibreGL==='function'){
-      mapLibreLayer=L.maplibreGL({
-        style:'./assets/barameel-map-style.json',
-        interactive:false,
-        attribution:'© OpenStreetMap contributors · OpenFreeMap'
-      }).addTo(map);
+    // IMPORTANT: map rendering must never be allowed to abort the whole route
+    // screen. WebGL/CDN/style failures fall back to ordinary OSM raster tiles.
+    const canUseVector =
+      typeof L.maplibreGL==='function' &&
+      typeof window.maplibregl!=='undefined' &&
+      (!window.maplibregl.supported || window.maplibregl.supported());
 
+    if(canUseVector){
       try{
-        const gl=mapLibreLayer.getMaplibreMap();
-        gl.on('error',()=>{
-          if(!mapLibreLayer)return;
-          try{map.removeLayer(mapLibreLayer)}catch{}
-          mapLibreLayer=null;
-          baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-            maxZoom:19,attribution:'© OpenStreetMap contributors'
-          }).addTo(map);
-          document.getElementById('mapStatus').textContent='REAL MAP • STANDARD STYLE';
+        mapLibreLayer=L.maplibreGL({
+          style:'./assets/barameel-map-style.json',
+          interactive:false,
+          attribution:'© OpenStreetMap contributors · OpenFreeMap'
         });
-      }catch{}
+        mapLibreLayer.addTo(map);
+
+        const gl=mapLibreLayer.getMaplibreMap();
+        let vectorLoaded=false;
+        if(gl){
+          gl.on('load',()=>{
+            vectorLoaded=true;
+            const el=document.getElementById('mapStatus');
+            if(el && !navigationStarted)el.textContent='REAL MAP • GPS READY';
+          });
+          gl.on('error',(evt)=>{
+            console.error('[BARAMEEL VECTOR MAP]',evt?.error||evt);
+            addRasterFallback('VECTOR MAP FAILED');
+          });
+        }
+
+        // Never leave the player on a blank map if the vector style/CDN hangs.
+        setTimeout(()=>{
+          if(!vectorLoaded && !baseTiles)addRasterFallback('VECTOR MAP TIMEOUT');
+        },7000);
+      }catch(err){
+        console.error('[BARAMEEL VECTOR MAP INIT]',err);
+        addRasterFallback('VECTOR MAP FAILED');
+      }
     }else{
-      baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-        maxZoom:19,attribution:'© OpenStreetMap contributors'
-      }).addTo(map);
+      addRasterFallback('VECTOR MAP UNAVAILABLE');
     }
 
     if(destination)marker(destination.lat,destination.lng,'barameel',destination.name);
