@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "name": "BARAMEEL GAME MAP • ILLUSTRATED ALEXANDRIA",
+  "name": "BARAMEEL WORLD • ALEXANDRIA ILLUSTRATED MAP",
   "sources": {
     "openmaptiles": {
       "type": "vector",
@@ -12,7 +12,7 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#e8ddc2"
+        "background-color": "#e7dcc0"
       }
     },
     {
@@ -20,10 +20,10 @@
       "type": "fill",
       "source": "openmaptiles",
       "source-layer": "building",
-      "minzoom": 14.7,
+      "minzoom": 13,
       "paint": {
         "fill-color": "#d2c6ab",
-        "fill-opacity": 0.045
+        "fill-opacity": 0.09
       }
     },
     {
@@ -31,10 +31,10 @@
       "type": "line",
       "source": "openmaptiles",
       "source-layer": "building",
-      "minzoom": 15,
+      "minzoom": 13.3,
       "paint": {
         "line-color": "#b9ab92",
-        "line-opacity": 0.035,
+        "line-opacity": 0.045,
         "line-width": [
           "interpolate",
           [
@@ -65,7 +65,7 @@
       ],
       "paint": {
         "fill-color": "#d9cfb5",
-        "fill-opacity": 0.18
+        "fill-opacity": 0.3
       }
     },
     {
@@ -83,7 +83,7 @@
       ],
       "paint": {
         "fill-color": "#87996a",
-        "fill-opacity": 0.32
+        "fill-opacity": 0.4
       }
     },
     {
@@ -93,7 +93,7 @@
       "source-layer": "park",
       "paint": {
         "fill-color": "#70885b",
-        "fill-opacity": 0.48
+        "fill-opacity": 0.56
       }
     },
     {
@@ -123,7 +123,7 @@
       ],
       "paint": {
         "fill-color": "#9eac78",
-        "fill-opacity": 0.24
+        "fill-opacity": 0.27
       }
     },
     {
@@ -138,7 +138,7 @@
       ],
       "paint": {
         "fill-color": "#e0c68c",
-        "fill-opacity": 0.4
+        "fill-opacity": 0.45
       }
     },
     {
@@ -147,8 +147,34 @@
       "source": "openmaptiles",
       "source-layer": "water",
       "paint": {
-        "fill-color": "#062b40"
+        "fill-color": "#07334a"
       }
+    },
+    {
+      "id": "water-shore",
+      "type": "line",
+      "source": "openmaptiles",
+      "minzoom": 10,
+      "paint": {
+        "line-color": "#0b4a65",
+        "line-opacity": 0.62,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          0.8,
+          14,
+          2,
+          18,
+          4
+        ]
+      },
+      "source-layer": "water"
     },
     {
       "id": "waterway",
@@ -160,8 +186,8 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#0d405b",
-        "line-opacity": 0.78,
+        "line-color": "#0c4d68",
+        "line-opacity": 0.84,
         "line-width": [
           "interpolate",
           [
@@ -195,7 +221,7 @@
       },
       "paint": {
         "line-color": "#071b2b",
-        "line-opacity": 0.16,
+        "line-opacity": 0.22,
         "line-width": [
           "interpolate",
           [
@@ -230,7 +256,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e0b43f",
+        "line-color": "#dcae37",
         "line-opacity": 0.98,
         "line-width": [
           "interpolate",
@@ -241,11 +267,11 @@
             "zoom"
           ],
           11,
-          1,
+          1.4,
           14,
-          2.2,
+          2.8,
           18,
-          6.5
+          7.2
         ]
       }
     },
@@ -266,7 +292,7 @@
       },
       "paint": {
         "line-color": "#071b2b",
-        "line-opacity": 0.08,
+        "line-opacity": 0.11,
         "line-width": [
           "interpolate",
           [
@@ -300,8 +326,8 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#eadfc8",
-        "line-opacity": 0.72,
+        "line-color": "#f0e1c3",
+        "line-opacity": 0.84,
         "line-width": [
           "interpolate",
           [
@@ -320,23 +346,13 @@
       }
     },
     {
-      "id": "roads-minor",
+      "id": "road-local",
       "type": "line",
       "source": "openmaptiles",
-      "source-layer": "transportation",
-      "minzoom": 14.8,
-      "filter": [
-        "==",
-        "class",
-        "minor"
-      ],
-      "layout": {
-        "line-cap": "round",
-        "line-join": "round"
-      },
+      "minzoom": 12.4,
       "paint": {
-        "line-color": "#f5ead5",
-        "line-opacity": 0.34,
+        "line-color": "#f5ead7",
+        "line-opacity": 0.46,
         "line-width": [
           "interpolate",
           [
@@ -345,8 +361,99 @@
           [
             "zoom"
           ],
-          14.8,
-          0.5,
+          12.4,
+          0.42,
+          16,
+          1,
+          18,
+          1.7
+        ]
+      },
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "source-layer": "transportation",
+      "filter": [
+        "in",
+        "class",
+        "minor",
+        "service",
+        "residential",
+        "unclassified"
+      ]
+    },
+    {
+      "id": "road-local-casing",
+      "type": "line",
+      "source": "openmaptiles",
+      "minzoom": 12.4,
+      "paint": {
+        "line-color": "#071b2b",
+        "line-opacity": 0.05,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12.4,
+          0.9,
+          16,
+          2.1,
+          18,
+          3.8
+        ]
+      },
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "source-layer": "transportation",
+      "filter": [
+        "in",
+        "class",
+        "minor",
+        "service",
+        "residential",
+        "unclassified"
+      ]
+    },
+    {
+      "id": "roads-minor",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "minzoom": 12.4,
+      "filter": [
+        "in",
+        "class",
+        "minor",
+        "service",
+        "residential",
+        "unclassified"
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#f4ead6",
+        "line-opacity": 0.44,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12.4,
+          0.45,
+          15.5,
+          1,
           18,
           1.9
         ]
@@ -369,7 +476,7 @@
       },
       "paint": {
         "line-color": "#63666b",
-        "line-opacity": 0.46,
+        "line-opacity": 0.24,
         "line-width": [
           "interpolate",
           [
