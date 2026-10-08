@@ -7,7 +7,7 @@
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
 <link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css">
 <style>
 #checkpointLockLayer{position:absolute;inset:0;z-index:44;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .16s ease,visibility 0s linear .16s;background:radial-gradient(circle at 62.85% 37.85%,rgba(244,197,47,.16) 0 8%,rgba(239,45,36,.08) 13%,transparent 30%),linear-gradient(180deg,rgba(7,27,43,0) 0 70%,rgba(239,45,36,.05) 100%);overflow:hidden}
 #checkpointLockLayer.active{opacity:1;visibility:visible;transition:opacity .12s ease}
@@ -257,8 +257,8 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js"></script>
+<script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
 <script src="./config.js?v=20261008-1"></script>
 <script>
 if('serviceWorker' in navigator){
@@ -399,9 +399,8 @@ if('serviceWorker' in navigator){
     try{
       if(typeof window.L?.maplibreGL==='function'){
         mapLibreLayer=L.maplibreGL({
-          style:new URL('./assets/barameel-map-style.json?v=20261008-5',location.href).href,
-          interactive:false,
-          pane:'overlayPane'
+          style:new URL('./assets/barameel-map-style.json?v=20261008-6',location.href).href,
+          interactive:false
         }).addTo(map);
         mapLibreLayer.on?.('load',()=>{
           if(baseTiles){map.removeLayer(baseTiles);baseTiles=null;}
