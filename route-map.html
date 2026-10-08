@@ -28,7 +28,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 #navOverlay{position:absolute;left:50%;top:82px;transform:translateX(-50%);z-index:20;display:none;align-items:center;justify-content:center;gap:8px;padding:8px 12px;border:2px solid #f4c52f;border-radius:12px;background:rgba(7,27,43,.88);color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;white-space:nowrap;pointer-events:none}
 #navOverlay.active{display:flex}
 #navDirection{color:#f4c52f}
-#navCompass{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:12;display:none;place-items:center;width:42px;height:42px;border-radius:50%;background:rgba(7,27,43,.82);border:2px solid #f4c52f;color:#f4c52f;font:900 25px/1 Arial,sans-serif;pointer-events:none}
+#navCompass{display:none!important}
 #navCompass.active{display:grid}
 #mapDestinationCard{position:absolute;left:24px;bottom:24px;z-index:20;width:min(410px,calc(100vw - 48px));padding:17px 17px 15px;border:2px solid #f6e7ce;border-radius:20px;background:rgba(7,27,43,.95);box-shadow:0 5px 0 rgba(0,0,0,.45),0 0 24px rgba(7,27,43,.24);color:#f6e7ce;overflow:hidden}#mapDestinationCard::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:#ef2d24;box-shadow:0 2px 0 rgba(244,197,47,.75)}#mapDestinationCard::after{content:"DESTINATION LOCKED • WALKING TARGET";display:block;margin-top:10px;color:#9fb4b9;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
 #mapDestinationCard .dest-title{color:#f4c52f;font:900 clamp(22px,3.4vw,34px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:.01em}
@@ -425,14 +425,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       type:'line',
       source:'walking-route',
       layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':'#ef2d24','line-width':11,'line-opacity':.16,'line-blur':2.2}
+      paint:{'line-color':'#f4c52f','line-width':12,'line-opacity':.20,'line-blur':2.6}
     });
     map.addLayer({
       id:'walking-route-line',
       type:'line',
       source:'walking-route',
       layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':'#ef2d24','line-width':4,'line-opacity':.96,'line-dasharray':[2.2,1.4]}
+      paint:{'line-color':'#ef2d24','line-width':4.5,'line-opacity':.98,'line-dasharray':[2.2,1.4]}
     });
   }
   function setRouteGeometry(geometry){
@@ -461,7 +461,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       navDistance.textContent=formatDistance(Number(route.distance||0));
       status.textContent='WALKING NAVIGATION • FOLLOW THE ROUTE';
       status.classList.remove('route-error');
-      setMapStatus('WALKING TO '+navigationTarget.name);
+      // Keep the map-health chip independent from navigation state.
       if(!routeHasFit){
         const bounds=new maplibregl.LngLatBounds();
         for(const c of route.geometry.coordinates)bounds.extend(c);
@@ -518,6 +518,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       status.textContent='BARAMEEL AREA REACHED • ARRIVE';
       status.classList.remove('route-error');
       setAction(false);
+      startNavCard.disabled=false;
       startNavCard.textContent='ENTER BARAMEEL';
       startNavCard.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
       navDirection.textContent='BARAMEEL';
@@ -539,6 +540,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }
     navigationTarget=target;
     navigationStarted=true;
+    startNavCard.disabled=true;
+    startNavCard.textContent=target.id==='barameel'?'NAVIGATING TO BARAMEEL':'NAVIGATING TO '+String(target.name||'CHECKPOINT').toUpperCase();
     status.classList.remove('route-error');
     navOverlay.classList.add('active');
     navCompass.classList.add('active');
