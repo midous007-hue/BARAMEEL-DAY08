@@ -270,6 +270,14 @@
     ? cfg.checkpoints.filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))).map(x=>({id:String(x.id||''),name:String(x.name||'CHECKPOINT'),lat:Number(x.lat),lng:Number(x.lng),order:Number.isFinite(Number(x.order))?Number(x.order):null,radius_meters:Math.max(5,Number(x.radius_meters||CHECKPOINT_HOTSPOT_RADIUS))}))
     : [];
 
+  // These must exist before initMap() runs. let/const declarations are not
+  // initialized before their declaration (TDZ), even though function
+  // declarations themselves are hoisted.
+  let map=null,watchId=null,playerMarker=null,markers=[],latestPosition=null,routeLine=null;
+  let navigationTarget=null,navigationSteps=[],navigationStarted=false,lastRouteAt=0,lastRoutePosition=null;
+  const liveMarkers=new Map();
+  const discovered=new Set((BR.state?.checkpoints||[]).map(String));
+
   // Render the real map immediately after its configuration exists.
   // GPS and Supabase are intentionally non-blocking.
   initMap(destination||{lat:31.190520,lng:29.920547});
@@ -286,11 +294,6 @@
     action.disabled=!enabled;
     action.setAttribute('aria-label',ariaLabel);
   }
-  const discovered=new Set((BR.state?.checkpoints||[]).map(String));
-  let map=null,watchId=null,playerMarker=null,markers=[],latestPosition=null,routeLine=null;
-  let navigationTarget=null,navigationSteps=[],navigationStarted=false,lastRouteAt=0,lastRoutePosition=null;
-  const liveMarkers=new Map();
-
   function avatarPosition(id){
     const map={avatar01:['0%','24%'],avatar02:['50%','24%'],avatar03:['100%','24%'],avatar04:['0%','78%'],avatar05:['50%','78%'],avatar06:['100%','78%']};
     return map[id]||map.avatar01;
