@@ -366,10 +366,16 @@
 
     // IMPORTANT: map rendering must never be allowed to abort the whole route
     // screen. WebGL/CDN/style failures fall back to ordinary OSM raster tiles.
-    const canUseVector =
-      typeof L.maplibreGL==='function' &&
-      typeof window.maplibregl!=='undefined' &&
-      (!window.maplibregl.supported || window.maplibregl.supported());
+    let canUseVector=false;
+    try{
+      canUseVector =
+        typeof L.maplibreGL==='function' &&
+        typeof window.maplibregl!=='undefined' &&
+        (!window.maplibregl.supported || window.maplibregl.supported());
+    }catch(err){
+      console.warn('[BARAMEEL MAP CAPABILITY]',err);
+      canUseVector=false;
+    }
 
     if(canUseVector){
       try{
