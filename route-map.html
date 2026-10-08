@@ -7,7 +7,6 @@
 <title>BARAMEEL RUN — CHECKPOINT RUN</title>
 <link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css">
 <style>
 #checkpointLockLayer{position:absolute;inset:0;z-index:44;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .16s ease,visibility 0s linear .16s;background:radial-gradient(circle at 62.85% 37.85%,rgba(244,197,47,.16) 0 8%,rgba(239,45,36,.08) 13%,transparent 30%),linear-gradient(180deg,rgba(7,27,43,0) 0 70%,rgba(239,45,36,.05) 100%);overflow:hidden}
 #checkpointLockLayer.active{opacity:1;visibility:visible;transition:opacity .12s ease}
@@ -245,9 +244,12 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
-<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
 <script src="./config.js?v=20261008-1"></script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js?v=20261008-2',{updateViaCache:'none'}).catch(()=>{});
+}
+</script>
 <script src="./app.js?v=20261008-1"></script>
 <script>
 (async()=>{
@@ -331,20 +333,25 @@
 
   let mapLibreLayer=null;
   let mapFallbackStarted=false;
+
   function addRasterFallback(reason=''){
-    if(!map || baseTiles || mapFallbackStarted)return;
-    mapFallbackStarted=true;
+    if(!map || baseTiles)return;
     try{
-      if(mapLibreLayer){
-        try{map.removeLayer(mapLibreLayer)}catch{}
-        mapLibreLayer=null;
-      }
       baseTiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
         maxZoom:19,
         attribution:'© OpenStreetMap contributors'
-      }).addTo(map);
-      const el=document.getElementById('mapStatus');
-      if(el)el.textContent=reason?'REAL MAP • STANDARD STYLE':'REAL MAP • FALLBACK STYLE';
+      });
+      baseTiles.on('load',()=>{
+        const el=document.getElementById('mapStatus');
+        if(el && !navigationStarted)el.textContent='REAL MAP • GPS READY';
+      });
+      baseTiles.on('tileerror',(evt)=>{
+        console.error('[BARAMEEL OSM TILE ERROR]',evt?.error||evt);
+        const el=document.getElementById('mapStatus');
+        if(el && !navigationStarted)el.textContent='MAP TILES UNAVAILABLE • RETRY';
+      });
+      baseTiles.addTo(map);
+      mapFallbackStarted=true;
     }catch(err){
       console.error('[BARAMEEL MAP FALLBACK]',err);
     }
@@ -353,6 +360,10 @@
   function initMap(center){
     if(map)return;
     const fallbackCenter=center||destination||{lat:31.190520,lng:29.920547};
+
+    // Stable production baseline: Leaflet + official OSM raster tiles.
+    // MapLibre is temporarily removed from the runtime path until this
+    // navigation baseline is verified independently.
     map=L.map('routeMap',{
       zoomControl:true,
       attributionControl:true,
@@ -360,56 +371,12 @@
       doubleClickZoom:true,
       touchZoom:true,
       dragging:true,
-      preferCanvas:true
+      preferCanvas:true,
+      minZoom:12,
+      maxZoom:19
     }).setView([fallbackCenter.lat,fallbackCenter.lng],15);
 
-    // IMPORTANT: map rendering must never be allowed to abort the whole route
-    // screen. WebGL/CDN/style failures fall back to ordinary OSM raster tiles.
-    let canUseVector=false;
-    try{
-      canUseVector =
-        typeof L.maplibreGL==='function' &&
-        typeof window.maplibregl!=='undefined' &&
-        (!window.maplibregl.supported || window.maplibregl.supported());
-    }catch(err){
-      console.warn('[BARAMEEL MAP CAPABILITY]',err);
-      canUseVector=false;
-    }
-
-    if(canUseVector){
-      try{
-        mapLibreLayer=L.maplibreGL({
-          style:'./assets/barameel-map-style.json',
-          interactive:false,
-          attribution:'© OpenStreetMap contributors · OpenFreeMap'
-        });
-        mapLibreLayer.addTo(map);
-
-        const gl=mapLibreLayer.getMaplibreMap();
-        let vectorLoaded=false;
-        if(gl){
-          gl.on('load',()=>{
-            vectorLoaded=true;
-            const el=document.getElementById('mapStatus');
-            if(el && !navigationStarted)el.textContent='REAL MAP • GPS READY';
-          });
-          gl.on('error',(evt)=>{
-            console.error('[BARAMEEL VECTOR MAP]',evt?.error||evt);
-            addRasterFallback('VECTOR MAP FAILED');
-          });
-        }
-
-        // Never leave the player on a blank map if the vector style/CDN hangs.
-        setTimeout(()=>{
-          if(!vectorLoaded && !baseTiles)addRasterFallback('VECTOR MAP TIMEOUT');
-        },7000);
-      }catch(err){
-        console.error('[BARAMEEL VECTOR MAP INIT]',err);
-        addRasterFallback('VECTOR MAP FAILED');
-      }
-    }else{
-      addRasterFallback('VECTOR MAP UNAVAILABLE');
-    }
+    addRasterFallback('BASELINE');
 
     if(destination)marker(destination.lat,destination.lng,'barameel',destination.name);
     const unlocked=unlockedCheckpoints();
@@ -870,10 +837,17 @@
   console.error('[BARAMEEL ROUTE MAP BOOT]',err);
   const s=document.getElementById('routeStatus');
   const m=document.getElementById('mapStatus');
-  if(s){s.textContent='ROUTE MAP ERROR — TAP RETRY';s.classList.add('route-error');}
-  if(m)m.textContent='ROUTE MAP ERROR';
+  if(s){s.textContent='MAP RECOVERY MODE';s.classList.remove('route-error');}
+  if(m)m.textContent='REAL MAP • RECOVERING';
   const a=document.getElementById('routeAction');
   if(a){a.disabled=false;a.setAttribute('aria-label','Retry Route Map');a.onclick=()=>location.reload();}
+  try{
+    const target=window.BARAMEEL_ROUTE_CONFIG?.destination||{lat:31.190520,lng:29.920547};
+    if(!map)initMap(target);
+    requestLocation();
+  }catch(recoveryErr){
+    console.error('[BARAMEEL ROUTE RECOVERY]',recoveryErr);
+  }
 });
 </script>
 </body>
