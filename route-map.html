@@ -93,6 +93,18 @@
 #routeMap .leaflet-container{
   width:100%;height:100%;background:#071b2b;
 }
+#routeMap .leaflet-tile-pane{
+  filter:saturate(.58) contrast(1.08) brightness(1.03) sepia(.12);
+  opacity:.94;
+}
+#routeMap::after{
+  content:"";position:absolute;inset:0;z-index:12;pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(246,231,206,.08),rgba(7,27,43,.06)),
+    repeating-linear-gradient(0deg,rgba(7,27,43,.035) 0 1px,transparent 1px 4px);
+  mix-blend-mode:multiply;
+}
+#routeMap .leaflet-control-zoom{display:none!important}
 #routeMap .maplibregl-map,
 #routeMap .maplibregl-canvas-container,
 #routeMap .maplibregl-canvas{
@@ -374,7 +386,7 @@ if('serviceWorker' in navigator){
       preferCanvas:true,
       minZoom:12,
       maxZoom:19
-    }).setView([fallbackCenter.lat,fallbackCenter.lng],15);
+    }).setView([fallbackCenter.lat,fallbackCenter.lng],14.5);
 
     addRasterFallback('BASELINE');
 
@@ -492,7 +504,7 @@ if('serviceWorker' in navigator){
 
     // Keep the player in the navigation focus, like a walking-navigation map.
     if(map){
-      map.setView([pos.lat,pos.lng],18,{animate:false});
+      map.setView([pos.lat,pos.lng],16.5,{animate:false});
       map.invalidateSize({pan:false});
     }
 
