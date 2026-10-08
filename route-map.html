@@ -731,7 +731,7 @@
     if(watchId||!navigator.geolocation)return;
     watchId=navigator.geolocation.watchPosition(
       p=>{const pos={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy};refresh(pos);loadLivePlayers(pos);},
-      ()=>status.textContent='GPS SIGNAL WEAK — KEEP LOCATION ON';document.getElementById('mapStatus').textContent='GPS SIGNAL WEAK',
+      ()=>{status.textContent='GPS SIGNAL WEAK — KEEP LOCATION ON';document.getElementById('mapStatus').textContent='GPS SIGNAL WEAK';},
       {enableHighAccuracy:true,maximumAge:3000,timeout:12000}
     );
   }
