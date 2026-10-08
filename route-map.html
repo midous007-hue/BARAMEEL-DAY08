@@ -234,7 +234,7 @@
   <div class="dest-title">BARAMEEL</div>
   <div class="dest-meta"><span id="destDistance">—</span><span id="destTime">—</span></div>
   <button id="startNavCard" class="dest-action">START NAVIGATION</button>
-</div></div>
+</div>
 <div id="checkpointLockLayer" aria-hidden="true">
   <div class="cp-vignette"></div>
   <div class="cp-ring"></div><div class="cp-ring r2"></div><div class="cp-ring r3"></div>
@@ -281,7 +281,11 @@ if('serviceWorker' in navigator){
   const TEST_MODE=TEST_PARAMS.get('test')==='1';
   // Supabase player sync must NEVER block map/GPS startup.
   // It runs in the background while the map and location services initialize.
-  if(!TEST_MODE) BR.syncPlayer().catch(()=>null);
+  if(!TEST_MODE){
+    // syncPlayer may be synchronous in some cached app.js builds.
+    // Never let player sync failure abort map/GPS boot.
+    Promise.resolve().then(()=>BR.syncPlayer()).catch(()=>null);
+  }
   const TEST_CP_ID=String(TEST_PARAMS.get('cp')||'CP01').toUpperCase();
   const TEST_APPROACH=TEST_MODE && TEST_PARAMS.get('approach')==='1';
   const TEST_INSTANT=TEST_MODE && TEST_PARAMS.get('instant')==='1';
