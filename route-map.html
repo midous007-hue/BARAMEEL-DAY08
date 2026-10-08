@@ -323,23 +323,13 @@
     const fallbackCenter=center||destination||{lat:31.190520,lng:29.920547};
     map=L.map('routeMap',{zoomControl:true,attributionControl:true,scrollWheelZoom:true,doubleClickZoom:true,touchZoom:true,dragging:true})
       .setView([fallbackCenter.lat,fallbackCenter.lng],15);
-    baseTiles=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
-      maxZoom:20,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'
+    // Use OpenStreetMap tiles directly. CARTO's basemap endpoint requires
+    // an API key in this environment and was causing the blank map.
+    baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      maxZoom:19,
+      attribution:'© OpenStreetMap contributors'
     }).addTo(map);
-    labelTiles=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{
-      maxZoom:20,subdomains:'abcd',opacity:.78,attribution:''
-    }).addTo(map);
-    let fallbackUsed=false;
-    baseTiles.on('tileerror',()=>{
-      if(fallbackUsed)return;
-      fallbackUsed=true;
-      try{map.removeLayer(labelTiles)}catch{}
-      try{map.removeLayer(baseTiles)}catch{}
-      baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-        maxZoom:19,attribution:'© OpenStreetMap'
-      }).addTo(map);
-      document.getElementById('mapStatus').textContent='REAL MAP • STANDARD TILES';
-    });
+    labelTiles=null;
     if(destination)marker(destination.lat,destination.lng,'barameel',destination.name);
     const unlocked=unlockedCheckpoints();
     unlocked.forEach(cp=>markers.push({
