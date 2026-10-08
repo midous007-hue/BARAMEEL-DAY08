@@ -69,6 +69,12 @@
   if(handoff?.image_id)requestedImage=String(handoff.image_id);
 
   function masterUrl(file){return './'+String(file||'').replace(/^\.\//,'')+'?v='+BR.VERSION}
+  function thumbUrl(file){
+    try{
+      const origin=new URL(String(file||'').replace(/^\.\//,''),location.href).href;
+      return 'https://wsrv.nl/?url='+encodeURIComponent(origin)+'&w=180&output=webp&q=45&maxage=1y';
+    }catch{return masterUrl(file)}
+  }
 
   async function loadMaster(file){
     const url=masterUrl(file);
@@ -112,7 +118,7 @@
       }
       b.appendChild(grid);thumbs.appendChild(b);
       b.onclick=()=>{BR.play('tap');BR.haptic('tap');renderImage(im.imageId)};
-      if(im.imageId===activeImageId){loadMaster(im.masterFile).then(img=>{if(img){const bg='url("' + img.src + '")';[...grid.children].forEach(cell=>cell.style.backgroundImage=bg)}})}
+      const thumb=thumbUrl(im.masterFile); [...grid.children].forEach(cell=>cell.style.backgroundImage='url("'+thumb+'")');
     }
   }
 
