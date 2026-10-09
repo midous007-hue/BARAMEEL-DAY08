@@ -49,13 +49,14 @@ Deno.serve(async (req) => {
   // New flow: scan an opaque Master QR token.
   // Legacy checkpoint_id is intentionally retained only for isolated Test Mode.
   const qrToken = String(body.qr_token || "").trim();
-  const legacyCheckpointId = String(body.checkpoint_id || "").trim().toUpperCase();
   const idempotencyKey = String(body.idempotency_key || crypto.randomUUID()).slice(0, 120);
   const lat = Number(body.lat);
   const lng = Number(body.lng);
   const accuracy = body.accuracy_meters == null ? null : Number(body.accuracy_meters);
 
-  if (!qrToken && !legacyCheckpointId) {
+  // Production claims must resolve from an active server-side Master QR token.
+  // Never accept a client-supplied checkpoint ID as proof of physical presence.
+  if (!qrToken) {
     return json({ ok: false, error: "MASTER_QR_REQUIRED", code: "MASTER_QR_REQUIRED" }, 400);
   }
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
@@ -81,32 +82,16 @@ Deno.serve(async (req) => {
     return json({ ok: false, error: "PLAYER_NOT_INITIALIZED", code: "PLAYER_NOT_INITIALIZED" }, 409);
   }
 
-  let data: any;
-  let error: any;
-
-  if (qrToken) {
-    const result = await admin.rpc("resolve_and_claim_master_checkpoint", {
-      p_player_id: player.id,
-      p_qr_token: qrToken,
-      p_lat: lat,
-      p_lng: lng,
-      p_accuracy_meters: accuracy,
-      p_idempotency_key: idempotencyKey,
-    });
-    data = result.data;
-    error = result.error;
-  } else {
-    // Legacy path remains only so the existing isolated test flow does not break.
-    const result = await admin.rpc("claim_checkpoint", {
-      p_player_id: player.id,
-      p_checkpoint_id: legacyCheckpointId,
-      p_idempotency_key: idempotencyKey,
-      p_lat: lat,
-      p_lng: lng,
-    });
-    data = result.data;
-    error = result.error;
-  }
+  const result = await admin.rpc("resolve_and_claim_master_checkpoint", {
+    p_player_id: player.id,
+    p_qr_token: qrToken,
+    p_lat: lat,
+    p_lng: lng,
+    p_accuracy_meters: accuracy,
+    p_idempotency_key: idempotencyKey,
+  });
+  const data = result.data;
+  const error = result.error;
 
   if (error) {
     // Postgres RPC errors can expose the stable SQLSTATE separately from the
@@ -159,37 +144,25 @@ Deno.serve(async (req) => {
     return json({ ok: false, error: "PLAYER_STATE_FAILED", code: "PLAYER_STATE_FAILED" }, 500);
   }
 
-  const { data: claims, error: claimsError } = qrToken
-    ? await admin
-        .from("checkpoint_challenge_claims")
-        .select("challenge_id,points_awarded")
-        .eq("player_id", player.id)
-        .order("created_at", { ascending: true })
-    : await admin
-        .from("checkpoint_claims")
-        .select("checkpoint_id,points_awarded")
-        .eq("player_id", player.id)
-        .order("created_at", { ascending: true });
+  const { data: claims, error: claimsError } = await admin
+    .from("checkpoint_challenge_claims")
+    .select("challenge_id,points_awarded")
+    .eq("player_id", player.id)
+    .order("created_at", { ascending: true });
 
   if (claimsError) {
     return json({ ok: false, error: "CHECKPOINT_STATE_FAILED", code: "CHECKPOINT_STATE_FAILED" }, 500);
   }
 
-  let claimsList: string[] = [];
-  if (qrToken) {
-    const challengeIds = (claims || []).map((row: any) => String(row.challenge_id || "")).filter(Boolean);
-    const { data: challengeRows, error: challengeRowsError } = challengeIds.length
-      ? await admin.from("checkpoint_challenges").select("id,location_id").in("id", challengeIds)
-      : { data: [], error: null };
-    if (challengeRowsError) {
-      return json({ ok: false, error: "CHECKPOINT_STATE_FAILED", code: "CHECKPOINT_STATE_FAILED" }, 500);
-    }
-    const locationByChallenge = new Map((challengeRows || []).map((row: any) => [String(row.id), String(row.location_id)]));
-    claimsList = challengeIds.map((id: string) => locationByChallenge.get(id)).filter(Boolean) as string[];
-  } else {
-    claimsList = (claims || []).map((row: any) => String(row.checkpoint_id || "")).filter(Boolean);
+  const challengeIds = (claims || []).map((row: any) => String(row.challenge_id || "")).filter(Boolean);
+  const { data: challengeRows, error: challengeRowsError } = challengeIds.length
+    ? await admin.from("checkpoint_challenges").select("id,location_id").in("id", challengeIds)
+    : { data: [], error: null };
+  if (challengeRowsError) {
+    return json({ ok: false, error: "CHECKPOINT_STATE_FAILED", code: "CHECKPOINT_STATE_FAILED" }, 500);
   }
-  claimsList = [...new Set(claimsList)];
+  const locationByChallenge = new Map((challengeRows || []).map((row: any) => [String(row.id), String(row.location_id)]));
+  const claimsList = [...new Set(challengeIds.map((id: string) => locationByChallenge.get(id)).filter(Boolean) as string[])];
 
   return json({
     ...data,
