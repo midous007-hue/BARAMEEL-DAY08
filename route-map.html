@@ -322,7 +322,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   let followPlayer=false;
   let firstGpsCentered=false;
 
-  const roadStyle='./assets/barameel-map-style.json?v=20261009-48.0';
+  const roadStyle='./assets/barameel-map-style.json?v=20261009-49.0';
   const landmarks=[
     {id:'qaitbay',name:'QAITBAY CITADEL',short:'QAITBAY CITADEL',lat:31.21375,lng:29.88540,type:'fortress'},
     {id:'roman',name:'ROMAN THEATRE',short:'ROMAN THEATRE',lat:31.19464,lng:29.90405,type:'theatre'},
@@ -359,7 +359,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     const el=document.createElement('div');
     el.className='map-pin '+kind;
     if(kind==='barameel'){
-      el.innerHTML='<img class="barameel-pin-art" src="./assets/barameel-map-pin.webp?v=20261009-48.0" alt="" aria-hidden="true"><span class="pin-label">BARAMEEL</span>';
+      el.innerHTML='<img class="barameel-pin-art" src="./assets/barameel-map-pin.webp?v=20261009-49.0" alt="" aria-hidden="true"><span class="pin-label">BARAMEEL</span>';
       return el;
     }
     const labelEl=document.createElement('span');
