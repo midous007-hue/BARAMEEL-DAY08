@@ -38,6 +38,28 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 #routeProgressFill{height:100%;width:0;background:#ef2d24;border-radius:99px;transition:width .35s ease}
 #routeAction{position:absolute;left:24px;right:24px;bottom:82px;top:auto;width:auto;height:48px;z-index:19;opacity:0;pointer-events:none;border:0;background:transparent}
 #routeAction.ready{pointer-events:auto}
+#routeAction.checkpoint-ready{
+  left:auto;right:clamp(18px,5vw,34px);top:clamp(96px,15vh,150px);bottom:auto;
+  width:88px;height:88px;opacity:1;pointer-events:auto;z-index:60;
+  border:2px solid #f4c52f;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%,rgba(14,77,112,.96) 0%,rgba(7,27,43,.98) 62%,#030c14 100%);
+  box-shadow:0 0 0 4px rgba(244,197,47,.14),0 0 0 8px rgba(8,125,255,.10),0 0 26px rgba(8,125,255,.6),inset 0 0 18px rgba(8,125,255,.4);
+  color:#f6e7ce;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font:900 10px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.08em;text-align:center;
+  animation:checkpointButtonPulse 1.8s ease-in-out infinite;touch-action:manipulation;
+}
+#routeAction.checkpoint-ready::before,#routeAction.checkpoint-ready::after{
+  content:"";position:absolute;inset:7px;border:1px solid rgba(77,190,255,.8);border-radius:50%;pointer-events:none;
+}
+#routeAction.checkpoint-ready::before{inset:15px;border-color:rgba(244,197,47,.62);animation:checkpointRadarSweep 2.2s linear infinite}
+#routeAction.checkpoint-ready::after{inset:25px;border-style:dashed;border-color:rgba(77,190,255,.7)}
+#routeAction .radar-glyph{font-size:29px;line-height:1;color:#f4c52f;text-shadow:0 0 12px rgba(244,197,47,.65);z-index:1}
+#routeAction .radar-label{z-index:1;font-size:9px;letter-spacing:.12em}
+@keyframes checkpointButtonPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.045);filter:brightness(1.25)}}
+@keyframes checkpointRadarSweep{to{transform:rotate(360deg)}}
+@media(max-width:700px){#routeAction.checkpoint-ready{width:82px;height:82px;right:18px;top:clamp(88px,13vh,126px)}}
+@media(prefers-reduced-motion:reduce){#routeAction.checkpoint-ready,#routeAction.checkpoint-ready::before{animation:none}}
+
 #directBarameel{display:none}
 .map-pin{position:relative;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:3px solid #f6e7ce;background:#071b2b;box-shadow:0 3px 0 rgba(0,0,0,.45),0 0 12px rgba(244,197,47,.55);font:900 10px/1 'Roboto Condensed',Arial,sans-serif;color:#f6e7ce;text-align:center;text-transform:uppercase}
 .map-pin.checkpoint{background:#071b2b;border-color:#f4c52f}
@@ -415,6 +437,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     action.setAttribute('aria-label',label);
     action.disabled=!enabled;
     action.classList.toggle('ready',!!enabled);
+    if(label!=='Open Checkpoint Scanner')action.classList.remove('checkpoint-ready');
   }
   function avatarPosition(id){
     const mapPos={avatar01:['0%','0%'],avatar02:['50%','0%'],avatar03:['100%','0%'],avatar04:['0%','100%'],avatar05:['50%','100%'],avatar06:['100%','100%']};
@@ -1021,15 +1044,28 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       return false;
     }
   }
+  let lastRadarCheckpoint='';
+  function playCheckpointRadarSound(){
+    // A distinctive three-note arcade detection pulse; AudioContext starts on user interaction.
+    arcadeTone(620,0.12,0.16,'square');
+    setTimeout(()=>arcadeTone(880,0.13,0.14,'triangle'),95);
+    setTimeout(()=>arcadeTone(1180,0.18,0.12,'sine'),195);
+  }
   function enterCheckpointHotspot(cp){
     if(!cp)return;
     next.textContent=cp.name;
     next.dataset.cp=cp.id;
     distance.textContent='YOU ARE HERE';
-    status.textContent='CHECKPOINT READY • OPEN SCANNER';
+    status.textContent='CHECKPOINT DETECTED • SCAN QR';
     status.classList.remove('route-error');
     setAction(true,'Open Checkpoint Scanner');
-    action.onclick=null;
+    action.classList.add('checkpoint-ready');
+    action.innerHTML='<span class="radar-glyph" aria-hidden="true">⌖</span><span class="radar-label">SCAN<br>CHECKPOINT</span>';
+    if(lastRadarCheckpoint!==cp.id){
+      lastRadarCheckpoint=cp.id;
+      playCheckpointRadarSound();
+      setBrunaGuide("There it is! Checkpoint detected. Tap the radar to scan its QR.",'CHECKPOINT IN RANGE');
+    }
   }
   function updateNavigation(pos){
     if(!navigationStarted||!navigationTarget||!pos)return;
@@ -1139,6 +1175,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       }else{
         status.textContent=available.length===1?'CHECKPOINT AVAILABLE':'NEAREST CHECKPOINT • '+available.length+' AVAILABLE';
         status.classList.remove('route-error');
+        action.innerHTML='';
         action.onclick=()=>startNavigation(available[0]);
         setAction(true,'Start Walking Navigation to Checkpoint');
       }
@@ -1293,8 +1330,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(remaining<=Math.max(5,cp.radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
       enterCheckpointHotspot(cp);
       const url=TEST_MODE
-        ?'checkpoint-scanner.html?v=20261008-2&test=1&cp='+encodeURIComponent(cp.id)
-        :'checkpoint-scanner.html?v=20261008-2';
+        ?'checkpoint-scanner.html?v=20261009-65.0&test=1&cp='+encodeURIComponent(cp.id)
+        :'checkpoint-scanner.html?v=20261009-65.0&cp='+encodeURIComponent(cp.id);
       BR.goAfter(url,'scan',220);
       return;
     }
