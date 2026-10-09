@@ -83,14 +83,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 #navDistance{color:#f4c52f;font:900 clamp(11px,2.2vw,16px)/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.04em}
 #currentLocation,#nextCheckpoint,#distanceNext{font-size:clamp(10px,2.0vw,17px)!important;letter-spacing:0!important;padding:0 4px!important;text-shadow:1px 1px 0 #071b2b!important}
 .map-player{z-index:9999!important;isolation:isolate!important;overflow:visible!important}
-.map-player .player-avatar{background-image:url('./assets/avatar-selection.webp?v=20261009-52.0')!important;background-repeat:no-repeat!important;background-size:300% 200%!important;border-radius:50%!important}
+.map-player .player-avatar{background-image:url('./assets/avatar-selection.webp?v=20261009-53.0')!important;background-repeat:no-repeat!important;background-size:300% 200%!important;border-radius:50%!important}
 .map-player-name{display:block!important;visibility:visible!important;opacity:1!important;z-index:10000!important;top:68px!important;font-size:12px!important;padding:5px 10px!important}
 
 
 /* V52: player identity is a stage overlay projected from live GPS, above Bruna/artwork layers. */
 #playerOverlay{position:absolute!important;inset:0!important;z-index:18!important;pointer-events:none!important}
 #livePlayerOverlayMarker{position:absolute!important;width:72px!important;height:72px!important;overflow:visible!important;display:block}
-#livePlayerOverlayMarker .player-avatar{position:absolute!important;display:block!important;visibility:visible!important;opacity:1!important;left:50%!important;top:0!important;width:54px!important;height:54px!important;transform:translateX(-50%)!important;background-image:url('./assets/avatar-selection.webp?v=20261009-52.0')!important;background-repeat:no-repeat!important;background-size:300% 200%!important;border:3px solid #f4c52f!important;border-radius:50%!important;box-shadow:0 0 0 3px #071b2b,0 0 18px rgba(25,185,210,.85)!important}
+#livePlayerOverlayMarker .player-avatar{position:absolute!important;display:block!important;visibility:visible!important;opacity:1!important;left:50%!important;top:0!important;width:54px!important;height:54px!important;transform:translateX(-50%)!important;background-image:url('./assets/avatar-selection.webp?v=20261009-53.0')!important;background-repeat:no-repeat!important;background-size:300% 200%!important;border:3px solid #f4c52f!important;border-radius:50%!important;box-shadow:0 0 0 3px #071b2b,0 0 18px rgba(25,185,210,.85)!important}
 #livePlayerOverlayMarker .player-arrow{top:50px!important;left:50%!important;border-left-width:8px!important;border-right-width:8px!important;border-bottom-width:16px!important}
 #livePlayerOverlayMarker .map-player-name{display:block!important;visibility:visible!important;opacity:1!important;position:absolute!important;top:72px!important;left:50%!important;transform:translateX(-50%)!important;z-index:10001!important;padding:6px 10px!important;border:2px solid #071b2b!important;border-radius:999px!important;background:#f4c52f!important;color:#071b2b!important;font:900 12px/1 'Roboto Condensed',Arial,sans-serif!important;white-space:nowrap!important;box-shadow:0 2px 0 rgba(0,0,0,.5)!important}
 
@@ -125,7 +125,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   filter:drop-shadow(0 3px 0 rgba(7,27,43,.75));
 }
 #routeBruna{
-  position:absolute;z-index:8;left:-1.5%;top:auto;bottom:1.2%;width:29%;height:52%;
+  position:absolute;z-index:8;left:7.5%;top:auto;bottom:1.2%;width:29%;height:52%;
   object-fit:contain;object-position:left bottom;pointer-events:none;
   filter:drop-shadow(3px 4px 0 rgba(7,27,43,.72));
 }
@@ -227,7 +227,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   white-space:nowrap;box-shadow:2px 2px 0 #071b2b;
 }
 .map-player{position:relative;width:54px;height:66px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 3px 0 #071b2b);pointer-events:none}
-.map-player .player-avatar{position:absolute;top:0;left:50%;width:42px;height:42px;transform:translateX(-50%);border-radius:50%;border:3px solid #f6e7ce;background-color:#19b9d2;background-image:url('./assets/avatar-selection.webp?v=20261009-52.0');background-repeat:no-repeat;background-size:300% 200%;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(25,185,210,.75);overflow:hidden}
+.map-player .player-avatar{position:absolute;top:0;left:50%;width:42px;height:42px;transform:translateX(-50%);border-radius:50%;border:3px solid #f6e7ce;background-color:#19b9d2;background-image:url('./assets/avatar-selection.webp?v=20261009-53.0');background-repeat:no-repeat;background-size:300% 200%;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(25,185,210,.75);overflow:hidden}
 .map-player .player-avatar::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 -10px 14px rgba(7,27,43,.22)}
 .map-player::before{content:"";position:absolute;top:0;left:50%;width:48px;height:48px;transform:translateX(-50%);border-radius:50%;border:2px solid rgba(244,197,47,.85);box-shadow:0 0 0 2px #071b2b,0 0 16px rgba(244,197,47,.45);pointer-events:none}
 .map-player::after{content:"YOU";position:absolute;left:50%;bottom:0;transform:translateX(-50%);padding:4px 9px;border:2px solid #071b2b;border-radius:999px;background:#1967d2;color:#fff;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.06em}
@@ -273,9 +273,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 </head>
 <body>
 <main class="flow-stage route-map-stage">
-<img id="routeArtwork" src="./assets/route-map-v49.webp?v=20261009-52.0" alt="" aria-hidden="true" data-role="approved-screen-artwork" loading="eager" decoding="async" fetchpriority="low">
-<img id="routeScreenLogo" src="./assets/barameel-run-checkpoint-logo.webp?v=20261009-52.0" alt="BARAMEEL RUN — CHECKPOINT RUN" aria-hidden="true" decoding="async">
-<img id="routeBruna" src="./assets/bruna-route-map.webp?v=20261009-52.0" alt="" aria-hidden="true" decoding="async">
+<img id="routeArtwork" src="./assets/route-map-v49.webp?v=20261009-53.0" alt="" aria-hidden="true" data-role="approved-screen-artwork" loading="eager" decoding="async" fetchpriority="low">
+<img id="routeScreenLogo" src="./assets/barameel-run-checkpoint-logo.webp?v=20261009-53.0" alt="BARAMEEL RUN — CHECKPOINT RUN" aria-hidden="true" decoding="async">
+<img id="routeBruna" src="./assets/bruna-route-map.webp?v=20261009-53.0" alt="" aria-hidden="true" decoding="async">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="playerOverlay" aria-hidden="true"></div>
 <div id="navOverlay" aria-live="polite" aria-atomic="true">
@@ -305,8 +305,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 </main>
 
 <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
-<script src="./config.js?v=20261009-52.0"></script>
-<script src="./app.js?v=20261009-52.0"></script>
+<script src="./config.js?v=20261009-53.0"></script>
+<script src="./app.js?v=20261009-53.0"></script>
 
 <script>
 (async()=>{
@@ -366,7 +366,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   let followPlayer=false;
   let firstGpsCentered=false;
 
-  const roadStyle='./assets/barameel-map-style.json?v=20261009-52.0';
+  const roadStyle='./assets/barameel-map-style.json?v=20261009-53.0';
   const landmarks=[
     {id:'qaitbay',name:'QAITBAY CITADEL',short:'QAITBAY CITADEL',lat:31.21375,lng:29.88540,type:'fortress'},
     {id:'roman',name:'ROMAN THEATRE',short:'ROMAN THEATRE',lat:31.19464,lng:29.90405,type:'theatre'},
@@ -403,7 +403,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     const el=document.createElement('div');
     el.className='map-pin '+kind;
     if(kind==='barameel'){
-      el.innerHTML='<img class="barameel-pin-art" src="./assets/barameel-map-pin.webp?v=20261009-52.0" alt="" aria-hidden="true"><span class="pin-label">BARAMEEL</span>';
+      el.innerHTML='<img class="barameel-pin-art" src="./assets/barameel-map-pin.webp?v=20261009-53.0" alt="" aria-hidden="true"><span class="pin-label">BARAMEEL</span>';
       return el;
     }
     const labelEl=document.createElement('span');
@@ -465,6 +465,33 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([29.8850,31.2190]).addTo(map);
     map._barameelSeaToken=m;
   }
+  function addMapContextLayers(){
+    if(!map||!mapReady)return;
+    const has=id=>!!map.getLayer(id);
+    const labelField=['coalesce',['get','name_en'],['get','name']];
+    if(!has('barameel-road-names'))map.addLayer({
+      id:'barameel-road-names',type:'symbol',source:'openmaptiles','source-layer':'transportation_name',minzoom:14.3,maxzoom:19,
+      layout:{'text-field':labelField,'text-font':['Open Sans Regular'],'text-size':['interpolate',['linear'],['zoom'],14.3,8,17,11],'text-max-width':8,'symbol-placement':'line','text-letter-spacing':0.015,'text-padding':5},
+      paint:{'text-color':'#fff0d4','text-halo-color':'#071b2b','text-halo-width':1.5,'text-halo-blur':0.2}
+    });
+    if(!has('barameel-neighborhood-names'))map.addLayer({
+      id:'barameel-neighborhood-names',type:'symbol',source:'openmaptiles','source-layer':'place',minzoom:11.8,maxzoom:16.5,
+      layout:{'text-field':labelField,'text-font':['Open Sans Bold'],'text-size':['interpolate',['linear'],['zoom'],12,9,15,13],'text-transform':'uppercase','text-max-width':10,'text-padding':8},
+      paint:{'text-color':'#f4c52f','text-halo-color':'#071b2b','text-halo-width':2}
+    });
+    const poiClasses=['school','college','university','kindergarten','hospital','clinic','pharmacy','supermarket','convenience','restaurant','cafe','fast_food','mall','bank','shop'];
+    if(!has('barameel-poi-dots'))map.addLayer({
+      id:'barameel-poi-dots',type:'circle',source:'openmaptiles','source-layer':'poi',minzoom:14.1,
+      filter:['in',['get','class'],['literal',poiClasses]],
+      paint:{'circle-radius':['interpolate',['linear'],['zoom'],14,2.1,17,3.5],'circle-color':['match',['get','class'],['school','college','university','kindergarten'],'#f4c52f',['hospital','clinic','pharmacy'],'#ef6b52',['supermarket','convenience','mall','shop'],'#54c6c8','#f6e7ce'],'circle-stroke-color':'#071b2b','circle-stroke-width':1.1}
+    });
+    if(!has('barameel-poi-labels'))map.addLayer({
+      id:'barameel-poi-labels',type:'symbol',source:'openmaptiles','source-layer':'poi',minzoom:14.7,
+      filter:['all',['in',['get','class'],['literal',poiClasses]],['has','name']],
+      layout:{'text-field':labelField,'text-font':['Open Sans Bold'],'text-size':['interpolate',['linear'],['zoom'],14.7,8,17,10.5],'text-offset':[0,0.8],'text-anchor':'top','text-max-width':9,'text-padding':4,'symbol-sort-key':['coalesce',['get','rank'],25]},
+      paint:{'text-color':'#fff4df','text-halo-color':'#071b2b','text-halo-width':1.5,'text-halo-blur':0.2}
+    });
+  }
   function syncLandmarks(){
     if(!map||!mapReady)return;
     for(const item of landmarks){
@@ -512,7 +539,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     el.className='map-player';
     const avatar=document.createElement('span');
     avatar.className='player-avatar';
-    const avatarId=String(BR.state?.avatar||BR.state?.runner||'avatar01').toLowerCase();
+    const avatarId=String((typeof BR.selectedAvatar==='function'&&BR.selectedAvatar())||BR.state?.avatar||BR.state?.runner||'avatar01').toLowerCase();
     const avatarPos=avatarPosition(avatarId);
     avatar.style.backgroundPosition=avatarPos.join(' ');
     el.appendChild(avatar);
@@ -547,6 +574,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       overlay.style.zIndex='18';
       overlay.style.pointerEvents='none';
     }
+    const currentAvatar=String((typeof BR.selectedAvatar==='function'&&BR.selectedAvatar())||BR.state?.avatar||BR.state?.runner||'avatar01').toLowerCase();
+    const avatarNode=playerMarker.querySelector('.player-avatar');
+    if(avatarNode)avatarNode.style.backgroundPosition=avatarPosition(currentAvatar).join(' ');
+    const nameNode=playerMarker.querySelector('.map-player-name');
+    if(nameNode)nameNode.textContent=String(BR.state?.nickname||BR.state?.playerCode||'PLAYER').trim().toUpperCase();
     playerMarker.style.left=point.x+'px';
     playerMarker.style.top=point.y+'px';
     const visible=point.x>=-70&&point.y>=-90&&point.x<=stage.clientWidth+70&&point.y<=stage.clientHeight+90;
@@ -614,15 +646,25 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     const x=Math.cos(a.lat*rad)*Math.sin(b.lat*rad)-Math.sin(a.lat*rad)*Math.cos(b.lat*rad)*Math.cos((b.lng-a.lng)*rad);
     return (Math.atan2(y,x)*deg+360)%360;
   }
+  let navigationStepIndex=0;
   function nearestUpcomingStep(pos){
-    let best=null,bestD=Infinity;
-    for(const step of navigationSteps){
-      const loc=step?.maneuver?.location;
-      if(!Array.isArray(loc)||loc.length<2)continue;
+    if(!Array.isArray(navigationSteps)||!navigationSteps.length)return null;
+    navigationStepIndex=Math.max(0,Math.min(navigationStepIndex,navigationSteps.length-1));
+    // Skip the initial depart step and advance only when the current route-ordered maneuver is reached.
+    while(navigationStepIndex<navigationSteps.length-1){
+      const currentStep=navigationSteps[navigationStepIndex];
+      const loc=currentStep?.maneuver?.location;
+      const type=String(currentStep?.maneuver?.type||'').toLowerCase();
+      if(type==='depart'){navigationStepIndex++;continue;}
+      if(!Array.isArray(loc)||loc.length<2){navigationStepIndex++;continue;}
       const d=haversine(pos,{lat:Number(loc[1]),lng:Number(loc[0])});
-      if(d<bestD){bestD=d;best={step,distance:d};}
+      if(d<=16){navigationStepIndex++;continue;}
+      return {step:currentStep,distance:d};
     }
-    return best;
+    const step=navigationSteps[navigationStepIndex];
+    const loc=step?.maneuver?.location;
+    if(!Array.isArray(loc)||loc.length<2)return {step,distance:Infinity};
+    return {step,distance:haversine(pos,{lat:Number(loc[1]),lng:Number(loc[0])})};
   }
   function setMapStatus(textValue,error=false){
     mapStatus.textContent=textValue;
@@ -669,6 +711,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         map.on('resize',syncPlayerOverlay);
         if(mapBootTimer)clearTimeout(mapBootTimer);
         setMapStatus('BARAMEEL GAME MAP • READY');
+        addMapContextLayers();
         if(destination) addDestinationMarker();
         syncLandmarks();
         addSeaToken();
@@ -710,18 +753,25 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       map.once('load',()=>{if(!done){done=true;clearTimeout(timer);resolve(true)}});
     });
   }
+  let lastMapFollowPosition=null;
   function renderRoutePosition(pos){
+    const previous=lastMapFollowPosition;
     latestPosition=pos;
     if(!mapReady)return;
     ensurePlayerMarker();
     if(!firstGpsCentered){
       firstGpsCentered=true;
+      lastMapFollowPosition={lat:pos.lat,lng:pos.lng};
       map.easeTo({center:[pos.lng,pos.lat],zoom:15.7,duration:550,essential:true});
       return;
     }
     if(followPlayer){
-      map.easeTo({center:[pos.lng,pos.lat],zoom:15.7,duration:500,essential:true});
+      const moved=previous?haversine(previous,pos):0;
+      const canTrustHeading=moved>=5&&Number(pos.accuracy||999)<=35;
+      const heading=canTrustHeading?bearing(previous,pos):map.getBearing();
+      map.easeTo({center:[pos.lng,pos.lat],zoom:navigationStarted?16.6:15.7,bearing:navigationStarted?heading:map.getBearing(),pitch:navigationStarted?34:map.getPitch(),duration:450,essential:true});
     }
+    lastMapFollowPosition={lat:pos.lat,lng:pos.lng};
   }
   function addRouteSourceAndLayer(){
     if(!mapReady||map.getSource('walking-route'))return;
@@ -784,6 +834,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         if(!bounds.isEmpty())map.fitBounds(bounds,{padding:{top:18,right:22,bottom:18,left:22},maxZoom:15.9,duration:650,essential:true});
       }
       navigationSteps=Array.isArray(route.legs?.[0]?.steps)?route.legs[0].steps:[];
+      navigationStepIndex=0;
       lastRouteAt=Date.now();
       lastRoutePosition={...origin};
       navOverlay?.classList.add('active');
@@ -874,9 +925,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }
     navigationTarget=target;
     navigationStarted=true;
-    // Show the whole route after calculation; follow mode is opt-in via the artwork target/follow control.
-    followPlayer=false;
-    if(mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:15.2,duration:350,essential:true});
+    // Active walking navigation follows the live GPS position; dragging the map pauses follow mode.
+    followPlayer=true;
+    if(mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:16.6,pitch:34,duration:450,essential:true});
     startNavCard.disabled=true;
     startNavCard.textContent=target.id==='barameel'?'NAVIGATING TO BARAMEEL':'NAVIGATING TO '+String(target.name||'CHECKPOINT').toUpperCase();
     status.classList.remove('route-error');
