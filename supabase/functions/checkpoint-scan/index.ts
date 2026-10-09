@@ -169,7 +169,21 @@ Deno.serve(async (req) => {
     return json({ ok: false, error: "CHECKPOINT_STATE_FAILED", code: "CHECKPOINT_STATE_FAILED" }, 500);
   }
 
-  const claimsList = (claims || []).map((row: any) => String(row.challenge_id || row.checkpoint_id));
+  let claimsList: string[] = [];
+  if (qrToken) {
+    const challengeIds = (claims || []).map((row: any) => String(row.challenge_id || "")).filter(Boolean);
+    const { data: challengeRows, error: challengeRowsError } = challengeIds.length
+      ? await admin.from("checkpoint_challenges").select("id,location_id").in("id", challengeIds)
+      : { data: [], error: null };
+    if (challengeRowsError) {
+      return json({ ok: false, error: "CHECKPOINT_STATE_FAILED", code: "CHECKPOINT_STATE_FAILED" }, 500);
+    }
+    const locationByChallenge = new Map((challengeRows || []).map((row: any) => [String(row.id), String(row.location_id)]));
+    claimsList = challengeIds.map((id: string) => locationByChallenge.get(id)).filter(Boolean) as string[];
+  } else {
+    claimsList = (claims || []).map((row: any) => String(row.checkpoint_id || "")).filter(Boolean);
+  }
+  claimsList = [...new Set(claimsList)];
 
   return json({
     ...data,
