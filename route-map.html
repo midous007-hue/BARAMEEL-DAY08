@@ -677,7 +677,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   }
   let arcadeAudioContext=null;
   let arcadeAudioReady=false;
-  function arcadeTone(frequency=520,duration=0.035,volume=0.025,wave='square'){
+  function arcadeTone(frequency=520,duration=0.035,volume=0.09,wave='square'){
     try{
       const AudioContextClass=window.AudioContext||window.webkitAudioContext;
       if(!AudioContextClass)return;
@@ -697,11 +697,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }catch{}
   }
   function arcadeMessageSound(){
-    arcadeTone(740,0.09,0.035,'square');
-    setTimeout(()=>arcadeTone(980,0.07,0.025,'triangle'),65);
+    arcadeTone(740,0.11,0.14,'square');
+    setTimeout(()=>arcadeTone(980,0.09,0.10,'triangle'),65);
   }
   function arcadeTypingSound(index){
-    if(index%2===0)arcadeTone(300+(index%7)*38,0.018,0.009,'square');
+    if(index%2===0)arcadeTone(300+(index%7)*38,0.022,0.035,'square');
   }
   function setBrunaGuide(message,detail=''){
     if(!brunaGuide||!brunaGuideText)return;
