@@ -195,13 +195,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   letter-spacing:.035em;text-transform:uppercase;text-shadow:2px 2px 0 #071b2b;
   pointer-events:none;
 }
-#currentLocation{top:51.45%;height:5.25%}
-#nextCheckpoint{top:59.55%;height:5.15%;color:#f4c52f}
-#distanceNext{top:67.15%;height:5.10%}
+#currentLocation{top:54.0%;height:3.55%}
+#nextCheckpoint{top:60.5%;height:3.45%;color:#f4c52f}
+#distanceNext{top:66.8%;height:3.65%}
 #routeStatus{display:none!important}
 #routeProgress{
   position:absolute;left:40.4%;right:auto;top:75.25%;bottom:auto;
-  width:49.3%;height:4px;z-index:23;background:transparent;border-radius:99px;
+  width:53.5%;height:4px;z-index:23;background:transparent;border-radius:99px;
   overflow:hidden;pointer-events:none;
 }
 #routeProgressFill{height:100%;width:0;background:#f4c52f;border-radius:99px;box-shadow:0 0 7px rgba(244,197,47,.75);transition:width .35s ease}
@@ -269,9 +269,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   .flow-stage.route-map-stage{width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948))}
   #routeMap{left:6.2%;top:2.8%;width:87.6%;height:45.8%;border-radius:22px}
   #currentLocation,#nextCheckpoint,#distanceNext{left:46.2%;width:48.0%}
-  #currentLocation{top:52.35%;height:3.55%;font-size:clamp(11px,2.4vw,19px)}
-  #nextCheckpoint{top:58.05%;height:3.45%;font-size:clamp(11px,2.4vw,19px)}
-  #distanceNext{top:64.95%;height:3.65%;font-size:clamp(11px,2.4vw,19px)}
+  #currentLocation{top:54.0%;height:3.55%;font-size:clamp(11px,2.4vw,19px)}
+  #nextCheckpoint{top:60.5%;height:3.45%;font-size:clamp(11px,2.4vw,19px)}
+  #distanceNext{top:66.8%;height:3.65%;font-size:clamp(11px,2.4vw,19px)}
   #routeAction{left:31.7%;top:80.85%;width:64.8%;height:7.15%}
   #directBarameel{display:block!important;left:31.7%;top:88.65%;width:64.8%;height:7.15%}
 }
@@ -675,6 +675,34 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       liveMarkers.clear();
     }
   }
+  let arcadeAudioContext=null;
+  let arcadeAudioReady=false;
+  function arcadeTone(frequency=520,duration=0.035,volume=0.025,wave='square'){
+    try{
+      const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContextClass)return;
+      if(!arcadeAudioContext)arcadeAudioContext=new AudioContextClass();
+      if(arcadeAudioContext.state==='suspended')arcadeAudioContext.resume().catch(()=>{});
+      const now=arcadeAudioContext.currentTime;
+      const oscillator=arcadeAudioContext.createOscillator();
+      const gain=arcadeAudioContext.createGain();
+      oscillator.type=wave;
+      oscillator.frequency.setValueAtTime(frequency,now);
+      gain.gain.setValueAtTime(0.0001,now);
+      gain.gain.exponentialRampToValueAtTime(Math.max(0.0002,volume),now+0.004);
+      gain.gain.exponentialRampToValueAtTime(0.0001,now+duration);
+      oscillator.connect(gain);gain.connect(arcadeAudioContext.destination);
+      oscillator.start(now);oscillator.stop(now+duration+0.01);
+      arcadeAudioReady=true;
+    }catch{}
+  }
+  function arcadeMessageSound(){
+    arcadeTone(740,0.09,0.035,'square');
+    setTimeout(()=>arcadeTone(980,0.07,0.025,'triangle'),65);
+  }
+  function arcadeTypingSound(index){
+    if(index%2===0)arcadeTone(300+(index%7)*38,0.018,0.009,'square');
+  }
   function setBrunaGuide(message,detail=''){
     if(!brunaGuide||!brunaGuideText)return;
     const phrase=String(message||'').trim();
@@ -684,12 +712,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(phrase===lastGuidePhrase)return;
     lastGuidePhrase=phrase;
     if(guideTypingTimer){clearInterval(guideTypingTimer);guideTypingTimer=null;}
+    arcadeMessageSound();
     brunaGuideText.textContent='';
     let i=0;
     guideTypingTimer=setInterval(()=>{
       i++;brunaGuideText.textContent=phrase.slice(0,i);
+      arcadeTypingSound(i);
       if(i>=phrase.length){clearInterval(guideTypingTimer);guideTypingTimer=null;}
-    },24);
+    },32);
   }
   function brunaLine(step,distanceMeters,remaining){
     const type=String(step?.maneuver?.type||'').toLowerCase();
@@ -983,21 +1013,18 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function enterCheckpointHotspot(cp){
     if(!cp)return;
     next.textContent=cp.name;
+    next.dataset.cp=cp.id;
     distance.textContent='YOU ARE HERE';
     status.textContent='CHECKPOINT READY • OPEN SCANNER';
     status.classList.remove('route-error');
     setAction(true,'Open Checkpoint Scanner');
-    action.onclick=()=>{
-      const url=TEST_MODE
-        ? 'checkpoint-scanner.html?v=20261008-2&test=1&cp='+encodeURIComponent(cp.id)
-        : 'checkpoint-scanner.html?v=20261008-2';
-      BR.goAfter(url,'scan',220);
-    };
+    action.onclick=null;
   }
   function updateNavigation(pos){
     if(!navigationStarted||!navigationTarget||!pos)return;
     const remaining=haversine(pos,navigationTarget);
     next.textContent=navigationTarget.name;
+    next.dataset.cp=navigationTarget.id==='barameel'?'':navigationTarget.id;
     distance.textContent=formatDistance(remaining);
     const upcoming=nearestUpcomingStep(pos);
     if(upcoming){
@@ -1026,7 +1053,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(navigationTarget.id==='barameel'&&remaining<=Math.max(10,navigationTarget.radius_meters||120)){
       status.textContent='BARAMEEL AREA REACHED • ARRIVE';
       status.classList.remove('route-error');
-      setAction(false);
+      setAction(true,'Switch to Checkpoint Navigation');
       startNavCard.disabled=false;
       startNavCard.textContent='ENTER BARAMEEL';
       startNavCard.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
@@ -1035,8 +1062,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       setBrunaGuide("That's it! You've made it to Barameel. Let's get you checked in!",'YOU MADE IT');
       return;
     }
-    action.classList.remove('ready');
-    action.disabled=true;
+    setAction(true,'Switch to Checkpoint Navigation');
     if(!lastRoutePosition||haversine(pos,lastRoutePosition)>35||Date.now()-lastRouteAt>20000)buildWalkingRoute(pos,navigationTarget,false);
   }
   async function startNavigation(target){
@@ -1064,7 +1090,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(navDistance)navDistance.textContent='PLEASE WAIT';
     setBrunaGuide("Hang tight, I'm finding us a walking route!",'CALCULATING ROUTE');
     if(navDistance)navDistance.textContent='ROUTE';
-    setAction(false);
+    setAction(true,'Switch to Checkpoint Navigation');
     await buildWalkingRoute(latestPosition,target,true);
   }
   function renderRoutePositionAndState(pos){
@@ -1239,9 +1265,30 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   },{passive:false});
   const routeButton=document.getElementById('routeAction');
   const runCheckpoint=()=>{
-    const cp=checkpoints.find(x=>String(x.id)===String(document.getElementById('nextCheckpoint').dataset.cp||''));
-    if(cp)startNavigation(cp);
-    else if(latestPosition&&checkpoints.length)startNavigation(checkpoints.find(x=>!getDiscovered().has(x.id))||checkpoints[0]);
+    if(!latestPosition)return requestLocation();
+    const discovered=getDiscovered();
+    const requestedId=String(next.dataset.cp||'');
+    let cp=checkpoints.find(x=>String(x.id)===requestedId);
+    if(!cp||cp.id==='barameel'||discovered.has(cp.id)){
+      cp=checkpoints.filter(x=>!discovered.has(x.id))
+        .map(x=>({...x,_distance:haversine(latestPosition,x)}))
+        .sort((a,b)=>a._distance-b._distance)[0]||null;
+    }
+    if(!cp){
+      setBrunaGuide('You have found every checkpoint! Head to Barameel to claim your reward.','RUN COMPLETE');
+      return;
+    }
+    const remaining=haversine(latestPosition,cp);
+    if(remaining<=Math.max(5,cp.radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
+      enterCheckpointHotspot(cp);
+      const url=TEST_MODE
+        ?'checkpoint-scanner.html?v=20261008-2&test=1&cp='+encodeURIComponent(cp.id)
+        :'checkpoint-scanner.html?v=20261008-2';
+      BR.goAfter(url,'scan',220);
+      return;
+    }
+    next.dataset.cp=cp.id;
+    startNavigation(cp);
   };
   function bindTouchAction(el,handler){
     let suppressClickUntil=0;
