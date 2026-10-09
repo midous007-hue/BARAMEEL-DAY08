@@ -61,8 +61,14 @@ Deno.serve(async (req) => {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return json({ ok: false, error: "CHECKPOINT_LOCATION_REQUIRED", code: "CHECKPOINT_LOCATION_REQUIRED" }, 400);
   }
-  if (accuracy !== null && !Number.isFinite(accuracy)) {
-    return json({ ok: false, error: "GPS_ACCURACY_INVALID", code: "GPS_ACCURACY_INVALID" }, 400);
+  // Physical checkpoint claims must include a usable GPS accuracy reading.
+  // The scanner already sends coords.accuracy; reject missing or implausible values
+  // instead of letting a null accuracy bypass the server-side quality gate.
+  if (accuracy === null || !Number.isFinite(accuracy) || accuracy < 0) {
+    return json({ ok: false, error: "GPS_ACCURACY_REQUIRED", code: "GPS_ACCURACY_REQUIRED" }, 400);
+  }
+  if (accuracy > 50) {
+    return json({ ok: false, error: "GPS_ACCURACY_TOO_LOW", code: "GPS_ACCURACY_TOO_LOW" }, 409);
   }
 
   const { data: player, error: playerError } = await admin
