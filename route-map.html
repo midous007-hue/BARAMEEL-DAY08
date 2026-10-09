@@ -360,7 +360,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   const TEST_CP_ID=String(params.get('cp')||'CP01').toUpperCase();
   const TEST_APPROACH=TEST_MODE&&params.get('approach')==='1';
   const TEST_INSTANT=TEST_MODE&&params.get('instant')==='1';
-  const CHECKPOINT_HOTSPOT_RADIUS=10;
+  const CHECKPOINT_HOTSPOT_RADIUS=30;
 
   const cfg=window.BARAMEEL_ROUTE_CONFIG||{};
   const destination=cfg.destination&&Number.isFinite(Number(cfg.destination.lat))&&Number.isFinite(Number(cfg.destination.lng))
