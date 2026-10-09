@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "name": "BARAMEEL WORLD • ALEXANDRIA LIVE GAME MAP • V47",
+  "name": "BARAMEEL WORLD • V50 GAME MAP",
   "sources": {
     "openmaptiles": {
       "type": "vector",
@@ -160,8 +160,8 @@
       "source-layer": "building",
       "minzoom": 13,
       "paint": {
-        "fill-color": "#77788b",
-        "fill-opacity": 0.72
+        "fill-color": "#9b8062",
+        "fill-opacity": 0.94
       }
     },
     {
@@ -180,9 +180,11 @@
             "zoom"
           ],
           14,
-          "#67697a",
-          17,
-          "#77788b"
+          "#8d6c4d",
+          16,
+          "#b18a61",
+          18,
+          "#c9a06d"
         ],
         "fill-extrusion-height": [
           "coalesce",
@@ -208,8 +210,38 @@
           ],
           0
         ],
-        "fill-extrusion-opacity": 0.9,
+        "fill-extrusion-opacity": 0.98,
         "fill-extrusion-vertical-gradient": true
+      }
+    },
+    {
+      "id": "building-game-outline",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "building",
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#342b2a",
+        "line-opacity": 0.82,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.45,
+          17,
+          1,
+          19,
+          1.6
+        ]
       }
     },
     {
@@ -422,8 +454,8 @@
       "source": "openmaptiles",
       "minzoom": 12.4,
       "paint": {
-        "line-color": "#c6b590",
-        "line-opacity": 0.82,
+        "line-color": "#c9b48b",
+        "line-opacity": 1,
         "line-width": [
           "interpolate",
           [
@@ -473,8 +505,8 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#d5c5a6",
-        "line-opacity": 0.78,
+        "line-color": "#d8c29b",
+        "line-opacity": 0.96,
         "line-width": [
           "interpolate",
           [
@@ -489,6 +521,57 @@
           1.1,
           18,
           2.1
+        ]
+      }
+    },
+    {
+      "id": "road-basalt-joints",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "minzoom": 15.3,
+      "filter": [
+        "in",
+        [
+          "get",
+          "class"
+        ],
+        [
+          "literal",
+          [
+            "minor",
+            "service",
+            "residential",
+            "unclassified",
+            "tertiary"
+          ]
+        ]
+      ],
+      "layout": {
+        "line-cap": "butt",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#665a4a",
+        "line-opacity": 0.42,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          15.3,
+          0.45,
+          17,
+          0.75,
+          19,
+          1.1
+        ],
+        "line-dasharray": [
+          0.7,
+          0.42
         ]
       }
     },
@@ -533,8 +616,22 @@
       "minzoom": 13,
       "filter": [
         "any",
-        ["==", ["get", "subclass"], "tram"],
-        ["==", ["get", "class"], "tram"]
+        [
+          "==",
+          [
+            "get",
+            "subclass"
+          ],
+          "tram"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "class"
+          ],
+          "tram"
+        ]
       ],
       "layout": {
         "line-cap": "round",
