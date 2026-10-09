@@ -925,34 +925,45 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     lastMapFollowPosition={lat:pos.lat,lng:pos.lng};
   }
   function addRouteSourceAndLayer(){
-    if(!mapReady||map.getSource('walking-route'))return;
-    map.addSource('walking-route',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-    map.addLayer({
-      id:'walking-route-glow',
-      type:'line',
-      source:'walking-route',
-      layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':'#168cff','line-width':17,'line-opacity':.44,'line-blur':3.2}
-    });
-    map.addLayer({
-      id:'walking-route-line',
-      type:'line',
-      source:'walking-route',
-      layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':'#087dff','line-width':7.5,'line-opacity':1}
-    });
-    map.addLayer({
-      id:'walking-route-dots',
-      type:'line',
-      source:'walking-route',
-      layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':'#b9e5ff','line-width':4.0,'line-opacity':1,'line-dasharray':[0.12,0.82]}
-    });
+    if(!mapReady)return;
+    // Re-create missing layers independently. A source can survive while a style
+    // refresh drops its layers, so an early return on source existence hides the route.
+    if(!map.getSource('walking-route')){
+      map.addSource('walking-route',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+    }
+    if(!map.getLayer('walking-route-glow')){
+      map.addLayer({
+        id:'walking-route-glow',
+        type:'line',
+        source:'walking-route',
+        layout:{'line-cap':'round','line-join':'round'},
+        paint:{'line-color':'#168cff','line-width':17,'line-opacity':.44,'line-blur':3.2}
+      });
+    }
+    if(!map.getLayer('walking-route-line')){
+      map.addLayer({
+        id:'walking-route-line',
+        type:'line',
+        source:'walking-route',
+        layout:{'line-cap':'round','line-join':'round'},
+        paint:{'line-color':'#087dff','line-width':7.5,'line-opacity':1}
+      });
+    }
+    if(!map.getLayer('walking-route-dots')){
+      map.addLayer({
+        id:'walking-route-dots',
+        type:'line',
+        source:'walking-route',
+        layout:{'line-cap':'round','line-join':'round'},
+        paint:{'line-color':'#b9e5ff','line-width':4.0,'line-opacity':1,'line-dasharray':[0.12,0.82]}
+      });
+    }
   }
   function setRouteGeometry(geometry){
     if(!mapReady||!geometry)return;
     addRouteSourceAndLayer();
-    map.getSource('walking-route').setData({type:'Feature',properties:{},geometry});
+    const source=map.getSource('walking-route');
+    if(source)source.setData({type:'Feature',properties:{},geometry});
   }
   let routeDashTimer=null;
   function animateRoute(){
