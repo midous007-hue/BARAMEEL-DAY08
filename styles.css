@@ -212,8 +212,8 @@ button,input,select{font:inherit}
 /* No /9 or collected-count text: the supplied artwork intentionally owns the card footer. */
 .collection-thumb:active{transform:scale(.985)}
 /* Exact transparent hotspots for the new artwork. */
-#myRewards{left:3.0%;top:60.75%;width:37.8%;height:5.55%;z-index:90}
-#scanMore{left:3.0%;top:66.70%;width:37.8%;height:5.55%;z-index:90}
+#myRewards{left:3.15%;top:60.75%;width:37.65%;height:5.55%;z-index:90}
+#scanMore{left:3.15%;top:66.70%;width:37.65%;height:5.55%;z-index:90}
 .complete-flash{position:absolute;inset:0;z-index:80;pointer-events:none;opacity:0;background:radial-gradient(ellipse 28% 19% at 71% 43%,rgba(255,244,188,.42) 0%,rgba(247,189,39,.16) 38%,rgba(255,245,214,0) 78%);mix-blend-mode:screen}
 .complete-flash.on{animation:completePulse 1.45s ease-in-out both}
 @keyframes completePulse{0%,100%{opacity:0}18%{opacity:.75}38%{opacity:.10}58%{opacity:.42}78%{opacity:.05}}
