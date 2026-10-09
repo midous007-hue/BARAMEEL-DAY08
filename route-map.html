@@ -59,8 +59,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .route-error{color:#ff9a8f!important}
 .route-map-stage::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(circle at 50% 45%,transparent 54%,rgba(7,27,43,.16) 100%),repeating-linear-gradient(0deg,rgba(7,27,43,.018) 0 1px,transparent 1px 5px);mix-blend-mode:multiply}.route-map-stage::after{content:"";position:absolute;inset:9px;z-index:6;border:2px solid rgba(246,231,206,.30);box-shadow:inset 0 0 0 2px rgba(7,27,43,.08),inset 0 0 42px rgba(7,27,43,.08);pointer-events:none;border-radius:6px}
 
-/* V50: visible player identity + Bruna composition */
-#routeBruna{z-index:8!important;left:1.5%!important;right:auto!important;top:auto!important;bottom:1.2%!important;width:34%!important;height:75%!important;object-fit:contain!important;object-position:left bottom!important}
+/* V50: visible player identity. Bruna foreground geometry is defined in V65 below. */
 .map-player{z-index:120!important;width:64px!important;height:64px!important;overflow:visible!important}
 .map-player .player-avatar{display:block!important;visibility:visible!important;opacity:1!important;width:48px!important;height:48px!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;z-index:3!important;background-size:300% 200%!important}
 .map-player-name{display:block!important;visibility:visible!important;opacity:1!important;z-index:125!important;top:68px!important;left:50%!important;transform:translateX(-50%)!important;padding:5px 9px!important;border:2px solid #071b2b!important;background:#f4c52f!important;color:#071b2b!important;font-size:11px!important;line-height:1.1!important;white-space:nowrap!important;max-width:180px!important}
@@ -88,7 +87,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 
 
 /* V54: live CP01 marker, working compass and Bruna's translucent speech bubble. */
-#routeBruna{left:1.5%!important;width:34%!important;height:75%!important;bottom:1.2%!important;object-fit:contain!important}
 #checkpointOverlay{position:absolute!important;inset:0!important;z-index:17!important;pointer-events:none!important}
 #cp01ScreenMarker{position:absolute;display:grid;place-items:center;min-width:40px;min-height:40px;transform:translate(-50%,-50%);border:3px solid #f6e7ce;border-radius:50%;background:#ef2d24;color:#fff4db;font:900 9px/1 'Roboto Condensed',Arial,sans-serif;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(244,197,47,.75);text-shadow:1px 1px 0 #071b2b}
 #cp01ScreenMarker::after{content:"";position:absolute;left:50%;top:calc(100% - 2px);transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-top:11px solid #ef2d24}
@@ -143,7 +141,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   filter:drop-shadow(0 3px 0 rgba(7,27,43,.75));
 }
 #routeBruna{
-  position:absolute;z-index:8;left:7.5%;top:auto;bottom:1.2%;width:29%;height:52%;
+  position:absolute;z-index:50;left:0;top:0;right:auto;bottom:0;width:100%;height:100%;
   object-fit:contain;object-position:left bottom;pointer-events:none;
   filter:drop-shadow(3px 4px 0 rgba(7,27,43,.72));
 }
@@ -277,7 +275,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   #routeAction{left:31.7%;top:80.85%;width:64.8%;height:7.15%}
   #directBarameel{display:block!important;left:31.7%;top:88.65%;width:64.8%;height:7.15%}
 }
-/* V45 — LIVE MAP ONLY. No reference/screenshot image is used as a map layer. */
+/* V65 — LIVE MAP ONLY. Bruna is a full-stage foreground character layer. */
 #routeMap,
 #routeMap .maplibregl-map,
 #routeMap .maplibregl-canvas-container,
