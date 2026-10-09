@@ -82,8 +82,20 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   overflow:hidden;background:#071b2b;
 }
 #routeArtwork{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:0;pointer-events:none}
+#routeScreenLogo,#routeBruna{user-select:none;-webkit-user-drag:none}
+#routeScreenLogo{
+  position:absolute;z-index:7;left:17%;top:0.1%;width:66%;height:13%;
+  object-fit:contain;object-position:center top;pointer-events:none;
+  filter:drop-shadow(0 3px 0 rgba(7,27,43,.75));
+}
+#routeBruna{
+  position:absolute;z-index:6;left:-1.5%;top:5.8%;width:27%;height:33%;
+  object-fit:contain;object-position:left top;pointer-events:none;
+  filter:drop-shadow(3px 4px 0 rgba(7,27,43,.6));
+}
+
 #routeMap{
-  position:absolute;left:6.4%;top:9.0%;width:87.9%;height:39.3%;
+  position:absolute;left:6.2%;top:2.8%;width:87.6%;height:45.8%;
   right:auto;bottom:auto;inset:auto;z-index:2;
   border:0;border-radius:24px;overflow:hidden;background:#07334a;
   box-shadow:none;
@@ -179,7 +191,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   white-space:nowrap;box-shadow:2px 2px 0 #071b2b;
 }
 .map-player{position:relative;width:54px;height:66px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 3px 0 #071b2b);pointer-events:none}
-.map-player .player-avatar{position:absolute;top:0;left:50%;width:42px;height:42px;transform:translateX(-50%);border-radius:50%;border:3px solid #f6e7ce;background-color:#19b9d2;background-image:url('./assets/avatar-selection.webp?v=20261009-48.0');background-repeat:no-repeat;background-size:300% 200%;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(25,185,210,.75);overflow:hidden}
+.map-player .player-avatar{position:absolute;top:0;left:50%;width:42px;height:42px;transform:translateX(-50%);border-radius:50%;border:3px solid #f6e7ce;background-color:#19b9d2;background-image:url('./assets/avatar-selection.webp?v=20261009-49.0');background-repeat:no-repeat;background-size:300% 200%;box-shadow:0 0 0 3px #071b2b,0 0 15px rgba(25,185,210,.75);overflow:hidden}
 .map-player .player-avatar::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 -10px 14px rgba(7,27,43,.22)}
 .map-player::before{content:"";position:absolute;top:0;left:50%;width:48px;height:48px;transform:translateX(-50%);border-radius:50%;border:2px solid rgba(244,197,47,.85);box-shadow:0 0 0 2px #071b2b,0 0 16px rgba(244,197,47,.45);pointer-events:none}
 .map-player::after{content:"YOU";position:absolute;left:50%;bottom:0;transform:translateX(-50%);padding:4px 9px;border:2px solid #071b2b;border-radius:999px;background:#1967d2;color:#fff;font:900 10px/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.06em}
@@ -203,7 +215,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .route-map-stage::after{content:"";position:absolute;inset:0;z-index:8;border:0;box-shadow:none;pointer-events:none;border-radius:0}
 @media(max-width:700px){
   .flow-stage.route-map-stage{width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948))}
-  #routeMap{left:6.4%;top:9.0%;width:87.9%;height:39.3%;border-radius:22px}
+  #routeMap{left:6.2%;top:2.8%;width:87.6%;height:45.8%;border-radius:22px}
   #currentLocation,#nextCheckpoint,#distanceNext{left:46.2%;width:48.0%}
   #currentLocation{top:52.35%;height:3.55%;font-size:clamp(11px,2.4vw,19px)}
   #nextCheckpoint{top:58.05%;height:3.45%;font-size:clamp(11px,2.4vw,19px)}
@@ -225,7 +237,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 </head>
 <body>
 <main class="flow-stage route-map-stage">
-<img id="routeArtwork" src="./assets/route-map-v48.webp?v=20261009-48.0" alt="" aria-hidden="true" data-role="approved-screen-artwork" loading="eager" decoding="async" fetchpriority="low">
+<img id="routeArtwork" src="./assets/route-map-v49.webp?v=20261009-49.0" alt="" aria-hidden="true" data-role="approved-screen-artwork" loading="eager" decoding="async" fetchpriority="low">
+<img id="routeScreenLogo" src="./assets/barameel-run-checkpoint-logo.webp?v=20261009-49.0" alt="BARAMEEL RUN — CHECKPOINT RUN" aria-hidden="true" decoding="async">
+<img id="routeBruna" src="./assets/brona-route-map.webp?v=20261009-49.0" alt="" aria-hidden="true" decoding="async">
 <div id="routeMap" aria-label="Live checkpoint map"></div>
 <div id="mapBrand" aria-hidden="true"></div>
 <div id="mapStatus" aria-hidden="true"></div>
@@ -647,21 +661,21 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       type:'line',
       source:'walking-route',
       layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':'#f4c52f','line-width':13,'line-opacity':.26,'line-blur':2.8}
+      paint:{'line-color':'#168cff','line-width':17,'line-opacity':.44,'line-blur':3.2}
     });
     map.addLayer({
       id:'walking-route-line',
       type:'line',
       source:'walking-route',
       layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':'#f4c52f','line-width':5,'line-opacity':.98}
+      paint:{'line-color':'#087dff','line-width':7.5,'line-opacity':1}
     });
     map.addLayer({
       id:'walking-route-dots',
       type:'line',
       source:'walking-route',
       layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':'#fff1bd','line-width':2.2,'line-opacity':.95,'line-dasharray':[0.1,1.55]}
+      paint:{'line-color':'#b9e5ff','line-width':4.0,'line-opacity':1,'line-dasharray':[0.12,0.82]}
     });
   }
   function setRouteGeometry(geometry){
