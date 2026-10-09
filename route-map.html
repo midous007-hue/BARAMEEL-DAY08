@@ -60,7 +60,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .route-map-stage::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(circle at 50% 45%,transparent 54%,rgba(7,27,43,.16) 100%),repeating-linear-gradient(0deg,rgba(7,27,43,.018) 0 1px,transparent 1px 5px);mix-blend-mode:multiply}.route-map-stage::after{content:"";position:absolute;inset:9px;z-index:6;border:2px solid rgba(246,231,206,.30);box-shadow:inset 0 0 0 2px rgba(7,27,43,.08),inset 0 0 42px rgba(7,27,43,.08);pointer-events:none;border-radius:6px}
 
 /* V50: visible player identity + Bruna composition */
-#routeBruna{z-index:8!important;left:-2%!important;right:auto!important;top:auto!important;bottom:0!important;width:58%!important;height:100%!important;object-fit:contain!important;object-position:left bottom!important}
+#routeBruna{z-index:8!important;left:7.5%!important;right:auto!important;top:auto!important;bottom:0!important;width:58%!important;height:100%!important;object-fit:contain!important;object-position:left bottom!important}
 .map-player{z-index:120!important;width:64px!important;height:64px!important;overflow:visible!important}
 .map-player .player-avatar{display:block!important;visibility:visible!important;opacity:1!important;width:48px!important;height:48px!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;z-index:3!important;background-size:300% 200%!important}
 .map-player-name{display:block!important;visibility:visible!important;opacity:1!important;z-index:125!important;top:68px!important;left:50%!important;transform:translateX(-50%)!important;padding:5px 9px!important;border:2px solid #071b2b!important;background:#f4c52f!important;color:#071b2b!important;font-size:11px!important;line-height:1.1!important;white-space:nowrap!important;max-width:180px!important}
@@ -566,7 +566,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       const overlay=document.getElementById('playerOverlay');
       (overlay||stage).appendChild(playerMarker);
     }
-    const point=map.project([latestPosition.lng,latestPosition.lat]);
+    const mapPoint=map.project([latestPosition.lng,latestPosition.lat]);
+    const mapContainer=document.getElementById('routeMap');
+    const point={x:mapPoint.x+(mapContainer?.offsetLeft||0),y:mapPoint.y+(mapContainer?.offsetTop||0)};
     const overlay=document.getElementById('playerOverlay');
     if(overlay){
       overlay.style.position='absolute';
