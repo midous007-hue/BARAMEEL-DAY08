@@ -297,23 +297,25 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   #routeAction{left:31.7%;top:80.85%;width:64.8%;height:7.15%}
   #directBarameel{display:block!important;left:31.7%;top:88.65%;width:64.8%;height:7.15%}
 }
-/* CHECKPOINT RADAR ALERT — high-impact arcade discovery layer */
-#checkpointRadarAlert{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scale(.82);width:min(88vw,430px);z-index:100;display:none;flex-direction:column;align-items:center;gap:10px;pointer-events:none;filter:drop-shadow(0 12px 24px rgba(0,0,0,.65))}
+/* APPROVED CHECKPOINT RADAR ARTWORK — preserve artwork; overlay only functional hit areas */
+#checkpointRadarAlert{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scale(.82);width:min(88vw,430px);z-index:100;display:none;flex-direction:column;align-items:center;gap:0;pointer-events:none;filter:drop-shadow(0 12px 24px rgba(0,0,0,.65))}
 #checkpointRadarAlert.active{display:flex;animation:radarAlertEnter .48s cubic-bezier(.16,1.25,.35,1) forwards}
-#checkpointRadarAlert .radar-emblem{position:relative;width:min(58vw,250px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;border:7px solid #f4c52f;background:radial-gradient(circle,#0d4268 0 25%,#071b2b 26% 48%,#06395f 49% 54%,#061624 55%);box-shadow:0 0 0 5px #ef2d24,0 0 0 10px #071b2b,0 0 28px 12px rgba(0,174,255,.78),inset 0 0 25px #00aaff;overflow:hidden}
-#checkpointRadarAlert .radar-emblem:before{content:"";position:absolute;inset:8%;border:2px solid #00c8ff;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 16%,rgba(0,196,255,.7) 16.5% 17.2%,transparent 17.7% 25%);animation:radarSweep 2.1s linear infinite}
-#checkpointRadarAlert .radar-emblem:after{content:"";position:absolute;width:140%;height:3px;background:#fff;box-shadow:0 0 8px 4px #00baff;transform:rotate(-35deg);animation:radarFlash 1.15s ease-in-out infinite alternate}
-#checkpointRadarAlert .radar-pin{position:relative;z-index:2;font:900 clamp(54px,14vw,82px)/1 Arial,sans-serif;color:#f4c52f;-webkit-text-stroke:2px #ef2d24;text-shadow:0 4px 0 #071b2b,0 0 22px #00baff}
-#checkpointRadarAlert .radar-alert-title{position:relative;z-index:3;width:100%;padding:10px 8px 8px;background:linear-gradient(110deg,#ef2d24,#b90e17 55%,#ef2d24);border:4px solid #071b2b;outline:3px solid #f4c52f;transform:rotate(-2deg);color:#fff;font:1000 clamp(22px,6.2vw,36px)/.98 Impact,'Arial Narrow',sans-serif;letter-spacing:.015em;text-align:center;text-shadow:3px 4px 0 #071b2b,-1px -1px 0 #071b2b}
-#checkpointRadarAlert .radar-scan-button{pointer-events:auto;position:relative;width:min(66vw,280px);min-height:112px;border-radius:50%;border:7px solid #ef2d24;outline:3px solid #f4c52f;background:radial-gradient(circle at 50% 35%,#ffda36 0,#ffb900 50%,#e98400 100%);box-shadow:0 0 0 6px #071b2b,0 0 28px 8px rgba(0,184,255,.8),inset 0 0 0 4px #ffe987;color:#071b2b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font:1000 23px/.95 Impact,'Arial Narrow',sans-serif;text-shadow:1px 2px 0 rgba(255,255,255,.45);cursor:pointer;touch-action:manipulation;animation:scanButtonPulse 1.2s ease-in-out infinite}
-#checkpointRadarAlert .radar-scan-button .scan-icon{font-size:34px;line-height:1}
-#checkpointRadarAlert .radar-scan-button small{font-size:16px}
-#checkpointRadarAlert .radar-dismiss{pointer-events:auto;position:absolute;top:-5px;right:1%;width:34px;height:34px;border:2px solid #f4c52f;border-radius:50%;background:#071b2b;color:#f6e7ce;font:900 22px/1 Arial,sans-serif;z-index:5}
+#checkpointRadarArtwork{display:block;width:100%;height:auto;max-height:82dvh;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
+#checkpointRadarAlert .radar-emblem,#checkpointRadarAlert .radar-alert-title{display:none}
+#checkpointRadarAlert .radar-scan-button{position:absolute;left:19%;top:67.5%;width:62%;height:28%;min-height:0;border:0;border-radius:50%;outline:0;background:transparent;box-shadow:none;color:transparent;font-size:0;cursor:pointer;touch-action:manipulation;animation:scanButtonPulse 1.2s ease-in-out infinite}
+#checkpointRadarAlert .radar-scan-button .scan-icon,#checkpointRadarAlert .radar-scan-button small{display:none}
+#checkpointRadarAlert .radar-dismiss{pointer-events:auto;position:absolute;top:2%;right:2%;width:32px;height:32px;border:2px solid #f4c52f;border-radius:50%;background:#071b2b;color:#f6e7ce;font:900 22px/1 Arial,sans-serif;z-index:5}
+#checkpointRadarAlert.barameel-alert #checkpointRadarArtwork{display:none}
+#checkpointRadarAlert.barameel-alert .radar-alert-title{display:block}
+#checkpointRadarAlert.barameel-alert .radar-emblem{display:grid}
+#checkpointRadarAlert.barameel-alert .radar-scan-button{position:relative;left:auto;top:auto;width:min(66vw,280px);height:auto;min-height:112px;border-radius:50%;border:7px solid #ef2d24;outline:3px solid #f4c52f;background:radial-gradient(circle at 50% 35%,#ffda36 0,#ffb900 50%,#e98400 100%);box-shadow:0 0 0 6px #071b2b,0 0 28px 8px rgba(0,184,255,.8),inset 0 0 0 4px #ffe987;color:#071b2b;font:1000 23px/.95 Impact,'Arial Narrow',sans-serif;text-shadow:1px 2px 0 rgba(255,255,255,.45)}
+#checkpointRadarAlert.barameel-alert .radar-scan-button .scan-icon{display:block;font-size:34px;line-height:1}
+#checkpointRadarAlert.barameel-alert .radar-scan-button small{display:block;font-size:16px}
 @keyframes radarAlertEnter{to{transform:translate(-50%,-50%) scale(1)}}
 @keyframes radarSweep{to{transform:rotate(360deg)}}
 @keyframes radarFlash{from{opacity:.45}to{opacity:1}}
-@keyframes scanButtonPulse{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.18);transform:scale(1.035)}}
-@media(max-height:700px){#checkpointRadarAlert{top:43%;gap:6px}#checkpointRadarAlert .radar-emblem{width:min(44vw,180px)}#checkpointRadarAlert .radar-scan-button{min-height:78px}}
+@keyframes scanButtonPulse{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.12);transform:scale(1.015)}}
+@media(max-height:700px){#checkpointRadarAlert{top:46%;width:min(74vw,360px)}#checkpointRadarArtwork{max-height:78dvh}}
 @media(prefers-reduced-motion:reduce){#checkpointRadarAlert.active,#checkpointRadarAlert .radar-emblem:before,#checkpointRadarAlert .radar-emblem:after,#checkpointRadarAlert .radar-scan-button{animation:none}}
 
 /* V65 — LIVE MAP ONLY. Bruna is a full-stage foreground character layer. */
@@ -359,9 +361,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 <button id="routeAction" aria-label="Go to checkpoint"></button>
 <div id="checkpointRadarAlert" role="dialog" aria-live="assertive" aria-label="Checkpoint detected">
   <button id="radarDismiss" class="radar-dismiss" type="button" aria-label="Dismiss radar alert">×</button>
+  <img id="checkpointRadarArtwork" src="./assets/checkpoint-radar-640.webp?v=20261010-1" alt="Checkpoint detected — scan checkpoint" decoding="async">
   <div class="radar-emblem" aria-hidden="true"><span class="radar-pin">⌖</span></div>
-  <div id="radarAlertTitle" class="radar-alert-title">CHECKPOINT<br>DETECTED!</div>
-  <button id="radarScanButton" class="radar-scan-button" type="button"><span class="scan-icon">▦</span><span id="radarScanLabel">SCAN</span><small id="radarScanSub">CHECKPOINT</small></button>
+  <div id="radarAlertTitle" class="radar-alert-title">BARAMEEL<br>ZONE DETECTED!</div>
+  <button id="radarScanButton" class="radar-scan-button" type="button" aria-label="Scan checkpoint"><span class="scan-icon">▦</span><span id="radarScanLabel">SCAN</span><small id="radarScanSub">CHECKPOINT</small></button>
 </div>
 <button id="directBarameel" aria-label="Direct to Barameel"></button>
 <button id="mapLocate" aria-label="Center map on my location"></button>
@@ -1123,7 +1126,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function showRadarAlert(target,type='checkpoint'){
     if(!target||!radarAlert)return;
     radarTarget={...target,_radarType:type};
-    radarAlertTitle.innerHTML=type==='barameel'?'BARAMEEL<br>ZONE DETECTED!':'CHECKPOINT<br>DETECTED!';
+    radarAlert.classList.toggle('barameel-alert',type==='barameel');
+    radarAlert.setAttribute('aria-label',type==='barameel'?'Barameel zone detected':'Checkpoint detected');
+    radarScanButton.setAttribute('aria-label',type==='barameel'?'Enter Barameel zone':'Scan checkpoint');
+    radarAlertTitle.innerHTML='BARAMEEL<br>ZONE DETECTED!';
     radarScanLabel.textContent=type==='barameel'?'ENTER':'SCAN';
     radarScanSub.textContent=type==='barameel'?'BARAMEEL ZONE':'CHECKPOINT';
     radarAlert.classList.add('active');
