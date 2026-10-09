@@ -297,6 +297,25 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   #routeAction{left:31.7%;top:80.85%;width:64.8%;height:7.15%}
   #directBarameel{display:block!important;left:31.7%;top:88.65%;width:64.8%;height:7.15%}
 }
+/* CHECKPOINT RADAR ALERT — high-impact arcade discovery layer */
+#checkpointRadarAlert{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scale(.82);width:min(88vw,430px);z-index:100;display:none;flex-direction:column;align-items:center;gap:10px;pointer-events:none;filter:drop-shadow(0 12px 24px rgba(0,0,0,.65))}
+#checkpointRadarAlert.active{display:flex;animation:radarAlertEnter .48s cubic-bezier(.16,1.25,.35,1) forwards}
+#checkpointRadarAlert .radar-emblem{position:relative;width:min(58vw,250px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;border:7px solid #f4c52f;background:radial-gradient(circle,#0d4268 0 25%,#071b2b 26% 48%,#06395f 49% 54%,#061624 55%);box-shadow:0 0 0 5px #ef2d24,0 0 0 10px #071b2b,0 0 28px 12px rgba(0,174,255,.78),inset 0 0 25px #00aaff;overflow:hidden}
+#checkpointRadarAlert .radar-emblem:before{content:"";position:absolute;inset:8%;border:2px solid #00c8ff;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 16%,rgba(0,196,255,.7) 16.5% 17.2%,transparent 17.7% 25%);animation:radarSweep 2.1s linear infinite}
+#checkpointRadarAlert .radar-emblem:after{content:"";position:absolute;width:140%;height:3px;background:#fff;box-shadow:0 0 8px 4px #00baff;transform:rotate(-35deg);animation:radarFlash 1.15s ease-in-out infinite alternate}
+#checkpointRadarAlert .radar-pin{position:relative;z-index:2;font:900 clamp(54px,14vw,82px)/1 Arial,sans-serif;color:#f4c52f;-webkit-text-stroke:2px #ef2d24;text-shadow:0 4px 0 #071b2b,0 0 22px #00baff}
+#checkpointRadarAlert .radar-alert-title{position:relative;z-index:3;width:100%;padding:10px 8px 8px;background:linear-gradient(110deg,#ef2d24,#b90e17 55%,#ef2d24);border:4px solid #071b2b;outline:3px solid #f4c52f;transform:rotate(-2deg);color:#fff;font:1000 clamp(22px,6.2vw,36px)/.98 Impact,'Arial Narrow',sans-serif;letter-spacing:.015em;text-align:center;text-shadow:3px 4px 0 #071b2b,-1px -1px 0 #071b2b}
+#checkpointRadarAlert .radar-scan-button{pointer-events:auto;position:relative;width:min(66vw,280px);min-height:112px;border-radius:50%;border:7px solid #ef2d24;outline:3px solid #f4c52f;background:radial-gradient(circle at 50% 35%,#ffda36 0,#ffb900 50%,#e98400 100%);box-shadow:0 0 0 6px #071b2b,0 0 28px 8px rgba(0,184,255,.8),inset 0 0 0 4px #ffe987;color:#071b2b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font:1000 23px/.95 Impact,'Arial Narrow',sans-serif;text-shadow:1px 2px 0 rgba(255,255,255,.45);cursor:pointer;touch-action:manipulation;animation:scanButtonPulse 1.2s ease-in-out infinite}
+#checkpointRadarAlert .radar-scan-button .scan-icon{font-size:34px;line-height:1}
+#checkpointRadarAlert .radar-scan-button small{font-size:16px}
+#checkpointRadarAlert .radar-dismiss{pointer-events:auto;position:absolute;top:-5px;right:1%;width:34px;height:34px;border:2px solid #f4c52f;border-radius:50%;background:#071b2b;color:#f6e7ce;font:900 22px/1 Arial,sans-serif;z-index:5}
+@keyframes radarAlertEnter{to{transform:translate(-50%,-50%) scale(1)}}
+@keyframes radarSweep{to{transform:rotate(360deg)}}
+@keyframes radarFlash{from{opacity:.45}to{opacity:1}}
+@keyframes scanButtonPulse{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.18);transform:scale(1.035)}}
+@media(max-height:700px){#checkpointRadarAlert{top:43%;gap:6px}#checkpointRadarAlert .radar-emblem{width:min(44vw,180px)}#checkpointRadarAlert .radar-scan-button{min-height:78px}}
+@media(prefers-reduced-motion:reduce){#checkpointRadarAlert.active,#checkpointRadarAlert .radar-emblem:before,#checkpointRadarAlert .radar-emblem:after,#checkpointRadarAlert .radar-scan-button{animation:none}}
+
 /* V65 — LIVE MAP ONLY. Bruna is a full-stage foreground character layer. */
 #routeMap,
 #routeMap .maplibregl-map,
@@ -338,6 +357,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 <div id="routeStatus" aria-live="polite"></div>
 <div id="routeProgress" aria-hidden="true"><div id="routeProgressFill"></div></div>
 <button id="routeAction" aria-label="Go to checkpoint"></button>
+<div id="checkpointRadarAlert" role="dialog" aria-live="assertive" aria-label="Checkpoint detected">
+  <button id="radarDismiss" class="radar-dismiss" type="button" aria-label="Dismiss radar alert">×</button>
+  <div class="radar-emblem" aria-hidden="true"><span class="radar-pin">⌖</span></div>
+  <div id="radarAlertTitle" class="radar-alert-title">CHECKPOINT<br>DETECTED!</div>
+  <button id="radarScanButton" class="radar-scan-button" type="button"><span class="scan-icon">▦</span><span id="radarScanLabel">SCAN</span><small id="radarScanSub">CHECKPOINT</small></button>
+</div>
 <button id="directBarameel" aria-label="Direct to Barameel"></button>
 <button id="mapLocate" aria-label="Center map on my location"></button>
 <button id="mapFollow" aria-label="Follow my location"></button>
@@ -357,6 +382,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   const distance=document.getElementById('distanceNext');
   const fill=document.getElementById('routeProgressFill');
   const action=document.getElementById('routeAction');
+  const radarAlert=document.getElementById('checkpointRadarAlert');
+  const radarAlertTitle=document.getElementById('radarAlertTitle');
+  const radarScanButton=document.getElementById('radarScanButton');
+  const radarScanLabel=document.getElementById('radarScanLabel');
+  const radarScanSub=document.getElementById('radarScanSub');
+  const radarDismiss=document.getElementById('radarDismiss');
+  let radarTarget=null;
+  let radarAlertDismissedFor='';
+  let lastRadarAlertTarget='';
+  let radarSoundPlayedFor='';
   const navOverlay=document.getElementById('navOverlay');
   const navDirection=document.getElementById('navDirection');
   const navDistance=document.getElementById('navDistance');
@@ -1044,6 +1079,55 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       return false;
     }
   }
+  function playCheckpointRadarSound(){
+    try{
+      const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContextClass)return;
+      if(!arcadeAudioContext)arcadeAudioContext=new AudioContextClass();
+      if(arcadeAudioContext.state==='suspended')arcadeAudioContext.resume().catch(()=>{});
+      const chime=(freq,start,duration,volume,wave='square')=>{
+        const now=arcadeAudioContext.currentTime+start,osc=arcadeAudioContext.createOscillator(),gain=arcadeAudioContext.createGain();
+        osc.type=wave;osc.frequency.setValueAtTime(freq,now);
+        gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(volume,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+        osc.connect(gain);gain.connect(arcadeAudioContext.destination);osc.start(now);osc.stop(now+duration+.02);
+      };
+      // Classic arcade radar ping: low sonar pulse, bright detection chirp, then confirmation sweep.
+      chime(185,0,.42,.20,'sine');chime(740,.18,.16,.13,'square');chime(1110,.39,.22,.10,'triangle');
+    }catch{}
+  }
+  function showRadarAlert(target,type='checkpoint'){
+    if(!target||!radarAlert)return;
+    radarTarget={...target,_radarType:type};
+    radarAlertTitle.innerHTML=type==='barameel'?'BARAMEEL<br>ZONE DETECTED!':'CHECKPOINT<br>DETECTED!';
+    radarScanLabel.textContent=type==='barameel'?'ENTER':'SCAN';
+    radarScanSub.textContent=type==='barameel'?'BARAMEEL ZONE':'CHECKPOINT';
+    radarAlert.classList.add('active');
+    if(lastRadarAlertTarget!==type+':'+target.id){
+      lastRadarAlertTarget=type+':'+target.id;
+      playCheckpointRadarSound();
+      if(type==='checkpoint')setBrunaGuide("Radar locked! Checkpoint detected. Tap to scan its QR.",'CHECKPOINT IN RANGE');
+      else setBrunaGuide("We've reached Barameel! Tap to enter the zone.",'BARAMEEL IN RANGE');
+    }
+  }
+  function hideRadarAlert(dismiss=true){
+    if(!radarAlert)return;
+    if(dismiss&&radarTarget)radarAlertDismissedFor=radarTarget._radarType+':'+radarTarget.id;
+    radarAlert.classList.remove('active');
+  }
+  radarDismiss?.addEventListener('click',()=>hideRadarAlert(true));
+  radarScanButton?.addEventListener('click',()=>{
+    if(!radarTarget)return;
+    const target=radarTarget;
+    hideRadarAlert(true);
+    if(target._radarType==='barameel'){
+      BR.goAfter('barameel-final-zone.html','confirm',240);
+      return;
+    }
+    const url=TEST_MODE
+      ?'checkpoint-scanner.html?v=20261009-65.0&test=1&cp='+encodeURIComponent(target.id)
+      :'checkpoint-scanner.html?v=20261009-65.0&cp='+encodeURIComponent(target.id);
+    BR.goAfter(url,'scan',220);
+  });
   let lastRadarCheckpoint='';
   function playCheckpointRadarSound(){
     // A distinctive three-note arcade detection pulse; AudioContext starts on user interaction.
@@ -1154,6 +1238,24 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }
     syncCheckpointMarkers();
     const discovered=getDiscovered();
+    // Proximity detection is GPS-driven and independent of whether walking navigation is active.
+    // Use a practical 12 m trigger, with a small hysteresis band to avoid repeated alerts on GPS jitter.
+    const radarRadius=12;
+    const radarExitRadius=27;
+    const cp01=checkpoints.find(cp=>String(cp.id).toUpperCase()==='CP01'&&!discovered.has(cp.id));
+    const cp01Distance=cp01?haversine(pos,cp01):Infinity;
+    const barameelDistance=destination?haversine(pos,destination):Infinity;
+    const radarCandidate=cp01&&cp01Distance<=radarRadius
+      ?{target:cp01,type:'checkpoint',distance:cp01Distance}
+      :destination&&barameelDistance<=radarRadius
+        ?{target:destination,type:'barameel',distance:barameelDistance}:null;
+    if(radarCandidate){
+      const key=radarCandidate.type+':'+radarCandidate.target.id;
+      if(radarAlertDismissedFor!==key)showRadarAlert(radarCandidate.target,radarCandidate.type);
+    }else if(radarTarget){
+      const currentDistance=radarTarget._radarType==='barameel'?barameelDistance:(checkpoints.find(cp=>cp.id===radarTarget.id)?haversine(pos,checkpoints.find(cp=>cp.id===radarTarget.id)):Infinity);
+      if(currentDistance>radarExitRadius){hideRadarAlert(false);radarTarget=null;radarAlertDismissedFor='';lastRadarAlertTarget='';}
+    }
     const unlocked=unlockedCheckpoints();
     const available=unlocked.filter(cp=>!discovered.has(cp.id)).map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>a.distance-b.distance);
     const done=checkpoints.filter(cp=>discovered.has(cp.id)).length;
