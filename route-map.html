@@ -761,14 +761,27 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function arcadeTypingSound(index){
     if(index%2===0)arcadeTone(300+(index%7)*38,0.022,0.035,'square');
   }
-  function setBrunaGuide(message,detail=''){
+  const GUIDE_MIN_INTERVAL_MS=14000;
+  let lastGuideShownAt=0;
+  let pendingGuidePhrase='';
+  function setBrunaGuide(message,detail='',options={}){
     if(!brunaGuide||!brunaGuideText)return;
     const phrase=String(message||'').trim();
     if(!phrase){brunaGuide.classList.remove('active');return;}
     brunaGuide.classList.add('active');
     if(brunaGuideDistance)brunaGuideDistance.textContent=detail;
+    // GPS can jitter around turn-distance thresholds. Keep the same speech bubble and arcade sounds,
+    // but don't restart typing or play another sound for the same line or every location update.
     if(phrase===lastGuidePhrase)return;
+    const now=Date.now();
+    const force=options===true||options?.force===true;
+    if(!force&&lastGuideShownAt&&now-lastGuideShownAt<GUIDE_MIN_INTERVAL_MS){
+      pendingGuidePhrase=phrase;
+      return;
+    }
+    pendingGuidePhrase='';
     lastGuidePhrase=phrase;
+    lastGuideShownAt=now;
     if(guideTypingTimer){clearInterval(guideTypingTimer);guideTypingTimer=null;}
     arcadeMessageSound();
     brunaGuideText.textContent='';
@@ -1117,8 +1130,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(lastRadarAlertTarget!==type+':'+target.id){
       lastRadarAlertTarget=type+':'+target.id;
       playCheckpointRadarSound();
-      if(type==='checkpoint')setBrunaGuide("Radar locked! Checkpoint detected. Tap to scan its QR.",'CHECKPOINT IN RANGE');
-      else setBrunaGuide("We've reached Barameel! Tap to enter the zone.",'BARAMEEL IN RANGE');
+      if(type==='checkpoint')setBrunaGuide("Radar locked! Checkpoint detected. Tap to scan its QR.",'CHECKPOINT IN RANGE',{force:true});
+      else setBrunaGuide("We've reached Barameel! Tap to enter the zone.",'BARAMEEL IN RANGE',{force:true});
     }
   }
   function hideRadarAlert(dismiss=true){
@@ -1160,7 +1173,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(lastRadarCheckpoint!==cp.id){
       lastRadarCheckpoint=cp.id;
       playCheckpointRadarSound();
-      setBrunaGuide("There it is! Checkpoint detected. Tap the radar to scan its QR.",'CHECKPOINT IN RANGE');
+      setBrunaGuide("There it is! Checkpoint detected. Tap the radar to scan its QR.",'CHECKPOINT IN RANGE',{force:true});
     }
   }
   function updateNavigation(pos){
