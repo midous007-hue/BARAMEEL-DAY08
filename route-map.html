@@ -1079,6 +1079,18 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       return false;
     }
   }
+  function unlockRadarAudio(){
+    try{
+      const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContextClass)return;
+      if(!arcadeAudioContext)arcadeAudioContext=new AudioContextClass();
+      if(arcadeAudioContext.state==='suspended')arcadeAudioContext.resume().catch(()=>{});
+    }catch{}
+  }
+  // Mobile browsers often block synthesized audio until the first user gesture.
+  document.addEventListener('pointerdown',unlockRadarAudio,{once:true,passive:true});
+  document.addEventListener('touchstart',unlockRadarAudio,{once:true,passive:true});
+  document.addEventListener('click',unlockRadarAudio,{once:true,passive:true});
   function playCheckpointRadarSound(){
     try{
       const AudioContextClass=window.AudioContext||window.webkitAudioContext;
@@ -1239,9 +1251,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     syncCheckpointMarkers();
     const discovered=getDiscovered();
     // Proximity detection is GPS-driven and independent of whether walking navigation is active.
-    // Use a practical 12 m trigger, with a small hysteresis band to avoid repeated alerts on GPS jitter.
-    const radarRadius=12;
-    const radarExitRadius=27;
+    // Use a 20 m trigger, widening modestly when the reported GPS accuracy is poor; hysteresis prevents repeat alerts.
+    const reportedAccuracy=Math.max(0,Number(pos.accuracy)||0);
+    const radarRadius=Math.max(20,Math.min(35,reportedAccuracy*0.5));
+    const radarExitRadius=radarRadius+15;
     const cp01=checkpoints.find(cp=>String(cp.id).toUpperCase()==='CP01'&&!discovered.has(cp.id));
     const cp01Distance=cp01?haversine(pos,cp01):Infinity;
     const barameelDistance=destination?haversine(pos,destination):Infinity;
