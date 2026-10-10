@@ -18,6 +18,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .briefing-back{position:absolute;left:3%;top:1%;width:19%;height:4.7%;z-index:30;border:0;background:transparent;border-radius:22%;cursor:pointer}
 .briefing-cta{position:absolute;left:8%;top:92.1%;width:84%;height:5.7%;z-index:30;border:0;background:transparent;border-radius:999px;cursor:pointer;touch-action:manipulation}
 .briefing-cta:active{transform:scale(.985);filter:brightness(1.12)}
+/* A distinct, visible map affordance above the main run CTA. */
+.briefing-map-cta{position:absolute;left:27%;top:87.65%;width:46%;height:3.35%;z-index:35;display:flex;align-items:center;justify-content:center;gap:7px;padding:0 10px;border:2px solid #f6d68a;border-radius:999px;background:linear-gradient(180deg,#fff0c2 0%,#d6a64d 48%,#8c5421 100%);box-shadow:0 3px 0 #422a17,0 0 0 2px #14262a,0 0 13px rgba(246,197,47,.4);color:#14262a;font:1000 clamp(11px,3vw,20px)/1 'Roboto Condensed',Impact,Arial,sans-serif;letter-spacing:.04em;text-shadow:0 1px rgba(255,255,255,.45);cursor:pointer;touch-action:manipulation;white-space:nowrap}
+.briefing-map-cta svg{width:clamp(17px,4vw,25px);height:clamp(17px,4vw,25px);flex:none;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.briefing-map-cta:active{transform:scale(.96);filter:brightness(1.15)}
+@media(max-width:380px){.briefing-map-cta{left:24%;width:52%;font-size:clamp(10px,2.8vw,14px);gap:5px}}
 .stat-value{position:absolute;z-index:20;display:flex;align-items:center;justify-content:center;color:#fff2d9;font:900 clamp(15px,4.2vw,32px)/1 'Roboto Condensed',Impact,Arial,sans-serif;text-shadow:0 2px 0 #071b2b,0 0 5px rgba(0,0,0,.8);pointer-events:none;white-space:nowrap}
 .stat-checkpoints{left:6.8%;top:52.1%;width:27.7%;height:2.5%}
 .stat-points{left:36.4%;top:52.1%;width:27.4%;height:2.5%}
@@ -33,22 +38,24 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .paper-map-overlay.is-open .paper-map-shell{transform:translateY(0) rotateX(0) scale(1);opacity:1}
 .paper-map-image{display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;touch-action:none;cursor:grab;transform-origin:center;transition:transform .18s ease;filter:sepia(.06) saturate(.94)}
 .paper-map-image:active{cursor:grabbing}
-.paper-map-fold{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0;transform-style:preserve-3d}
+.paper-map-fold{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0;transform-style:preserve-3d;perspective:1200px}
+.paper-map-fold-panel{position:absolute;top:0;bottom:0;width:14.285714%;background-image:url("./assets/alexandria-stage01-map.webp?v=20261010-map-1");background-repeat:no-repeat;background-size:700% 100%;backface-visibility:hidden;transform-style:preserve-3d;box-shadow:inset 0 0 2px rgba(24,12,2,.65);will-change:transform,filter}
+.paper-map-fold-panel:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(16,8,2,.48),rgba(255,231,170,.26) 47%,rgba(16,8,2,.42));pointer-events:none}
 .paper-map-fold:before,.paper-map-fold:after{content:"";position:absolute;top:0;bottom:0;width:50%;background:linear-gradient(90deg,rgba(28,13,4,.18),rgba(255,227,158,.12) 48%,rgba(22,13,4,.32));box-shadow:inset 0 0 18px rgba(20,10,2,.28);backface-visibility:hidden}
 .paper-map-fold:before{left:0;transform-origin:left center;transform:rotateY(0)}.paper-map-fold:after{right:0;transform-origin:right center;transform:rotateY(0)}
-.paper-map-overlay.is-opening .paper-map-fold{opacity:1}.paper-map-overlay.is-opening .paper-map-fold:before{animation:mapUnfoldLeft .82s cubic-bezier(.2,.75,.18,1) both}.paper-map-overlay.is-opening .paper-map-fold:after{animation:mapUnfoldRight .82s cubic-bezier(.2,.75,.18,1) both}
-.paper-map-overlay.is-closing .paper-map-shell{transform:translateY(22px) rotateX(7deg) scale(.86);opacity:0;filter:drop-shadow(0 8px 10px rgba(0,0,0,.4))}
-.paper-map-overlay.is-closing .paper-map-fold{opacity:1}.paper-map-overlay.is-closing .paper-map-fold:before{animation:mapFoldLeft .48s ease-in both}.paper-map-overlay.is-closing .paper-map-fold:after{animation:mapFoldRight .48s ease-in both}
-@keyframes mapUnfoldLeft{0%{clip-path:inset(0 0 0 0);transform:perspective(800px) rotateY(76deg);filter:brightness(.55)}65%{transform:perspective(800px) rotateY(-7deg);filter:brightness(1.1)}100%{clip-path:inset(0);transform:perspective(800px) rotateY(0);filter:brightness(1)}}
-@keyframes mapUnfoldRight{0%{clip-path:inset(0 0 0 0);transform:perspective(800px) rotateY(-76deg);filter:brightness(.5)}65%{transform:perspective(800px) rotateY(7deg);filter:brightness(1.08)}100%{clip-path:inset(0);transform:perspective(800px) rotateY(0);filter:brightness(1)}}
-@keyframes mapFoldLeft{0%{transform:perspective(800px) rotateY(0)}100%{transform:perspective(800px) rotateY(76deg)}}@keyframes mapFoldRight{0%{transform:perspective(800px) rotateY(0)}100%{transform:perspective(800px) rotateY(-76deg)}}
+.paper-map-overlay.is-opening .paper-map-fold,.paper-map-overlay.is-closing .paper-map-fold{opacity:1}
+.paper-map-overlay.is-opening .paper-map-fold-panel{animation:mapAccordionOpen .98s cubic-bezier(.16,.82,.2,1) both;animation-delay:calc(var(--panel-index) * 68ms)}
+.paper-map-overlay.is-closing .paper-map-fold-panel{animation:mapAccordionClose .64s cubic-bezier(.72,0,.84,.18) both;animation-delay:calc((6 - var(--panel-index)) * 44ms)}
+.paper-map-overlay.is-closing .paper-map-shell{transform:translateY(26px) rotateX(8deg) scale(.82);opacity:0;filter:drop-shadow(0 8px 10px rgba(0,0,0,.4))}
+@keyframes mapAccordionOpen{0%{transform:rotateY(var(--fold-angle)) scaleX(.82);filter:brightness(.45)}55%{transform:rotateY(calc(var(--fold-angle) * -.10)) scaleX(1.04);filter:brightness(1.18)}78%{transform:rotateY(calc(var(--fold-angle) * .035)) scaleX(.99);filter:brightness(1.04)}100%{transform:rotateY(0) scaleX(1);filter:brightness(1)}}
+@keyframes mapAccordionClose{0%{transform:rotateY(0) scaleX(1);filter:brightness(1)}100%{transform:rotateY(var(--fold-angle)) scaleX(.82);filter:brightness(.48)}}
 .paper-map-close{position:absolute;right:clamp(2px,1.5vw,16px);top:clamp(2px,1.5vw,16px);z-index:5;width:clamp(40px,5.3vw,58px);height:clamp(40px,5.3vw,58px);border:2px solid #ffe3bd;border-radius:50%;background:linear-gradient(145deg,#f04435,#a90d16);color:#fff7e8;font:900 clamp(24px,3vw,34px)/1 Arial,sans-serif;box-shadow:0 3px 0 #5e0b10,0 5px 14px #0009;cursor:pointer;display:grid;place-items:center}
 .paper-map-download{position:absolute;left:clamp(3px,1.5vw,18px);bottom:clamp(3px,1.5vw,18px);z-index:5;width:clamp(48px,6.5vw,68px);height:clamp(48px,6.5vw,68px);border:2px solid #f9e5b9;border-radius:50%;background:linear-gradient(145deg,#183c45,#071b2b);color:#ffe9b7;display:grid;place-items:center;box-shadow:0 3px 0 #030a0d,0 5px 14px #0009;cursor:pointer}
 .paper-map-download svg,.paper-map-screenshot svg{width:56%;height:56%;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 .paper-map-screenshot{position:absolute;right:clamp(3px,1.5vw,18px);bottom:clamp(3px,1.5vw,18px);z-index:5;width:clamp(48px,6.5vw,68px);height:clamp(48px,6.5vw,68px);border:2px solid #f9e5b9;border-radius:50%;background:linear-gradient(145deg,#183c45,#071b2b);color:#ffe9b7;display:grid;place-items:center;box-shadow:0 3px 0 #030a0d,0 5px 14px #0009;cursor:pointer}
 .paper-map-hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:4;max-width:72%;padding:6px 10px;border:1px solid #c99d48;border-radius:999px;background:rgba(8,25,31,.88);color:#fff0cf;text-align:center;font:800 clamp(9px,2.2vw,13px)/1.15 Arial,sans-serif;pointer-events:none;white-space:nowrap}
 @media(max-aspect-ratio:4/5){.paper-map-shell{width:98vw;max-height:80dvh;aspect-ratio:1535/1023}.paper-map-hint{bottom:-26px}}
-@media(prefers-reduced-motion:reduce){.paper-map-overlay,.paper-map-shell,.paper-map-image{transition:none!important}.paper-map-overlay.is-opening .paper-map-fold:before,.paper-map-overlay.is-opening .paper-map-fold:after,.paper-map-overlay.is-closing .paper-map-fold:before,.paper-map-overlay.is-closing .paper-map-fold:after{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.paper-map-overlay,.paper-map-shell,.paper-map-image{transition:none!important}.paper-map-overlay.is-opening .paper-map-fold-panel,.paper-map-overlay.is-closing .paper-map-fold-panel{animation:none!important;transform:none!important}}
 
 </style>
 </head>
@@ -61,13 +68,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 <div class="stat-value stat-progress" id="discoveryProgress">—</div>
 
 <button id="briefingBack" class="briefing-back" aria-label="Back to My Run"></button>
-<button id="startExploring" class="briefing-cta" aria-label="Start exploring and open the route map"></button>
+<button id="openPaperMap" class="briefing-map-cta" aria-label="Open the Stage 01 paper exploration map">
+ <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5 8.5 4l7 2.5L21 4v13.5L15.5 20l-7-2.5L3 20z"/><path d="M8.5 4v13.5M15.5 6.5V20"/></svg>
+ <span>STAGE 01 MAP</span>
+</button>
+<button id="startExploring" class="briefing-cta" aria-label="Start exploring and open the live route map"></button>
 <div class="briefing-toast" id="briefingToast" aria-live="polite"></div>
 </main>
 <section class="paper-map-overlay" id="paperMapOverlay" aria-label="Stage 01 exploration map" aria-hidden="true">
  <div class="paper-map-shell" id="paperMapShell">
   <img class="paper-map-image" id="paperMapImage" src="./assets/alexandria-stage01-map.webp?v=20261010-map-1" alt="Alexandria Stage 01 paper exploration map. Thirteen checkpoint areas and Barameel are marked." draggable="false">
-  <div class="paper-map-fold" aria-hidden="true"></div>
+  <div class="paper-map-fold" id="paperMapFold" aria-hidden="true"></div>
   <button class="paper-map-close" id="paperMapClose" aria-label="Close map">×</button>
   <button class="paper-map-download" id="paperMapDownload" aria-label="Download map image" title="Download map">
    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 17v3h16v-3"/></svg>
@@ -189,21 +200,34 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   });
   $('briefingBack').addEventListener('click',()=>BR.goAfter('screen04.html','back',180));
   const mapOverlay=$('paperMapOverlay'),mapImage=$('paperMapImage'),mapShell=$('paperMapShell');
-  let mapScale=1,mapX=0,mapY=0,pointers=new Map(),pinchStart=null,dragStart=null,closeTimer=0,mapViewed=false;
+  let mapScale=1,mapX=0,mapY=0,pointers=new Map(),pinchStart=null,dragStart=null,closeTimer=0;
+  const foldLayer=$('paperMapFold');
+  for(let i=0;i<7;i++){const panel=document.createElement('div');panel.className='paper-map-fold-panel';panel.style.left=(i*100/7)+'%';panel.style.backgroundPosition=(i*100/6)+'% center';panel.style.setProperty('--panel-index',i);panel.style.setProperty('--fold-angle',(i%2===0?'-':'')+(i===3?82:76)+'deg');foldLayer.appendChild(panel);}
   function mapSound(opening=true){
-    try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=new C();if(c.state==='suspended')c.resume().catch(()=>{});const now=c.currentTime;
-      // Layered parchment flutter: soft filtered noise + low woody fold creak.
-      const duration=opening?.72:.48,buffer=c.createBuffer(1,Math.ceil(c.sampleRate*duration),c.sampleRate),data=buffer.getChannelData(0);
-      for(let i=0;i<data.length;i++){const t=i/data.length,envelope=opening?Math.sin(Math.PI*t)**.55:Math.sin(Math.PI*t)**.65;data[i]=(Math.random()*2-1)*envelope*(.8-.45*t)}
-      const src=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();src.buffer=buffer;filter.type='bandpass';filter.frequency.setValueAtTime(opening?1250:980,now);filter.frequency.exponentialRampToValueAtTime(opening?2100:520,now+duration);filter.Q.value=.65;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.22,now+.035);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);src.connect(filter).connect(gain).connect(c.destination);src.start(now);src.stop(now+duration);
-      const thump=c.createOscillator(),tg=c.createGain();thump.type='triangle';thump.frequency.setValueAtTime(opening?115:95,now);thump.frequency.exponentialRampToValueAtTime(48,now+.19);tg.gain.setValueAtTime(.0001,now);tg.gain.exponentialRampToValueAtTime(.13,now+.012);tg.gain.exponentialRampToValueAtTime(.0001,now+.22);thump.connect(tg).connect(c.destination);thump.start(now);thump.stop(now+.23);setTimeout(()=>c.close().catch(()=>{}),1200);
+    // Gesture-triggered layered sound: broad paper rush, sharp creases, and a low physical fold impact.
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+      const c=new C();const now=c.currentTime;
+      const master=c.createGain(),compressor=c.createDynamicsCompressor();
+      master.gain.setValueAtTime(1.0,now);compressor.threshold.setValueAtTime(-16,now);compressor.knee.setValueAtTime(8,now);compressor.ratio.setValueAtTime(5,now);compressor.attack.setValueAtTime(.003,now);compressor.release.setValueAtTime(.18,now);master.connect(compressor).connect(c.destination);
+      const duration=opening?1.22:.88;
+      const noiseBuffer=c.createBuffer(1,Math.ceil(c.sampleRate*duration),c.sampleRate),data=noiseBuffer.getChannelData(0);
+      for(let i=0;i<data.length;i++){const t=i/data.length;const envelope=opening?Math.pow(Math.sin(Math.PI*t),.38):Math.pow(Math.sin(Math.PI*t),.45);data[i]=(Math.random()*2-1)*envelope*(.72+.28*Math.random())}
+      const src=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();src.buffer=noiseBuffer;filter.type='bandpass';filter.frequency.setValueAtTime(opening?680:850,now);filter.frequency.exponentialRampToValueAtTime(opening?3600:2600,now+duration*.72);filter.Q.value=.42;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.82,now+.045);gain.gain.setValueAtTime(.7,now+duration*.45);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);src.connect(filter).connect(gain).connect(master);src.start(now);src.stop(now+duration);
+      // Individual crease snaps make the accordion folds feel physical rather than like a generic whoosh.
+      const creases=opening?[.12,.27,.43,.59,.76,.91]:[.08,.22,.37,.53,.68];
+      creases.forEach((offset,i)=>{const at=now+offset;const b=c.createBuffer(1,Math.ceil(c.sampleRate*.12),c.sampleRate),d=b.getChannelData(0);for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*Math.pow(1-j/d.length,2);const n=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();n.buffer=b;f.type='bandpass';f.frequency.value=1800+i*230;f.Q.value=.7;g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(.52,at+.004);g.gain.exponentialRampToValueAtTime(.0001,at+.095);n.connect(f).connect(g).connect(master);n.start(at);n.stop(at+.11)});
+      const thump=c.createOscillator(),tg=c.createGain();thump.type='triangle';thump.frequency.setValueAtTime(opening?105:125,now+.015);thump.frequency.exponentialRampToValueAtTime(38,now+.32);tg.gain.setValueAtTime(.0001,now);tg.gain.exponentialRampToValueAtTime(.42,now+.018);tg.gain.exponentialRampToValueAtTime(.0001,now+.36);thump.connect(tg).connect(master);thump.start(now);thump.stop(now+.37);
+      if(c.state==='suspended')c.resume().catch(()=>{});setTimeout(()=>c.close().catch(()=>{}),Math.ceil((duration+.4)*1000));
     }catch{}
   }
   function applyMapTransform(){mapImage.style.transform='translate('+mapX+'px,'+mapY+'px) scale('+mapScale+')'}
   function resetMapView(){mapScale=1;mapX=0;mapY=0;applyMapTransform()}
-  function openPaperMap(){clearTimeout(closeTimer);resetMapView();mapOverlay.classList.remove('is-closing');mapOverlay.classList.add('is-open','is-opening');mapOverlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';mapSound(true);setTimeout(()=>mapOverlay.classList.remove('is-opening'),900);$('paperMapClose').focus({preventScroll:true})}
-  function closePaperMap(){if(!mapOverlay.classList.contains('is-open'))return;mapOverlay.classList.remove('is-opening');mapOverlay.classList.add('is-closing');mapSound(false);mapOverlay.setAttribute('aria-hidden','true');closeTimer=setTimeout(()=>{mapOverlay.classList.remove('is-open','is-closing');document.body.style.overflow=''},500);$('startExploring').focus({preventScroll:true})}
-  $('startExploring').addEventListener('click',()=>{if(mapViewed){BR.safeSession.set('barameelActivePath','checkpoint');BR.goAfter('route-map.html?v=20261010-briefing-1','confirm',240);return}mapViewed=true;openPaperMap()});$('paperMapClose').addEventListener('click',closePaperMap);
+  function openPaperMap(){clearTimeout(closeTimer);resetMapView();mapOverlay.classList.remove('is-closing');mapOverlay.classList.add('is-open','is-opening');mapOverlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';mapSound(true);setTimeout(()=>mapOverlay.classList.remove('is-opening'),1450);$('paperMapClose').focus({preventScroll:true})}
+  function closePaperMap(){if(!mapOverlay.classList.contains('is-open'))return;mapOverlay.classList.remove('is-opening');mapOverlay.classList.add('is-closing');mapSound(false);mapOverlay.setAttribute('aria-hidden','true');closeTimer=setTimeout(()=>{mapOverlay.classList.remove('is-open','is-closing');document.body.style.overflow=''},1050);$('openPaperMap').focus({preventScroll:true})}
+  $('openPaperMap').addEventListener('click',openPaperMap);
+  $('startExploring').addEventListener('click',()=>{BR.safeSession.set('barameelActivePath','checkpoint');BR.goAfter('route-map.html?v=20261010-briefing-1','confirm',240)});
+  $('paperMapClose').addEventListener('click',closePaperMap);
   mapOverlay.addEventListener('click',e=>{if(e.target===mapOverlay)closePaperMap()});
   document.addEventListener('keydown',e=>{if(!mapOverlay.classList.contains('is-open'))return;if(e.key==='Escape')closePaperMap();if(e.key==='+'||e.key==='=')setMapScale(mapScale*1.2);if(e.key==='-')setMapScale(mapScale/1.2)});
   function setMapScale(value){mapScale=Math.max(1,Math.min(4,value));if(mapScale===1){mapX=0;mapY=0}applyMapTransform()}
