@@ -1,5 +1,5 @@
-const CACHE='barameel-world-performance-13';
-const CORE=['./','./index.html','./world.html?v=20261010-neon-logo-5','./styles.css','./barameel-flow.css','./barameel-flow.js','./config.js','./app.js?v=20261010-security-1','./run-briefing.html?v=20261010-compass-artwork-2','./assets/alexandria-stage01-map.webp?v=20261010-map-1','./assets/barameel-world-splash.webp','./assets/barameel-world.webp','./assets/barameel-map-style.json?v=20261008-performance-2','./route-map.html?v=20261010-skip-flow-1','./assets/route-map-v49.webp?v=20261010-skip-flow-1'];
+const CACHE='barameel-world-performance-14';
+const CORE=['./','./index.html','./world.html?v=20261010-neon-logo-6','./styles.css','./barameel-flow.css','./barameel-flow.js','./config.js','./app.js?v=20261010-security-1','./run-briefing.html?v=20261010-compass-artwork-2','./assets/alexandria-stage01-map.webp?v=20261010-map-1','./assets/barameel-world-splash.webp','./assets/barameel-world.webp','./assets/barameel-map-style.json?v=20261008-performance-2','./route-map.html?v=20261010-skip-flow-1','./assets/route-map-v49.webp?v=20261010-skip-flow-1'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE).catch(()=>{})).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
