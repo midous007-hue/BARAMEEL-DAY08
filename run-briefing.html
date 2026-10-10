@@ -11,12 +11,10 @@
 <style>
 :root{color-scheme:dark}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
-.briefing-stage{position:relative;width:min(100vw,45.3125dvh);height:min(100dvh,220.6897vw);aspect-ratio:928/2048;margin:auto;overflow:hidden;background:#071b2b;isolation:isolate;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.briefing-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071b2b;isolation:isolate;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .briefing-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none;pointer-events:none}
-.compass-assembly{position:absolute;left:50.2%;top:35.5%;width:25.5%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:12;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.42))}
+.compass-assembly{position:absolute;left:50.2%;top:35.5%;width:39%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:12;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.42))}
 .compass-core{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;backface-visibility:hidden;transition:transform .12s linear}
-.compass-activate{position:absolute;left:50.2%;top:35.5%;width:26%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:18;border:0;border-radius:50%;background:transparent;cursor:pointer;touch-action:manipulation}
-.compass-activate:focus-visible{outline:3px solid #f6c532;outline-offset:4px}
 .briefing-back{position:absolute;left:3%;top:1%;width:19%;height:4.7%;z-index:30;border:0;background:transparent;border-radius:22%;cursor:pointer}
 .briefing-cta{position:absolute;left:8%;top:92.1%;width:84%;height:5.7%;z-index:30;border:0;background:transparent;border-radius:999px;cursor:pointer;touch-action:manipulation}
 .briefing-cta:active{transform:scale(.985);filter:brightness(1.12)}
@@ -33,7 +31,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 <main class="briefing-stage" id="briefingStage" aria-label="BARAMEEL RUN mission briefing">
 <img class="briefing-art" src="./run-briefing.webp?v=20261010-1" alt="BARAMEEL RUN — Stage 01 mission briefing" fetchpriority="high">
 <div class="compass-assembly" aria-hidden="true"><img id="compassCore" class="compass-core" src="./run-briefing-compass.webp?v=20261010-1" alt=""></div>
-<button id="compassActivate" class="compass-activate" aria-label="Activate compass direction and sound" title="Activate compass"></button>
 <div class="stat-value stat-checkpoints" id="checkpointsFound">—</div>
 <div class="stat-value stat-points" id="pointsEarned">—</div>
 <div class="stat-value stat-progress" id="discoveryProgress">—</div>
@@ -49,7 +46,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   const $ = id => document.getElementById(id);
   const compass = $('compassCore');
   const toast = $('briefingToast');
-  const stage = $('briefingStage');
   let toastTimer = 0;
   function showToast(message){
     toast.textContent=message;
@@ -76,7 +72,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     $('discoveryProgress').textContent=count+'/13';
   }
   // Old brass compass + restrained arcade feedback. Sound is event-driven, not continuous.
-  let audioContext=null,lastTickAt=0,lastTickHeading=null,lastHeading=null;
+  let audioContext=null,lastTickAt=0,lastHeading=null,firstHeadingTicked=false;
   function audio(){
     if(audioContext)return audioContext;
     const C=window.AudioContext||window.webkitAudioContext;
@@ -118,50 +114,39 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     // Rotate the compass rose opposite the phone's heading so the rose behaves like a physical compass card.
     const target=-heading;
     compass.style.transform='rotate('+target+'deg)';
-    if(lastHeading!==null){
+    if(!firstHeadingTicked){
+      playCompassTick(.9);firstHeadingTicked=true;lastTickAt=performance.now();
+    }else if(lastHeading!==null){
       const delta=Math.abs(angleDelta(heading,lastHeading));
       const now=performance.now();
       if(delta>=6 && now-lastTickAt>235){
         playCompassTick(Math.min(1,Math.max(.72,delta/16)));
-        lastTickAt=now;lastTickHeading=heading;
+        lastTickAt=now;
       }
     }
     lastHeading=heading;
   }
+  // Start immediately. iOS permission is requested from the Checkpoint Run tap on the previous screen.
   let listening=false;
-  async function activateCompass(){
+  function startCompass(){
     const DeviceOrientation=window.DeviceOrientationEvent;
-    if(listening){
-      const c=audio();
-      if(c&&c.state==='suspended')await c.resume().catch(()=>{});
-      playCompassTick(1.15);
-      showToast('COMPASS ACTIVE — MOVE YOUR PHONE TO TURN THE ROSE');
-      return;
-    }
-    if(!DeviceOrientation){showToast('COMPASS SENSOR IS NOT AVAILABLE ON THIS DEVICE');playCompassTick(.9);return;}
+    if(!DeviceOrientation)return;
     try{
-      if(typeof DeviceOrientation.requestPermission==='function'){
-        const permission=await DeviceOrientation.requestPermission();
-        if(permission!=='granted'){showToast('ALLOW MOTION ACCESS TO ROTATE THE COMPASS');return;}
-      }
       if(window.AudioContext||window.webkitAudioContext){
-        const c=audio();if(c&&c.state==='suspended')await c.resume().catch(()=>{});
-        playCompassTick(1.15);
+        const c=audio();if(c&&c.state==='suspended')c.resume().catch(()=>{});
       }
       window.addEventListener('deviceorientation',onOrientation,true);
+      if('ondeviceorientationabsolute' in window)window.addEventListener('deviceorientationabsolute',onOrientation,true);
       listening=true;
-      showToast('COMPASS ACTIVE — MOVE YOUR PHONE TO TURN THE ROSE');
-    }catch{
-      showToast('COMPASS ACCESS WAS NOT GRANTED');
+    }catch{}
+  }
+  startCompass();
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'){
+      const c=audio();if(c&&c.state==='suspended')c.resume().catch(()=>{});
+      if(!listening)startCompass();
     }
-  }
-  $('compassActivate').addEventListener('click',activateCompass,{passive:true});
-  // Try the sensor on browsers that do not require a permission prompt; iOS waits for a deliberate tap.
-  if(typeof window.DeviceOrientationEvent==='function' && typeof window.DeviceOrientationEvent.requestPermission!=='function'){
-    window.addEventListener('deviceorientation',onOrientation,true);
-    listening=true;
-  }
-
+  });
   $('briefingBack').addEventListener('click',()=>BR.goAfter('screen04.html','back',180));
   $('startExploring').addEventListener('click',()=>{
     BR.safeSession.set('barameelActivePath','checkpoint');
