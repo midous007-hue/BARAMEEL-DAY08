@@ -56,7 +56,7 @@
     document.getElementById('checkpoint').classList.add('is-active');
     BR.safeSession.set('checkpointRunStartPoints', String(BR.state?.points || 0));
     BR.safeSession.set('barameelActivePath', 'checkpoint');
-    BR.goAfter('route-map.html', 'confirm', 240);
+    BR.goAfter('run-briefing.html', 'confirm', 240);
   };
   document.getElementById('rewards').onclick = () => {
     BR.safeSession.set('barameelRewardsParent', 'screen04.html');
