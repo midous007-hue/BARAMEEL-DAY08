@@ -185,7 +185,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   });
   $('briefingBack').addEventListener('click',()=>BR.goAfter('screen04.html','back',180));
   const mapOverlay=$('paperMapOverlay'),mapImage=$('paperMapImage'),mapShell=$('paperMapShell');
-  let mapScale=1,mapX=0,mapY=0,pointers=new Map(),pinchStart=null,dragStart=null,closeTimer=0;
+  let mapScale=1,mapX=0,mapY=0,pointers=new Map(),pinchStart=null,dragStart=null,closeTimer=0,mapViewed=false;
   function mapSound(opening=true){
     try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=new C();if(c.state==='suspended')c.resume().catch(()=>{});const now=c.currentTime;
       // Layered parchment flutter: soft filtered noise + low woody fold creak.
@@ -199,7 +199,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function resetMapView(){mapScale=1;mapX=0;mapY=0;applyMapTransform()}
   function openPaperMap(){clearTimeout(closeTimer);resetMapView();mapOverlay.classList.remove('is-closing');mapOverlay.classList.add('is-open','is-opening');mapOverlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';mapSound(true);setTimeout(()=>mapOverlay.classList.remove('is-opening'),900);$('paperMapClose').focus({preventScroll:true})}
   function closePaperMap(){if(!mapOverlay.classList.contains('is-open'))return;mapOverlay.classList.remove('is-opening');mapOverlay.classList.add('is-closing');mapSound(false);mapOverlay.setAttribute('aria-hidden','true');closeTimer=setTimeout(()=>{mapOverlay.classList.remove('is-open','is-closing');document.body.style.overflow=''},500);$('startExploring').focus({preventScroll:true})}
-  $('startExploring').addEventListener('click',openPaperMap);$('paperMapClose').addEventListener('click',closePaperMap);
+  $('startExploring').addEventListener('click',()=>{if(mapViewed){BR.safeSession.set('barameelActivePath','checkpoint');BR.goAfter('route-map.html?v=20261010-briefing-1','confirm',240);return}mapViewed=true;openPaperMap()});$('paperMapClose').addEventListener('click',closePaperMap);
   mapOverlay.addEventListener('click',e=>{if(e.target===mapOverlay)closePaperMap()});
   document.addEventListener('keydown',e=>{if(!mapOverlay.classList.contains('is-open'))return;if(e.key==='Escape')closePaperMap();if(e.key==='+'||e.key==='=')setMapScale(mapScale*1.2);if(e.key==='-')setMapScale(mapScale/1.2)});
   function setMapScale(value){mapScale=Math.max(1,Math.min(4,value));if(mapScale===1){mapX=0;mapY=0}applyMapTransform()}
