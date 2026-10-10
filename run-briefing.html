@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#071b2b">
+<meta name="description" content="BARAMEEL RUN — Stage briefing">
+<title>BARAMEEL RUN — YOUR RUN BRIEFING</title>
+<link rel="stylesheet" href="./styles.css?v=20261010-briefing-1">
+<script src="./config.js?v=20261010-briefing-1"></script>
+<style>
+:root{color-scheme:dark}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
+.briefing-stage{position:relative;width:min(100vw,calc(100dvh * 928 / 2048));height:min(100dvh,calc(100vw * 2048 / 928));aspect-ratio:928/2048;margin:auto;overflow:hidden;background:#071b2b;isolation:isolate;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.briefing-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.compass-assembly{position:absolute;left:50.2%;top:28.2%;width:30.2%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:12;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.42))}
+.compass-core{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;backface-visibility:hidden}
+.compass-activate{position:absolute;left:34.8%;top:21.0%;width:30.8%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:18;border:0;border-radius:50%;background:transparent;cursor:pointer;touch-action:manipulation}
+.compass-activate:focus-visible{outline:3px solid #f6c532;outline-offset:4px}
+.briefing-back{position:absolute;left:3%;top:1%;width:19%;height:4.7%;z-index:30;border:0;background:transparent;border-radius:22%;cursor:pointer}
+.briefing-cta{position:absolute;left:8%;top:92.1%;width:84%;height:5.7%;z-index:30;border:0;background:transparent;border-radius:999px;cursor:pointer;touch-action:manipulation}
+.briefing-cta:active{transform:scale(.985);filter:brightness(1.12)}
+.stat-value{position:absolute;z-index:20;display:flex;align-items:center;justify-content:center;color:#fff2d9;font:900 clamp(15px,4.2vw,32px)/1 'Roboto Condensed',Impact,Arial,sans-serif;text-shadow:0 2px 0 #071b2b,0 0 5px rgba(0,0,0,.8);pointer-events:none;white-space:nowrap}
+.stat-checkpoints{left:6.8%;top:52.1%;width:27.7%;height:2.5%}
+.stat-points{left:36.4%;top:52.1%;width:27.4%;height:2.5%}
+.stat-progress{left:66.5%;top:52.1%;width:27.2%;height:2.5%}
+.discovery-nodes{position:absolute;inset:0;z-index:16;pointer-events:none}
+.discovery-node{position:absolute;width:9.4%;aspect-ratio:1;transform:translate(-50%,-50%);border:2px solid #b7a58a;border-radius:50%;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 35% 25%,#34414a,#101820 70%);box-shadow:0 2px 0 #03090e,inset 0 0 0 3px rgba(0,0,0,.55);color:#c9bda9;font:900 clamp(15px,4vw,27px)/1 Arial,sans-serif;text-shadow:0 2px #000}
+.discovery-node::before{content:attr(data-number);position:absolute;top:-12%;left:50%;transform:translateX(-50%);width:28%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:#f6e7ce;border:1px solid #101820;color:#101820;font:900 clamp(8px,2vw,14px)/1 Arial,sans-serif;box-shadow:0 1px 0 #000}
+.discovery-node::after{content:"";position:absolute;bottom:-4%;right:3%;width:27%;aspect-ratio:1;border:2px solid #f6e7ce;border-radius:50%;background:#101820;box-shadow:0 1px 0 #000}
+.discovery-node.locked{opacity:.96}
+.discovery-node.locked span{font-size:clamp(18px,4.5vw,30px);opacity:.7}
+.discovery-node.locked::after{content:"⌑";display:grid;place-items:center;color:#f6e7ce;font:900 clamp(8px,2vw,14px)/1 Arial,sans-serif}
+.discovery-node.collected{border-color:#ffcf32;background:radial-gradient(circle at 32% 25%,#ffe98a,#db6c13 45%,#8f1d1d 90%);color:#fff8dc;box-shadow:0 0 0 2px #071b2b,0 0 12px rgba(255,195,39,.85),inset 0 0 0 3px rgba(0,0,0,.3)}
+.discovery-node.collected span{font-size:clamp(17px,4.2vw,28px);color:#fff7d7;text-shadow:0 2px #5b1609}
+.discovery-node.collected::after{content:"✓";display:grid;place-items:center;border-color:#071b2b;background:#f6c532;color:#071b2b;font:900 clamp(9px,2.3vw,15px)/1 Arial,sans-serif}
+.discovery-node.discovered{border-color:#29e3ff;background:radial-gradient(circle at 32% 25%,#8ef7ff,#098fb5 58%,#07334b);color:#fff;box-shadow:0 0 0 2px #071b2b,0 0 11px rgba(41,227,255,.75),inset 0 0 0 3px rgba(0,0,0,.28)}
+.discovery-node.discovered span{font-size:clamp(17px,4.2vw,28px);color:#fff}
+.discovery-node.discovered::after{content:"!";display:grid;place-items:center;border-color:#071b2b;background:#29e3ff;color:#071b2b;font:900 clamp(9px,2.3vw,15px)/1 Arial,sans-serif}
+.node-1{left:9.8%;top:59.2%}.node-2{left:23.8%;top:59.2%}.node-3{left:36.9%;top:59.2%}.node-4{left:50.2%;top:59.2%}.node-5{left:63.5%;top:59.2%}.node-6{left:76.7%;top:59.2%}.node-7{left:90%;top:59.2%}
+.node-8{left:17.5%;top:64.1%}.node-9{left:30.8%;top:64.1%}.node-10{left:44.2%;top:64.1%}.node-11{left:57.5%;top:64.1%}.node-12{left:70.8%;top:64.1%}.node-13{left:84%;top:64.1%}
+.briefing-toast{position:absolute;z-index:40;left:15%;right:15%;top:31.5%;padding:10px 14px;border:2px solid #f6c532;border-radius:12px;background:rgba(7,27,43,.96);color:#fff2d9;text-align:center;font:800 clamp(11px,2.8vw,17px)/1.2 'Roboto Condensed',Arial,sans-serif;opacity:0;transform:translateY(5px);transition:opacity .18s,transform .18s;pointer-events:none}
+.briefing-toast.show{opacity:1;transform:translateY(0)}
+@media (prefers-reduced-motion:reduce){.compass-core{transition:none!important}.briefing-toast{transition:none}}
+</style>
+</head>
+<body>
+<main class="briefing-stage" id="briefingStage" aria-label="BARAMEEL RUN mission briefing">
+<img class="briefing-art" src="./run-briefing.webp?v=20261010-1" alt="BARAMEEL RUN — Stage 01 mission briefing" fetchpriority="high">
+<div class="compass-assembly" aria-hidden="true"><img id="compassCore" class="compass-core" src="./run-briefing-compass.webp?v=20261010-1" alt=""></div>
+<button id="compassActivate" class="compass-activate" aria-label="Activate compass direction and sound" title="Activate compass"></button>
+<div class="stat-value stat-checkpoints" id="checkpointsFound">—</div>
+<div class="stat-value stat-points" id="pointsEarned">—</div>
+<div class="stat-value stat-progress" id="discoveryProgress">—</div>
+<div class="discovery-nodes" id="discoveryNodes" aria-label="Checkpoint collection progress"></div>
+<button id="briefingBack" class="briefing-back" aria-label="Back to My Run"></button>
+<button id="startExploring" class="briefing-cta" aria-label="Start exploring and open the route map"></button>
+<div class="briefing-toast" id="briefingToast" aria-live="polite"></div>
+</main>
+<script src="./app.js?v=20261010-audio-boost-1"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const compass = $('compassCore');
+  const toast = $('briefingToast');
+  const stage = $('briefingStage');
+  const CHECKPOINT_IDS = Array.from({length:13},(_,i)=>'CP'+String(i+1).padStart(2,'0'));
+  const nodePositions = ['node-1','node-2','node-3','node-4','node-5','node-6','node-7','node-8','node-9','node-10','node-11','node-12','node-13'];
+  let toastTimer = 0;
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>toast.classList.remove('show'),2200);
+  }
+  function checkpointIds(value){
+    if(!Array.isArray(value)) return new Set();
+    const ids = new Set();
+    for(const item of value){
+      const raw = typeof item === 'string' ? item : (item?.location_id || item?.checkpoint_id || item?.checkpointId || item?.id || item?.locationId || '');
+      const match = String(raw).toUpperCase().match(/CP\d{2}/);
+      if(match) ids.add(match[0]);
+    }
+    return ids;
+  }
+  function renderProgress(){
+    const state=BR.state||{};
+    const ids=checkpointIds(state.checkpoints);
+    const count=ids.size;
+    $('checkpointsFound').textContent=String(count);
+    $('pointsEarned').textContent=Number(state.points||0).toLocaleString('en-US');
+    $('discoveryProgress').textContent=count+'/13';
+    CHECKPOINT_IDS.forEach((id,i)=>{
+      const node=document.querySelector('.discovery-node[data-id="'+id+'"]');
+      if(!node)return;
+      const collected=ids.has(id);
+      node.classList.toggle('collected',collected);
+      node.classList.toggle('locked',!collected);
+      node.setAttribute('aria-label',collected ? id+' collected' : 'Undiscovered checkpoint');
+      node.querySelector('span').textContent=collected?'✓':'?';
+    });
+  }
+  function buildNodes(){
+    CHECKPOINT_IDS.forEach((id,i)=>{
+      const node=document.createElement('div');
+      node.className='discovery-node locked '+nodePositions[i];
+      node.dataset.id=id;node.dataset.number=String(i+1);
+      node.innerHTML='<span>?</span>';
+      $('discoveryNodes').appendChild(node);
+    });
+  }
+
+  // Old brass compass + restrained arcade feedback. Sound is event-driven, not continuous.
+  let audioContext=null,lastTickAt=0,lastTickHeading=null,lastHeading=null;
+  function audio(){
+    if(audioContext)return audioContext;
+    const C=window.AudioContext||window.webkitAudioContext;
+    if(!C)return null;
+    audioContext=new C();
+    return audioContext;
+  }
+  function playCompassTick(strength=1){
+    const c=audio();if(!c)return;
+    if(c.state==='suspended')c.resume().catch(()=>{});
+    const now=c.currentTime;
+    try{
+      // A short, warm brass/metal detent with a little mechanical body.
+      const body=c.createOscillator(),bodyGain=c.createGain();
+      body.type='triangle';body.frequency.setValueAtTime(390,now);body.frequency.exponentialRampToValueAtTime(245,now+.075);
+      bodyGain.gain.setValueAtTime(.0001,now);bodyGain.gain.exponentialRampToValueAtTime(.38*strength,now+.004);bodyGain.gain.exponentialRampToValueAtTime(.0001,now+.105);
+      body.connect(bodyGain).connect(c.destination);body.start(now);body.stop(now+.12);
+      const ring=c.createOscillator(),ringGain=c.createGain();
+      ring.type='sine';ring.frequency.setValueAtTime(1320,now+.004);ring.frequency.exponentialRampToValueAtTime(820,now+.095);
+      ringGain.gain.setValueAtTime(.0001,now+.004);ringGain.gain.exponentialRampToValueAtTime(.20*strength,now+.009);ringGain.gain.exponentialRampToValueAtTime(.0001,now+.13);
+      ring.connect(ringGain).connect(c.destination);ring.start(now+.004);ring.stop(now+.145);
+      const noiseBuffer=c.createBuffer(1,Math.ceil(c.sampleRate*.035),c.sampleRate),data=noiseBuffer.getChannelData(0);
+      for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);
+      const noise=c.createBufferSource(),filter=c.createBiquadFilter(),ng=c.createGain();
+      noise.buffer=noiseBuffer;filter.type='bandpass';filter.frequency.value=2500;filter.Q.value=1.1;
+      ng.gain.setValueAtTime(.0001,now);ng.gain.exponentialRampToValueAtTime(.13*strength,now+.003);ng.gain.exponentialRampToValueAtTime(.0001,now+.04);
+      noise.connect(filter).connect(ng).connect(c.destination);noise.start(now);noise.stop(now+.045);
+    }catch{}
+  }
+  function normalizedAngle(n){return ((n%360)+360)%360}
+  function angleDelta(a,b){return ((a-b+540)%360)-180}
+  function headingFromEvent(e){
+    if(typeof e.webkitCompassHeading==='number'&&Number.isFinite(e.webkitCompassHeading))return normalizedAngle(e.webkitCompassHeading);
+    if(typeof e.alpha==='number'&&Number.isFinite(e.alpha))return normalizedAngle(360-e.alpha);
+    return null;
+  }
+  function onOrientation(e){
+    const heading=headingFromEvent(e);if(heading===null)return;
+    // Rotate the compass rose opposite the phone's heading so the rose behaves like a physical compass card.
+    const target=-heading;
+    compass.style.transform='rotate('+target+'deg)';
+    if(lastHeading!==null){
+      const delta=Math.abs(angleDelta(heading,lastHeading));
+      const now=performance.now();
+      if(delta>=6 && now-lastTickAt>235){
+        playCompassTick(Math.min(1,Math.max(.72,delta/16)));
+        lastTickAt=now;lastTickHeading=heading;
+      }
+    }
+    lastHeading=heading;
+  }
+  let listening=false;
+  async function activateCompass(){
+    if(listening)return;
+    const DeviceOrientation=window.DeviceOrientationEvent;
+    if(!DeviceOrientation){showToast('COMPASS SENSOR IS NOT AVAILABLE ON THIS DEVICE');playCompassTick(.9);return;}
+    try{
+      if(typeof DeviceOrientation.requestPermission==='function'){
+        const permission=await DeviceOrientation.requestPermission();
+        if(permission!=='granted'){showToast('ALLOW MOTION ACCESS TO ROTATE THE COMPASS');return;}
+      }
+      if(window.AudioContext||window.webkitAudioContext){
+        const c=audio();if(c&&c.state==='suspended')await c.resume().catch(()=>{});
+        playCompassTick(1.15);
+      }
+      window.addEventListener('deviceorientation',onOrientation,true);
+      listening=true;
+      showToast('COMPASS ACTIVE — MOVE YOUR PHONE TO TURN THE ROSE');
+    }catch{
+      showToast('COMPASS ACCESS WAS NOT GRANTED');
+    }
+  }
+  $('compassActivate').addEventListener('click',activateCompass,{passive:true});
+  // Try the sensor on browsers that do not require a permission prompt; iOS waits for a deliberate tap.
+  if(typeof window.DeviceOrientationEvent==='function' && typeof window.DeviceOrientationEvent.requestPermission!=='function'){
+    window.addEventListener('deviceorientation',onOrientation,true);
+    listening=true;
+  }
+
+  $('briefingBack').addEventListener('click',()=>BR.goAfter('screen04.html','back',180));
+  $('startExploring').addEventListener('click',()=>{
+    BR.safeSession.set('barameelActivePath','checkpoint');
+    BR.goAfter('route-map.html','confirm',240);
+  });
+
+  buildNodes();
+  renderProgress();
+  BR.syncPlayer().then(renderProgress).catch(()=>showToast('PROGRESS COULD NOT REFRESH — SHOWING SAVED DATA'));
+  BR.track('run_briefing_view');
+})();
+</script>
+</body>
+</html>
