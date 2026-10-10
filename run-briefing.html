@@ -131,26 +131,43 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     audioContext=new C();
     return audioContext;
   }
-  function playCompassTick(strength=1){
+  let compassOpeningPlayed=false,needleHasSettled=false;
+  function playCompassOpen(){
+    if(compassOpeningPlayed)return;compassOpeningPlayed=true;
+    const c=audio();if(!c)return;
+    const run=()=>{
+      const t=c.currentTime;
+      try{
+        const master=c.createGain(),comp=c.createDynamicsCompressor();
+        master.gain.setValueAtTime(1.0,t);comp.threshold.setValueAtTime(-13,t);comp.knee.setValueAtTime(8,t);comp.ratio.setValueAtTime(4,t);comp.attack.setValueAtTime(.002,t);comp.release.setValueAtTime(.22,t);master.connect(comp).connect(c.destination);
+        // Heavy brass latch: a short mechanical clack, followed by the lid's resonant metallic ring.
+        const clickBuffer=c.createBuffer(1,Math.floor(c.sampleRate*.085),c.sampleRate),cd=clickBuffer.getChannelData(0);
+        for(let i=0;i<cd.length;i++)cd[i]=(Math.random()*2-1)*Math.pow(1-i/cd.length,3);
+        const click=c.createBufferSource(),cf=c.createBiquadFilter(),cg=c.createGain();click.buffer=clickBuffer;cf.type='bandpass';cf.frequency.value=1750;cf.Q.value=.85;cg.gain.setValueAtTime(.0001,t);cg.gain.exponentialRampToValueAtTime(.95,t+.003);cg.gain.exponentialRampToValueAtTime(.0001,t+.075);click.connect(cf).connect(cg).connect(master);click.start(t);click.stop(t+.085);
+        const lid=c.createOscillator(),lg=c.createGain(),lf=c.createBiquadFilter();lid.type='triangle';lid.frequency.setValueAtTime(210,t+.035);lid.frequency.exponentialRampToValueAtTime(92,t+.31);lf.type='lowpass';lf.frequency.value=720;lg.gain.setValueAtTime(.0001,t+.025);lg.gain.exponentialRampToValueAtTime(.7,t+.065);lg.gain.exponentialRampToValueAtTime(.0001,t+.42);lid.connect(lf).connect(lg).connect(master);lid.start(t+.025);lid.stop(t+.43);
+        const ring=c.createOscillator(),rg=c.createGain(),rf=c.createBiquadFilter();ring.type='sine';ring.frequency.setValueAtTime(1180,t+.10);ring.frequency.exponentialRampToValueAtTime(910,t+.9);rf.type='bandpass';rf.frequency.value=1250;rf.Q.value=2.6;rg.gain.setValueAtTime(.0001,t+.09);rg.gain.exponentialRampToValueAtTime(.36,t+.15);rg.gain.exponentialRampToValueAtTime(.0001,t+1.05);ring.connect(rf).connect(rg).connect(master);ring.start(t+.09);ring.stop(t+1.08);
+        // Brief brushed-metal hinge movement, like the lid settling into its open position.
+        const dur=.42,nb=c.createBuffer(1,Math.floor(c.sampleRate*dur),c.sampleRate),nd=nb.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/nd.length);
+        const ns=c.createBufferSource(),nf=c.createBiquadFilter(),ng=c.createGain();ns.buffer=nb;nf.type='bandpass';nf.frequency.setValueAtTime(850,t+.02);nf.frequency.exponentialRampToValueAtTime(2600,t+.28);nf.Q.value=.65;ng.gain.setValueAtTime(.0001,t+.02);ng.gain.exponentialRampToValueAtTime(.28,t+.08);ng.gain.exponentialRampToValueAtTime(.0001,t+.43);ns.connect(nf).connect(ng).connect(master);ns.start(t+.02);ns.stop(t+.44);
+      }catch{}
+    };
+    if(c.state==='suspended')c.resume().then(run).catch(()=>{compassOpeningPlayed=false});else run();
+  }
+  function playNeedleMovement(degrees=10){
     const c=audio();if(!c)return;
     if(c.state==='suspended')c.resume().catch(()=>{});
-    const now=c.currentTime;
+    const t=c.currentTime;
     try{
-      // A short, warm brass/metal detent with a little mechanical body.
-      const body=c.createOscillator(),bodyGain=c.createGain();
-      body.type='triangle';body.frequency.setValueAtTime(390,now);body.frequency.exponentialRampToValueAtTime(245,now+.075);
-      bodyGain.gain.setValueAtTime(.0001,now);bodyGain.gain.exponentialRampToValueAtTime(.38*strength,now+.004);bodyGain.gain.exponentialRampToValueAtTime(.0001,now+.105);
-      body.connect(bodyGain).connect(c.destination);body.start(now);body.stop(now+.12);
-      const ring=c.createOscillator(),ringGain=c.createGain();
-      ring.type='sine';ring.frequency.setValueAtTime(1320,now+.004);ring.frequency.exponentialRampToValueAtTime(820,now+.095);
-      ringGain.gain.setValueAtTime(.0001,now+.004);ringGain.gain.exponentialRampToValueAtTime(.20*strength,now+.009);ringGain.gain.exponentialRampToValueAtTime(.0001,now+.13);
-      ring.connect(ringGain).connect(c.destination);ring.start(now+.004);ring.stop(now+.145);
-      const noiseBuffer=c.createBuffer(1,Math.ceil(c.sampleRate*.035),c.sampleRate),data=noiseBuffer.getChannelData(0);
-      for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);
-      const noise=c.createBufferSource(),filter=c.createBiquadFilter(),ng=c.createGain();
-      noise.buffer=noiseBuffer;filter.type='bandpass';filter.frequency.value=2500;filter.Q.value=1.1;
-      ng.gain.setValueAtTime(.0001,now);ng.gain.exponentialRampToValueAtTime(.13*strength,now+.003);ng.gain.exponentialRampToValueAtTime(.0001,now+.04);
-      noise.connect(filter).connect(ng).connect(c.destination);noise.start(now);noise.stop(now+.045);
+      const strength=Math.min(1,Math.max(.62,Math.abs(degrees)/24));
+      const master=c.createGain(),comp=c.createDynamicsCompressor();master.gain.setValueAtTime(.92,t);comp.threshold.setValueAtTime(-17,t);comp.knee.setValueAtTime(7,t);comp.ratio.setValueAtTime(4,t);master.connect(comp).connect(c.destination);
+      // Magnetic needle sweep: a short airy movement rising in pitch, ending in a firm brass detent.
+      const duration=.23+Math.min(.18,Math.abs(degrees)/180);
+      const b=c.createBuffer(1,Math.floor(c.sampleRate*duration),c.sampleRate),d=b.getChannelData(0);
+      for(let i=0;i<d.length;i++){const p=i/d.length;d[i]=(Math.random()*2-1)*Math.sin(Math.PI*p)**.7}
+      const src=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();src.buffer=b;filter.type='bandpass';filter.frequency.setValueAtTime(500,t);filter.frequency.exponentialRampToValueAtTime(2300+Math.min(900,Math.abs(degrees)*16),t+duration*.78);filter.Q.value=.65;gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.5*strength,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+duration);src.connect(filter).connect(gain).connect(master);src.start(t);src.stop(t+duration);
+      const at=t+duration*.72;
+      const snap=c.createOscillator(),sg=c.createGain(),sf=c.createBiquadFilter();snap.type='triangle';snap.frequency.setValueAtTime(740+Math.min(450,Math.abs(degrees)*8),at);snap.frequency.exponentialRampToValueAtTime(330,at+.095);sf.type='bandpass';sf.frequency.value=1100;sf.Q.value=1.7;sg.gain.setValueAtTime(.0001,at);sg.gain.exponentialRampToValueAtTime(.42*strength,at+.006);sg.gain.exponentialRampToValueAtTime(.0001,at+.14);snap.connect(sf).connect(sg).connect(master);snap.start(at);snap.stop(at+.15);
+      const ring=c.createOscillator(),rg=c.createGain();ring.type='sine';ring.frequency.setValueAtTime(1640,at+.008);ring.frequency.exponentialRampToValueAtTime(1120,at+.17);rg.gain.setValueAtTime(.0001,at+.008);rg.gain.exponentialRampToValueAtTime(.14*strength,at+.018);rg.gain.exponentialRampToValueAtTime(.0001,at+.2);ring.connect(rg).connect(master);ring.start(at+.008);ring.stop(at+.21);
     }catch{}
   }
   function normalizedAngle(n){return ((n%360)+360)%360}
@@ -166,12 +183,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     const target=-heading;
     compass.style.transform='rotate('+target+'deg)';
     if(!firstHeadingTicked){
-      playCompassTick(.9);firstHeadingTicked=true;lastTickAt=performance.now();
+      // Opening sound is separate; first valid magnetic reading gives the needle its initial directional settle.
+      playNeedleMovement(18);firstHeadingTicked=true;needleHasSettled=true;lastTickAt=performance.now();
     }else if(lastHeading!==null){
       const delta=Math.abs(angleDelta(heading,lastHeading));
       const now=performance.now();
-      if(delta>=6 && now-lastTickAt>235){
-        playCompassTick(Math.min(1,Math.max(.72,delta/16)));
+      if(delta>=8 && now-lastTickAt>420){
+        playNeedleMovement(delta);
         lastTickAt=now;
       }
     }
@@ -191,10 +209,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       listening=true;
     }catch{}
   }
+  playCompassOpen();
   startCompass();
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='visible'){
       const c=audio();if(c&&c.state==='suspended')c.resume().catch(()=>{});
+      if(!compassOpeningPlayed)playCompassOpen();
       if(!listening)startCompass();
     }
   });
