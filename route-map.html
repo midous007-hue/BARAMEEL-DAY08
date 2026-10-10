@@ -1051,7 +1051,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   }
   async function buildWalkingRoute(origin,target,fitCamera=false){
     if(!origin||!target)return false;
-    const url='https://routing.openstreetmap.de/routed-foot/route/v1/foot/'+origin.lng+','+origin.lat+';'+target.lng+','+target.lat+'?overview=full&geometries=geojson&steps=true';
+    const url='https://routing.openstreetmap.de/routed-foot/route/v1/driving/'+origin.lng+','+origin.lat+';'+target.lng+','+target.lat+'?overview=full&geometries=geojson&steps=true';
     try{
       const res=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store'});
       if(!res.ok)throw new Error('ROUTER_'+res.status);
