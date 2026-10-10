@@ -96,6 +96,6 @@ function pulse(section){stage.dataset.active=section;links.forEach(l=>l.classLis
  }
  window.addEventListener('pointerdown',unlock,{passive:true});window.addEventListener('keydown',unlock);
  window.setTimeout(ignite,1650);
- // Neon settles at while the neon is still igniting; build the arcade fanfare underneath the electrical sound.
- window.setTimeout(playArcadeStartup,3600);
+ // Start the arcade fanfare just over two seconds into the intro, while the neon ignition is still active.
+ window.setTimeout(playArcadeStartup,2450);
 })();</script></body></html>
