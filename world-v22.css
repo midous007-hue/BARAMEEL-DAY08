@@ -21,3 +21,9 @@
 }
 @keyframes barameelNeonRoomGlow{0%,14%,28%{opacity:0}9%,12%{opacity:.08}22%,26%{opacity:.13}36%,41%{opacity:.06}45%,53%{opacity:.29}59%{opacity:.24}76%{opacity:.13}100%{opacity:.09}}
 @media(prefers-reduced-motion:reduce){.world-hub-stage.neon-igniting .world-neon-logo,.world-hub-stage.neon-igniting .world-neon-impact{animation:none!important}.world-hub-stage .world-neon-logo{filter:brightness(1.08) saturate(1.12) drop-shadow(0 0 8px rgba(255,135,30,.7)) drop-shadow(0 0 20px rgba(255,77,25,.4)) drop-shadow(0 0 27px rgba(20,170,255,.35))}}
+
+/* Neon ignition: show the dedicated dim artwork first, then reveal the lit artwork. */
+.world-hub-stage .world-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:0}
+.world-hub-stage .world-dark-state{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:2;display:block;opacity:1;pointer-events:none;transition:opacity 1.35s ease-out}
+.world-hub-stage.neon-igniting .world-dark-state{opacity:0;transition-delay:.18s}
+.world-hub-stage #neonIgnitionAudio{display:none}
