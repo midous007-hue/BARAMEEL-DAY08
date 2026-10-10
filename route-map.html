@@ -1314,7 +1314,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       if(currentDistance>radarExitRadius){hideRadarAlert(false);radarTarget=null;radarAlertDismissedFor='';lastRadarAlertTarget='';}
     }
     const unlocked=unlockedCheckpoints();
-    const skipped=getSkippedCheckpoints();
     const available=unlocked.filter(cp=>!discovered.has(cp.id)&&!skipped.has(String(cp.id))).map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>a.distance-b.distance);
     const done=checkpoints.filter(cp=>discovered.has(cp.id)).length;
     fill.style.width=(checkpoints.length?Math.round(done/checkpoints.length*100):0)+'%';
