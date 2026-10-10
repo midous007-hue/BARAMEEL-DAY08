@@ -11,11 +11,11 @@
 <style>
 :root{color-scheme:dark}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
-.briefing-stage{position:relative;width:min(100vw,calc(100dvh * 928 / 2048));height:min(100dvh,calc(100vw * 2048 / 928));aspect-ratio:928/2048;margin:auto;overflow:hidden;background:#071b2b;isolation:isolate;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.briefing-stage{position:relative;width:min(100vw,45.3125dvh);height:min(100dvh,220.6897vw);aspect-ratio:928/2048;margin:auto;overflow:hidden;background:#071b2b;isolation:isolate;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .briefing-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none;pointer-events:none}
 .compass-assembly{position:absolute;left:50.2%;top:28.2%;width:30.2%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:12;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.42))}
 .compass-core{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;backface-visibility:hidden}
-.compass-activate{position:absolute;left:34.8%;top:21.0%;width:30.8%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:18;border:0;border-radius:50%;background:transparent;cursor:pointer;touch-action:manipulation}
+.compass-activate{position:absolute;left:50.2%;top:28.2%;width:30.8%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:18;border:0;border-radius:50%;background:transparent;cursor:pointer;touch-action:manipulation}
 .compass-activate:focus-visible{outline:3px solid #f6c532;outline-offset:4px}
 .briefing-back{position:absolute;left:3%;top:1%;width:19%;height:4.7%;z-index:30;border:0;background:transparent;border-radius:22%;cursor:pointer}
 .briefing-cta{position:absolute;left:8%;top:92.1%;width:84%;height:5.7%;z-index:30;border:0;background:transparent;border-radius:999px;cursor:pointer;touch-action:manipulation}
@@ -166,8 +166,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   }
   let listening=false;
   async function activateCompass(){
-    if(listening)return;
     const DeviceOrientation=window.DeviceOrientationEvent;
+    if(listening){
+      const c=audio();
+      if(c&&c.state==='suspended')await c.resume().catch(()=>{});
+      playCompassTick(1.15);
+      showToast('COMPASS ACTIVE — MOVE YOUR PHONE TO TURN THE ROSE');
+      return;
+    }
     if(!DeviceOrientation){showToast('COMPASS SENSOR IS NOT AVAILABLE ON THIS DEVICE');playCompassTick(.9);return;}
     try{
       if(typeof DeviceOrientation.requestPermission==='function'){
