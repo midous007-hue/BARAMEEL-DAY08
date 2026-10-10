@@ -1514,10 +1514,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   }
   bindTouchAction(routeButton,runCheckpoint);
   const skipOverlay=document.getElementById('skipCheckpointOptions'),skipButton=document.getElementById('skipCheckpoint'),closeSkipOptions=document.getElementById('closeSkipOptions');
+  let pendingSkipCheckpoint='';
   function closeSkipModal(){skipOverlay.classList.remove('is-open');skipOverlay.setAttribute('aria-hidden','true');skipButton?.focus({preventScroll:true});}
-  function openSkipModal(){const id=String(next.dataset.cp||'');if(id&&id.toLowerCase()!=='barameel')saveSkippedCheckpoint(id);skipOverlay.classList.add('is-open');skipOverlay.setAttribute('aria-hidden','false');}
+  function openSkipModal(){pendingSkipCheckpoint=String(next.dataset.cp||'');skipOverlay.classList.add('is-open');skipOverlay.setAttribute('aria-hidden','false');}
+  function confirmCheckpointSkip(){if(pendingSkipCheckpoint&&pendingSkipCheckpoint.toLowerCase()!=='barameel')saveSkippedCheckpoint(pendingSkipCheckpoint);}
   skipButton.addEventListener('click',openSkipModal);skipButton.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse'){e.preventDefault();openSkipModal();}},{passive:false});closeSkipOptions.addEventListener('click',closeSkipModal);skipOverlay.addEventListener('click',e=>{if(e.target===skipOverlay)closeSkipModal();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&skipOverlay.classList.contains('is-open'))closeSkipModal();});
-  document.getElementById('skipToWallet').addEventListener('click',()=>BR.goAfter('marks-wallet.html','skip-checkpoint',220));document.getElementById('skipToReceipt').addEventListener('click',()=>BR.goAfter('receipt-code.html','skip-checkpoint',220));document.getElementById('skipContinueRun').addEventListener('click',()=>{closeSkipModal();if(latestPosition)renderRoutePositionAndState(latestPosition);else requestLocation();});
+  document.getElementById('skipToWallet').addEventListener('click',()=>{confirmCheckpointSkip();BR.goAfter('marks-wallet.html','skip-checkpoint',220);});
+  document.getElementById('skipToReceipt').addEventListener('click',()=>{confirmCheckpointSkip();BR.goAfter('receipt-code.html','skip-checkpoint',220);});
+  document.getElementById('skipContinueRun').addEventListener('click',()=>{confirmCheckpointSkip();closeSkipModal();if(latestPosition)renderRoutePositionAndState(latestPosition);else requestLocation();});
 
   const directButton=document.getElementById('directBarameel');
   const runDirect=()=>{
