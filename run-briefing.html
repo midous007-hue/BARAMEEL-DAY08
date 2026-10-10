@@ -18,11 +18,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .briefing-back{position:absolute;left:3%;top:1%;width:19%;height:4.7%;z-index:30;border:0;background:transparent;border-radius:22%;cursor:pointer}
 .briefing-cta{position:absolute;left:8%;top:92.1%;width:84%;height:5.7%;z-index:30;border:0;background:transparent;border-radius:999px;cursor:pointer;touch-action:manipulation}
 .briefing-cta:active{transform:scale(.985);filter:brightness(1.12)}
-/* A distinct, visible map affordance above the main run CTA. */
-.briefing-map-cta{position:absolute;left:27%;top:87.65%;width:46%;height:3.35%;z-index:35;display:flex;align-items:center;justify-content:center;gap:7px;padding:0 10px;border:2px solid #f6d68a;border-radius:999px;background:linear-gradient(180deg,#fff0c2 0%,#d6a64d 48%,#8c5421 100%);box-shadow:0 3px 0 #422a17,0 0 0 2px #14262a,0 0 13px rgba(246,197,47,.4);color:#14262a;font:1000 clamp(11px,3vw,20px)/1 'Roboto Condensed',Impact,Arial,sans-serif;letter-spacing:.04em;text-shadow:0 1px rgba(255,255,255,.45);cursor:pointer;touch-action:manipulation;white-space:nowrap}
-.briefing-map-cta svg{width:clamp(17px,4vw,25px);height:clamp(17px,4vw,25px);flex:none;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.briefing-map-cta:active{transform:scale(.96);filter:brightness(1.15)}
-@media(max-width:380px){.briefing-map-cta{left:24%;width:52%;font-size:clamp(10px,2.8vw,14px);gap:5px}}
+/* Transparent hit-area precisely aligned to the illustrated STAGE 1 MAP artwork button. */
+.briefing-map-cta{position:absolute;left:4.3%;top:78.9%;width:51.2%;height:6.8%;z-index:35;display:block;padding:0;border:0;border-radius:14px;background:transparent;box-shadow:none;color:transparent;font-size:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.briefing-map-cta:active{transform:scale(.985);filter:brightness(1.08)}
 .stat-value{position:absolute;z-index:20;display:flex;align-items:center;justify-content:center;color:#fff2d9;font:900 clamp(15px,4.2vw,32px)/1 'Roboto Condensed',Impact,Arial,sans-serif;text-shadow:0 2px 0 #071b2b,0 0 5px rgba(0,0,0,.8);pointer-events:none;white-space:nowrap}
 .stat-checkpoints{left:6.8%;top:52.1%;width:27.7%;height:2.5%}
 .stat-points{left:36.4%;top:52.1%;width:27.4%;height:2.5%}
@@ -61,17 +59,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 </head>
 <body>
 <main class="briefing-stage" id="briefingStage" aria-label="BARAMEEL RUN mission briefing">
-<img class="briefing-art" src="./run-briefing.webp?v=20261010-1" alt="BARAMEEL RUN — Stage 01 mission briefing" fetchpriority="high">
+<img class="briefing-art" src="./run-briefing.webp?v=20261010-artwork-map-2" alt="BARAMEEL RUN — Stage 01 mission briefing" fetchpriority="high">
 <div class="compass-assembly" aria-hidden="true"><img id="compassCore" class="compass-core" src="./run-briefing-compass.webp?v=20261010-1" alt=""></div>
 <div class="stat-value stat-checkpoints" id="checkpointsFound">—</div>
 <div class="stat-value stat-points" id="pointsEarned">—</div>
 <div class="stat-value stat-progress" id="discoveryProgress">—</div>
 
 <button id="briefingBack" class="briefing-back" aria-label="Back to My Run"></button>
-<button id="openPaperMap" class="briefing-map-cta" aria-label="Open the Stage 01 paper exploration map">
- <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5 8.5 4l7 2.5L21 4v13.5L15.5 20l-7-2.5L3 20z"/><path d="M8.5 4v13.5M15.5 6.5V20"/></svg>
- <span>STAGE 01 MAP</span>
-</button>
+<button id="openPaperMap" class="briefing-map-cta" aria-label="Open the Stage 01 paper exploration map" title="Open Stage 1 map"></button>
 <button id="startExploring" class="briefing-cta" aria-label="Start exploring and open the live route map"></button>
 <div class="briefing-toast" id="briefingToast" aria-live="polite"></div>
 </main>
@@ -158,16 +153,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(c.state==='suspended')c.resume().catch(()=>{});
     const t=c.currentTime;
     try{
-      const strength=Math.min(1,Math.max(.62,Math.abs(degrees)/24));
-      const master=c.createGain(),comp=c.createDynamicsCompressor();master.gain.setValueAtTime(.92,t);comp.threshold.setValueAtTime(-17,t);comp.knee.setValueAtTime(7,t);comp.ratio.setValueAtTime(4,t);master.connect(comp).connect(c.destination);
-      // Magnetic needle sweep: a short airy movement rising in pitch, ending in a firm brass detent.
-      const duration=.23+Math.min(.18,Math.abs(degrees)/180);
-      const b=c.createBuffer(1,Math.floor(c.sampleRate*duration),c.sampleRate),d=b.getChannelData(0);
-      for(let i=0;i<d.length;i++){const p=i/d.length;d[i]=(Math.random()*2-1)*Math.sin(Math.PI*p)**.7}
-      const src=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();src.buffer=b;filter.type='bandpass';filter.frequency.setValueAtTime(500,t);filter.frequency.exponentialRampToValueAtTime(2300+Math.min(900,Math.abs(degrees)*16),t+duration*.78);filter.Q.value=.65;gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.5*strength,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+duration);src.connect(filter).connect(gain).connect(master);src.start(t);src.stop(t+duration);
-      const at=t+duration*.72;
-      const snap=c.createOscillator(),sg=c.createGain(),sf=c.createBiquadFilter();snap.type='triangle';snap.frequency.setValueAtTime(740+Math.min(450,Math.abs(degrees)*8),at);snap.frequency.exponentialRampToValueAtTime(330,at+.095);sf.type='bandpass';sf.frequency.value=1100;sf.Q.value=1.7;sg.gain.setValueAtTime(.0001,at);sg.gain.exponentialRampToValueAtTime(.42*strength,at+.006);sg.gain.exponentialRampToValueAtTime(.0001,at+.14);snap.connect(sf).connect(sg).connect(master);snap.start(at);snap.stop(at+.15);
-      const ring=c.createOscillator(),rg=c.createGain();ring.type='sine';ring.frequency.setValueAtTime(1640,at+.008);ring.frequency.exponentialRampToValueAtTime(1120,at+.17);rg.gain.setValueAtTime(.0001,at+.008);rg.gain.exponentialRampToValueAtTime(.14*strength,at+.018);rg.gain.exponentialRampToValueAtTime(.0001,at+.2);ring.connect(rg).connect(master);ring.start(at+.008);ring.stop(at+.21);
+      // Clean, restrained magnet sweep: a soft brass glide ending in one damped directional detent.
+      const strength=Math.min(.78,Math.max(.42,Math.abs(degrees)/28));
+      const bus=c.createGain(),comp=c.createDynamicsCompressor();bus.gain.setValueAtTime(.76,t);comp.threshold.setValueAtTime(-20,t);comp.knee.setValueAtTime(8,t);comp.ratio.setValueAtTime(3,t);bus.connect(comp).connect(c.destination);
+      const duration=.26+Math.min(.12,Math.abs(degrees)/220);
+      const osc=c.createOscillator(),og=c.createGain(),filter=c.createBiquadFilter();
+      osc.type='sine';osc.frequency.setValueAtTime(360,t);osc.frequency.exponentialRampToValueAtTime(620+Math.min(220,Math.abs(degrees)*5),t+duration*.52);osc.frequency.exponentialRampToValueAtTime(290,t+duration);
+      filter.type='lowpass';filter.frequency.value=1250;og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.19*strength,t+.045);og.gain.exponentialRampToValueAtTime(.0001,t+duration);osc.connect(filter).connect(og).connect(bus);osc.start(t);osc.stop(t+duration+.01);
+      const at=t+duration*.74,click=c.createOscillator(),cg=c.createGain(),cf=c.createBiquadFilter();
+      click.type='triangle';click.frequency.setValueAtTime(980,at);click.frequency.exponentialRampToValueAtTime(410,at+.065);cf.type='bandpass';cf.frequency.value=1050;cf.Q.value=1.05;cg.gain.setValueAtTime(.0001,at);cg.gain.exponentialRampToValueAtTime(.22*strength,at+.005);cg.gain.exponentialRampToValueAtTime(.0001,at+.105);click.connect(cf).connect(cg).connect(bus);click.start(at);click.stop(at+.11);
+      const ring=c.createOscillator(),rg=c.createGain();ring.type='sine';ring.frequency.setValueAtTime(1470,at+.008);ring.frequency.exponentialRampToValueAtTime(1130,at+.13);rg.gain.setValueAtTime(.0001,at+.008);rg.gain.exponentialRampToValueAtTime(.045*strength,at+.02);rg.gain.exponentialRampToValueAtTime(.0001,at+.15);ring.connect(rg).connect(bus);ring.start(at+.008);ring.stop(at+.16);
     }catch{}
   }
   function normalizedAngle(n){return ((n%360)+360)%360}
@@ -188,7 +183,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }else if(lastHeading!==null){
       const delta=Math.abs(angleDelta(heading,lastHeading));
       const now=performance.now();
-      if(delta>=8 && now-lastTickAt>420){
+      if(delta>=11 && now-lastTickAt>620){
         playNeedleMovement(delta);
         lastTickAt=now;
       }
