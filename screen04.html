@@ -52,11 +52,22 @@
     BR.safeSession.set('barameelActivePath', 'collection');
     BR.goAfter('screen05.html', 'confirm', 240);
   };
-  document.getElementById('checkpoint').onclick = () => {
+  document.getElementById('checkpoint').onclick = async () => {
     document.getElementById('checkpoint').classList.add('is-active');
     BR.safeSession.set('checkpointRunStartPoints', String(BR.state?.points || 0));
     BR.safeSession.set('barameelActivePath', 'checkpoint');
-    BR.goAfter('run-briefing.html', 'confirm', 240);
+    // Unlock audio from this real user gesture, then request iOS motion access before briefing opens.
+    BR.play('confirm');
+    const Orientation = window.DeviceOrientationEvent;
+    if (typeof Orientation?.requestPermission === 'function') {
+      try {
+        const permission = await Orientation.requestPermission();
+        BR.safeSession.set('barameelOrientationPermission', permission === 'granted' ? 'granted' : 'denied');
+      } catch {
+        BR.safeSession.set('barameelOrientationPermission', 'denied');
+      }
+    }
+    BR.goAfter('run-briefing.html?v=20261010-compass-auto-2', 'tap', 240);
   };
   document.getElementById('rewards').onclick = () => {
     BR.safeSession.set('barameelRewardsParent', 'screen04.html');
