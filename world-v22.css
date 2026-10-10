@@ -27,3 +27,8 @@
 .world-hub-stage .world-dark-state{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:2;display:block;opacity:1;pointer-events:none;transition:opacity 1.35s ease-out}
 .world-hub-stage.neon-igniting .world-dark-state{opacity:0;transition-delay:.18s}
 .world-hub-stage #neonIgnitionAudio{display:none}
+
+/* Full-screen artwork flickers with the neon ignition, then remains on the lit art. */
+.world-hub-stage .world-dark-state{z-index:2;opacity:1;transition:none}
+.world-hub-stage.neon-igniting .world-dark-state{animation:barameelDarkArtworkFlicker 2.9s steps(1,end) forwards}
+@keyframes barameelDarkArtworkFlicker{0%,7%,14%,20%,28%,34%{opacity:1}8%,13%,21%,27%,35%,41%{opacity:.34}42%,47%{opacity:.20}48%,52%{opacity:.42}53%,58%{opacity:.08}59%,62%{opacity:.18}63%,100%{opacity:0}}
