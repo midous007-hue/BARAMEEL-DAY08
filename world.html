@@ -3,42 +3,43 @@
 <div class="world-neon-impact" aria-hidden="true"></div><div class="world-ambient-glow" aria-hidden="true"></div><div class="world-scanline" aria-hidden="true"></div><div class="world-grain" aria-hidden="true"></div><div class="world-live-pulse" aria-hidden="true"></div><div class="world-card-fx fx-run" data-section="run" aria-hidden="true"></div><div class="world-card-fx fx-duo" data-section="duo" aria-hidden="true"></div><div class="world-card-fx fx-menu" data-section="menu" aria-hidden="true"></div><div class="world-card-fx fx-post" data-section="post" aria-hidden="true"></div><div class="world-card-fx fx-profile" data-section="profile" aria-hidden="true"></div><nav class="world-nav" aria-label="Barameel World"><a class="hub-link hub-run" data-section="run" href="./how-it-works.html" aria-label="BARAMEEL RUN"></a><a class="hub-link hub-duo" data-section="duo" href="./duo-link.html" aria-label="DUO LINK"></a><a class="hub-link hub-menu" data-section="menu" href="./menu.html" aria-label="BARAMEEL MENU"></a><a class="hub-link hub-post" data-section="post" href="./post.html" aria-label="BARAMEEL POST"></a><a class="hub-link hub-profile" data-section="profile" href="./my-barameel.html" aria-label="MY BARAMEEL"></a><a class="hub-link social-ig" href="#" aria-label="Instagram"></a><a class="hub-link social-tt" href="#" aria-label="TikTok"></a><a class="hub-link social-fb" href="#" aria-label="Facebook"></a><a class="hub-link social-wa" href="#" aria-label="WhatsApp"></a></nav></main><script src="./app.js?v=20261010-neon-logo-2"></script><script>(()=>{const stage=document.getElementById('worldHub'),links=[...stage.querySelectorAll('.hub-link[data-section]')],tones={run:[196,294,392],duo:[330,494,659],menu:[247,370,494],post:[294,440,587],profile:[220,330,523]};const runLink=stage.querySelector('.hub-run');if(runLink)runLink.href=BR?.state?.runHowItWorksSeen?'./run.html':'./how-it-works.html';function audio(section){try{window.BR?.play?.('tap')}catch{}}
 function pulse(section){stage.dataset.active=section;links.forEach(l=>l.classList.remove('is-active'));void stage.offsetWidth;const active=links.find(l=>l.dataset.section===section);if(active)active.classList.add('is-active');try{window.BR?.haptic?.('confirm');window.BR?.play?.('tap')}catch{}}links.forEach(a=>{a.addEventListener('pointerdown',()=>{const s=a.dataset.section;if(!s)return;pulse(s);audio(s);window.BR?.play?.('tap')},{passive:true});a.addEventListener('click',e=>{const s=a.dataset.section;if(!s){e.preventDefault();return}if(s==='run')a.href=BR?.state?.runHowItWorksSeen?'./run.html':'./how-it-works.html';pulse(s);if(a.dataset.going)return;a.dataset.going='1';document.body.classList.add('world-navigate');setTimeout(()=>location.href=a.href,720);e.preventDefault()})});stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;stage.style.setProperty('--mx',(x*2.2).toFixed(3)+'%');stage.style.setProperty('--my',(y*1.7).toFixed(3)+'%')},{passive:true});stage.addEventListener('pointerleave',()=>{stage.style.setProperty('--mx','0%');stage.style.setProperty('--my','0%')},{passive:true});BR.track('world_view')})();
 (()=> {
- const stage=document.getElementById('worldHub');
- const logo=document.getElementById('worldNeonLogo');
+ const stage=document.getElementById('worldHub'),logo=document.getElementById('worldNeonLogo');
  if(!stage||!logo)return;
- let soundPlayed=false,audioPending=false,ignitionStarted=false;
+ let started=false,played=false,pending=false;
  function playIgnition(){
-   if(soundPlayed)return;
-   const AC=window.AudioContext||window.webkitAudioContext;
-   if(!AC){audioPending=true;return}
+   if(played)return;
+   const AC=window.AudioContext||window.webkitAudioContext;if(!AC){pending=true;return}
    try{
      const ctx=playIgnition.ctx||(playIgnition.ctx=new AC());
      const run=()=>{
        const t=ctx.currentTime;
-       const master=ctx.createGain();master.gain.setValueAtTime(.0001,t);master.gain.linearRampToValueAtTime(.8,t+.025);master.gain.setValueAtTime(.8,t+.62);master.gain.exponentialRampToValueAtTime(.0001,t+2.9);master.connect(ctx.destination);
-       // Fluorescent starter: several loud, dry electrical ticks.
-       const tick=(at,freq,vol,dur=.045)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='square';o.frequency.setValueAtTime(freq,at);o.frequency.exponentialRampToValueAtTime(Math.max(80,freq*.18),at+dur);g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(vol,at+.003);g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(g);g.connect(master);o.start(at);o.stop(at+dur+.01)};
-       [0,.09,.22,.48,.67].forEach((d,i)=>tick(t+d,[2400,1800,2800,1450,3100][i],i===4?.72:.54,.035+i%2*.02));
-       // Ballast surge: coarse 50 Hz hum swells and catches.
-       const hum=ctx.createOscillator(),hum2=ctx.createOscillator(),hg=ctx.createGain();hum.type='sawtooth';hum.frequency.setValueAtTime(43,t+.53);hum.frequency.linearRampToValueAtTime(51,t+1.05);hum.frequency.setValueAtTime(50,t+1.3);hum2.type='square';hum2.frequency.setValueAtTime(100,t+.55);hum2.frequency.linearRampToValueAtTime(120,t+1.05);hg.gain.setValueAtTime(.0001,t+.5);hg.gain.linearRampToValueAtTime(.27,t+.68);hg.gain.setValueAtTime(.22,t+1.2);hg.gain.exponentialRampToValueAtTime(.0001,t+2.85);hum.connect(hg);hum2.connect(hg);hg.connect(master);hum.start(t+.5);hum2.start(t+.5);hum.stop(t+2.9);hum2.stop(t+2.9);
-       // Distinct bright glass-tube zap, then a sustained neon electrical buzz.
-       const zap=ctx.createOscillator(),zg=ctx.createGain();zap.type='sawtooth';zap.frequency.setValueAtTime(1900,t+.92);zap.frequency.exponentialRampToValueAtTime(260,t+1.12);zg.gain.setValueAtTime(.0001,t+.91);zg.gain.linearRampToValueAtTime(.58,t+.925);zg.gain.exponentialRampToValueAtTime(.0001,t+1.25);zap.connect(zg);zg.connect(master);zap.start(t+.91);zap.stop(t+1.26);
-       const buzz=ctx.createOscillator(),buzz2=ctx.createOscillator(),bg=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();buzz.type='sawtooth';buzz.frequency.setValueAtTime(112,t+1.08);buzz2.type='square';buzz2.frequency.setValueAtTime(224,t+1.08);lfo.type='sine';lfo.frequency.setValueAtTime(18,t+1.08);lg.gain.setValueAtTime(.035,t+1.08);lfo.connect(lg);lg.connect(bg.gain);bg.gain.setValueAtTime(.0001,t+1.06);bg.gain.linearRampToValueAtTime(.19,t+1.2);bg.gain.setValueAtTime(.16,t+2.35);bg.gain.exponentialRampToValueAtTime(.0001,t+2.9);buzz.connect(bg);buzz2.connect(bg);bg.connect(master);buzz.start(t+1.06);buzz2.start(t+1.06);lfo.start(t+1.06);buzz.stop(t+2.95);buzz2.stop(t+2.95);lfo.stop(t+2.95);
-       soundPlayed=true;audioPending=false;
+       const bus=ctx.createGain();bus.gain.setValueAtTime(.0001,t);bus.gain.linearRampToValueAtTime(.92,t+.025);bus.gain.setValueAtTime(.82,t+1.1);bus.gain.exponentialRampToValueAtTime(.0001,t+5.8);bus.connect(ctx.destination);
+       // 0–1.25s: the fluorescent starter repeatedly tries to strike.
+       function tick(delay,freq,peak,dur){const o=ctx.createOscillator(),g=ctx.createGain();o.type='square';o.frequency.setValueAtTime(freq,t+delay);o.frequency.exponentialRampToValueAtTime(Math.max(95,freq*.12),t+delay+dur);g.gain.setValueAtTime(.0001,t+delay);g.gain.linearRampToValueAtTime(peak,t+delay+.003);g.gain.exponentialRampToValueAtTime(.0001,t+delay+dur);o.connect(g);g.connect(bus);o.start(t+delay);o.stop(t+delay+dur+.01)}
+       [[0,2200,.48,.045],[.11,1700,.42,.055],[.29,2650,.55,.04],[.53,1400,.46,.065],[.82,3000,.7,.045],[1.13,2100,.6,.05]].forEach(v=>tick(...v));
+       // 0.55–4.8s: ballast starts, wavers, then settles into a recognizable electrical hum.
+       const hum=ctx.createOscillator(),harm=ctx.createOscillator(),hg=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();
+       hum.type='sawtooth';hum.frequency.setValueAtTime(42,t+.55);hum.frequency.exponentialRampToValueAtTime(58,t+1.2);hum.frequency.setValueAtTime(50,t+1.65);
+       harm.type='square';harm.frequency.setValueAtTime(84,t+.55);harm.frequency.exponentialRampToValueAtTime(100,t+1.2);harm.frequency.setValueAtTime(100,t+1.65);
+       lfo.type='sine';lfo.frequency.setValueAtTime(12,t+.55);lg.gain.setValueAtTime(8,t+.55);lg.gain.linearRampToValueAtTime(1.8,t+2.6);lfo.connect(lg);lg.connect(hum.frequency);
+       hg.gain.setValueAtTime(.0001,t+.52);hg.gain.linearRampToValueAtTime(.25,t+.72);hg.gain.linearRampToValueAtTime(.2,t+1.4);hg.gain.setValueAtTime(.16,t+3.5);hg.gain.exponentialRampToValueAtTime(.0001,t+4.9);
+       hum.connect(hg);harm.connect(hg);hg.connect(bus);hum.start(t+.52);harm.start(t+.52);lfo.start(t+.52);hum.stop(t+4.95);harm.stop(t+4.95);lfo.stop(t+4.95);
+       // The final high-voltage catch coincides with the last bright flash.
+       const zap=ctx.createOscillator(),zg=ctx.createGain();zap.type='sawtooth';zap.frequency.setValueAtTime(1850,t+1.72);zap.frequency.exponentialRampToValueAtTime(185,t+2.03);zg.gain.setValueAtTime(.0001,t+1.71);zg.gain.linearRampToValueAtTime(.7,t+1.735);zg.gain.exponentialRampToValueAtTime(.0001,t+2.18);zap.connect(zg);zg.connect(bus);zap.start(t+1.71);zap.stop(t+2.19);
+       // 2.0–5.6s: neon tube buzz after it lights, fading only after the visual has settled.
+       const buzz=ctx.createOscillator(),buzz2=ctx.createOscillator(),bg=ctx.createGain(),flutter=ctx.createOscillator(),fg=ctx.createGain();
+       buzz.type='sawtooth';buzz.frequency.setValueAtTime(105,t+2);buzz.frequency.linearRampToValueAtTime(112,t+2.7);buzz.frequency.setValueAtTime(110,t+3.3);
+       buzz2.type='square';buzz2.frequency.setValueAtTime(220,t+2);
+       flutter.type='sine';flutter.frequency.setValueAtTime(28,t+2);fg.gain.setValueAtTime(0,t+2);fg.gain.linearRampToValueAtTime(.025,t+2.15);flutter.connect(fg);fg.connect(bg.gain);
+       bg.gain.setValueAtTime(.0001,t+1.98);bg.gain.linearRampToValueAtTime(.22,t+2.15);bg.gain.setValueAtTime(.17,t+3.8);bg.gain.exponentialRampToValueAtTime(.0001,t+5.65);
+       buzz.connect(bg);buzz2.connect(bg);bg.connect(bus);buzz.start(t+1.98);buzz2.start(t+1.98);flutter.start(t+1.98);buzz.stop(t+5.7);buzz2.stop(t+5.7);flutter.stop(t+5.7);
+       played=true;pending=false;
      };
-     if(ctx.state==='suspended'){audioPending=true;ctx.resume().then(()=>{if(audioPending&&!soundPlayed)run()}).catch(()=>{});}
-     else run();
-   }catch{audioPending=true}
+     if(ctx.state==='suspended'){pending=true;ctx.resume().then(()=>{if(pending&&!played)run()}).catch(()=>{});}else run();
+   }catch{pending=true}
  }
- function ignite(){
-   if(ignitionStarted)return;ignitionStarted=true;
-   stage.classList.add('neon-igniting');
-   playIgnition();
- }
- // Start the visual sequence after the screen has settled.
+ function ignite(){if(started)return;started=true;stage.classList.add('neon-igniting');playIgnition()}
  window.setTimeout(ignite,1650);
- // Browsers that block autoplay start the same electrical sound on the first real gesture.
- const unlock=()=>{if(!soundPlayed)playIgnition()};
- window.addEventListener('pointerdown',unlock,{once:true,passive:true});
- window.addEventListener('keydown',unlock,{once:true});
+ const unlock=()=>{if(!played)playIgnition()};
+ window.addEventListener('pointerdown',unlock,{once:true,passive:true});window.addEventListener('keydown',unlock,{once:true});
 })();</script></body></html>
