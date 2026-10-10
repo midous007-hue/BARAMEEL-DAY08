@@ -1,20 +1,23 @@
 /* V22 WORLD PRECISION — isolated overrides only. */
 .world-hub-stage .hub-run{left:1.89%!important;top:45.88%!important;width:46.53%!important;height:15.92%!important}.world-hub-stage .hub-duo{left:49.68%!important;top:45.88%!important;width:46.43%!important;height:15.92%!important}.world-hub-stage .hub-menu{left:1.89%!important;top:62.71%!important;width:46.53%!important;height:15.92%!important}.world-hub-stage .hub-post{left:49.68%!important;top:62.71%!important;width:46.43%!important;height:15.92%!important}.world-hub-stage .hub-profile{left:2.94%!important;top:79.54%!important;width:93.70%!important;height:9.69%!important}.world-hub-stage .hub-link[data-section]::after{inset:0!important}.world-hub-stage .hub-link[data-section]::before{border-width:3px!important}.world-navigate .world-art{animation:worldNavigate .34s cubic-bezier(.2,.8,.2,1) both}@keyframes worldNavigate{0%{filter:brightness(1)}35%{filter:brightness(1.28) saturate(1.12)}100%{filter:brightness(1.08) saturate(1.04)}}
 
-/* BARAMEEL WORLD neon: one fixed image, so no letter/line can vanish between states. */
-.world-hub-stage .world-neon-logo{position:absolute;left:15%;top:22.3%;width:70%;height:18%;object-fit:fill;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none;z-index:8;opacity:1;transform:none;will-change:filter;filter:grayscale(1) saturate(.12) brightness(.48) contrast(1.12) sepia(.14) drop-shadow(0 2px 1px rgba(0,0,0,.6))}
+/* Timed ignition: logo stays in one fixed layer; only tube illumination flickers. */
+.world-hub-stage .world-neon-logo{position:absolute;left:15%;top:22.3%;width:70%;height:18%;object-fit:fill;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none;z-index:8;opacity:1;transform:none;will-change:filter;filter:grayscale(1) saturate(.12) brightness(.43) contrast(1.12) sepia(.14) drop-shadow(0 2px 1px rgba(0,0,0,.6))}
 .world-hub-stage .world-neon-impact{position:absolute;inset:0;z-index:7;pointer-events:none;opacity:0;background:radial-gradient(ellipse 44% 20% at 50% 31%,rgba(255,135,32,.18),transparent 68%),radial-gradient(ellipse 67% 31% at 50% 31%,rgba(24,170,255,.12),transparent 74%);mix-blend-mode:screen}
-.world-hub-stage.neon-igniting .world-neon-logo{animation:barameelNeonSameLogo 1.7s steps(1,end) forwards}
-.world-hub-stage.neon-igniting .world-neon-impact{animation:barameelNeonRoomGlow 1.9s ease-out forwards}
+.world-hub-stage.neon-igniting .world-neon-logo{animation:barameelNeonSameLogo 2.9s steps(1,end) forwards}
+.world-hub-stage.neon-igniting .world-neon-impact{animation:barameelNeonRoomGlow 3.1s ease-out forwards}
 @keyframes barameelNeonSameLogo{
-  0%,8%{filter:grayscale(1) saturate(.12) brightness(.48) contrast(1.12) sepia(.14) drop-shadow(0 2px 1px rgba(0,0,0,.6))}
-  9%,17%{filter:brightness(.68) saturate(.7) drop-shadow(0 0 4px rgba(255,150,55,.25))}
-  18%,25%{filter:grayscale(1) saturate(.12) brightness(.43) contrast(1.12) sepia(.14)}
-  26%,32%{filter:brightness(.82) saturate(1.25) drop-shadow(0 0 7px rgba(255,140,30,.4)) drop-shadow(0 0 11px rgba(28,180,255,.2))}
-  33%,39%{filter:grayscale(1) saturate(.12) brightness(.47) contrast(1.12) sepia(.14)}
-  40%,47%{filter:brightness(.92) saturate(1.25) drop-shadow(0 0 10px rgba(255,135,30,.62)) drop-shadow(0 0 18px rgba(28,180,255,.34))}
-  48%,52%{filter:brightness(.68) saturate(.7) drop-shadow(0 0 4px rgba(255,150,55,.2))}
-  53%,100%{filter:brightness(1.08) saturate(1.12) drop-shadow(0 0 8px rgba(255,135,30,.7)) drop-shadow(0 0 20px rgba(255,77,25,.4)) drop-shadow(0 0 27px rgba(20,170,255,.35))}
+  0%,7%{filter:grayscale(1) saturate(.12) brightness(.43) contrast(1.12) sepia(.14) drop-shadow(0 2px 1px rgba(0,0,0,.6))}
+  8%,13%{filter:brightness(.58) saturate(.65) drop-shadow(0 0 3px rgba(255,150,55,.2))}
+  14%,20%{filter:grayscale(1) saturate(.12) brightness(.4) contrast(1.12) sepia(.14)}
+  21%,27%{filter:brightness(.76) saturate(1.1) drop-shadow(0 0 6px rgba(255,140,30,.34)) drop-shadow(0 0 9px rgba(28,180,255,.16))}
+  28%,34%{filter:grayscale(1) saturate(.12) brightness(.43) contrast(1.12) sepia(.14)}
+  35%,41%{filter:brightness(.64) saturate(.8) drop-shadow(0 0 4px rgba(255,140,30,.28))}
+  42%,47%{filter:brightness(.92) saturate(1.2) drop-shadow(0 0 9px rgba(255,135,30,.58)) drop-shadow(0 0 15px rgba(28,180,255,.3))}
+  48%,52%{filter:brightness(.7) saturate(.85) drop-shadow(0 0 3px rgba(255,150,55,.2))}
+  53%,58%{filter:brightness(1.04) saturate(1.14) drop-shadow(0 0 12px rgba(255,135,30,.72)) drop-shadow(0 0 22px rgba(255,77,25,.42)) drop-shadow(0 0 27px rgba(20,170,255,.35))}
+  59%,62%{filter:brightness(.88) saturate(1.05) drop-shadow(0 0 5px rgba(255,135,30,.36))}
+  63%,100%{filter:brightness(1.08) saturate(1.12) drop-shadow(0 0 8px rgba(255,135,30,.7)) drop-shadow(0 0 20px rgba(255,77,25,.4)) drop-shadow(0 0 27px rgba(20,170,255,.35))}
 }
-@keyframes barameelNeonRoomGlow{0%,18%,33%{opacity:0}10%,16%{opacity:.12}27%,31%{opacity:.18}41%,47%{opacity:.3}54%{opacity:.23}75%{opacity:.13}100%{opacity:.09}}
+@keyframes barameelNeonRoomGlow{0%,14%,28%{opacity:0}9%,12%{opacity:.08}22%,26%{opacity:.13}36%,41%{opacity:.06}45%,53%{opacity:.29}59%{opacity:.24}76%{opacity:.13}100%{opacity:.09}}
 @media(prefers-reduced-motion:reduce){.world-hub-stage.neon-igniting .world-neon-logo,.world-hub-stage.neon-igniting .world-neon-impact{animation:none!important}.world-hub-stage .world-neon-logo{filter:brightness(1.08) saturate(1.12) drop-shadow(0 0 8px rgba(255,135,30,.7)) drop-shadow(0 0 20px rgba(255,77,25,.4)) drop-shadow(0 0 27px rgba(20,170,255,.35))}}
