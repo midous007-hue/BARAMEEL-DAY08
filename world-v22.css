@@ -32,3 +32,6 @@
 .world-hub-stage .world-dark-state{z-index:2;opacity:1;transition:none}
 .world-hub-stage.neon-igniting .world-dark-state{animation:barameelDarkArtworkFlicker 2.9s steps(1,end) forwards}
 @keyframes barameelDarkArtworkFlicker{0%,7%,14%,20%,28%,34%{opacity:1}8%,13%,21%,27%,35%,41%{opacity:.34}42%,47%{opacity:.20}48%,52%{opacity:.42}53%,58%{opacity:.08}59%,62%{opacity:.18}63%,100%{opacity:0}}
+
+/* Reduced-motion fallback: never leave the World Hub trapped on its dark/off artwork. */
+@media (prefers-reduced-motion: reduce){.world-hub-stage .world-dark-state{opacity:0!important;animation:none!important}.world-hub-stage .world-neon-logo{filter:brightness(1.08) saturate(1.12) drop-shadow(0 0 8px rgba(255,135,30,.7)) drop-shadow(0 0 20px rgba(255,77,25,.4)) drop-shadow(0 0 27px rgba(20,170,255,.35))!important}.world-hub-stage .world-neon-impact{animation:none!important;opacity:.09!important}}
