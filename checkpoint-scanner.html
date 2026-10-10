@@ -59,10 +59,11 @@
     return false;
   }
   function parse(raw){
-    const s=decodeURIComponent(String(raw||'').trim());
-    const m=s.match(/^BARAMEEL[-_:]?CHECKPOINT[-_:]?([A-Z0-9_-]+)$/i);
-    if(m)return {legacyId:m[1],qrToken:null};
-    if(/^BRM-Q1-[A-Z0-9_-]+$/i.test(s))return {legacyId:null,qrToken:s};
+    let s='';
+    try{s=decodeURIComponent(String(raw||'').trim())}catch{return null}
+    // Production accepts only opaque Master QR tokens; legacy checkpoint IDs
+    // are not proof of a server-registered physical QR.
+    if(/^BRM-Q1-[A-Z0-9_-]+$/i.test(s))return {qrToken:s};
     return null;
   }
   function getPosition(){
