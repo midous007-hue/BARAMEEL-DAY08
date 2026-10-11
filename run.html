@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN</title>
-<link rel="stylesheet" href="./styles.css?v=20261011-run-engine-3">
+<link rel="stylesheet" href="./styles.css?v=20261011-run-engine-4">
 <script src="./config.js?v=20261005-23.4"></script>
 <style>
 .run-engine-stage{isolation:isolate;overflow:hidden}
@@ -13,6 +13,9 @@
 .run-engine-stage .run-car-on{z-index:2;pointer-events:none;transition:opacity .16s ease}
 .run-engine-stage .run-bruna-overlay{position:absolute;left:16%;top:27%;width:67%;height:55%;object-fit:contain;object-position:center bottom;z-index:4;pointer-events:none;user-select:none;-webkit-user-drag:none}
 .run-engine-stage #runBack,.run-engine-stage #nickname,.run-engine-stage #start,.run-engine-stage #nameGuide{z-index:10}
+.run-engine-stage #nameGuide{left:8%;right:8%;top:69.1%;width:84%;min-height:4.3%;padding:1.1% 3%;border:0;background:transparent;box-shadow:none;border-radius:0;color:#fff0bd;font-family:'Righteous','Arial Black',Impact,sans-serif;font-size:clamp(15px,4.0vw,27px);line-height:1.12;letter-spacing:.025em;text-shadow:2px 2px 0 #071b2b,-1px -1px 0 #071b2b,0 3px 0 #d92f25;text-align:center;opacity:0;transform:translateY(5px);transition:opacity .25s ease,transform .25s ease}
+.run-engine-stage #nameGuide.show{opacity:1;transform:translateY(0)}
+.run-engine-stage #nameGuide.error{left:18%;right:18%;width:64%;top:69.1%;min-height:4.3%;padding:1.1% 3%;border:2px solid #f05a42;background:rgba(7,26,32,.92);box-shadow:0 3px 0 rgba(0,0,0,.3);border-radius:12px;color:#fff0bd;font-size:clamp(11px,2.8vw,17px);text-shadow:none}
 @media(prefers-reduced-motion:reduce){.run-engine-stage .run-car-on{transition:none}}
 </style>
 </head>
@@ -42,7 +45,7 @@
     ignitionStarted = true;
     if (carOn) { carOn.style.visibility = 'visible'; carOn.style.opacity = '1'; }
     if (engine) {
-      engine.volume = 1;
+      engine.volume = 0.5;
       engine.currentTime = 0;
       const p = engine.play();
       if (p && p.catch) p.catch(() => {});
@@ -51,6 +54,59 @@
   };
   window.setTimeout(startIgnition, 850);
   stage?.addEventListener('pointerdown', () => { if (!ignitionStarted) startIgnition(); }, { once: true, passive: true });
+  // One-time BARAMEEL RUN intro guidance, matching the checkpoint screen's arcade type-on cue.
+  let guideAudioContext=null;
+  function guideTone(frequency=520,duration=.025,volume=.028,wave='square'){
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext;
+      if(!AC)return;
+      if(!guideAudioContext)guideAudioContext=new AC();
+      if(guideAudioContext.state==='suspended')guideAudioContext.resume().catch(()=>{});
+      const now=guideAudioContext.currentTime;
+      const osc=guideAudioContext.createOscillator();
+      const gain=guideAudioContext.createGain();
+      osc.type=wave;osc.frequency.setValueAtTime(frequency,now);
+      gain.gain.setValueAtTime(.0001,now);
+      gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),now+.004);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+      osc.connect(gain);gain.connect(guideAudioContext.destination);
+      osc.start(now);osc.stop(now+duration+.01);
+    }catch{}
+  }
+  function guideMessageCue(){
+    guideTone(740,.085,.085,'square');
+    window.setTimeout(()=>guideTone(980,.075,.06,'triangle'),60);
+  }
+  function typeGuideOnce(message){
+    guide.classList.remove('error');
+    guide.textContent='';
+    guide.classList.add('show');
+    guideMessageCue();
+    let i=0;
+    const timer=window.setInterval(()=>{
+      i++;
+      guide.textContent=message.slice(0,i);
+      if(i%2===0)guideTone(300+(i%7)*38,.018,.018,'square');
+      if(i>=message.length)window.clearInterval(timer);
+    },38);
+  }
+  function runIntroGuidance(){
+    const phrases=[
+      'ALEXANDRIA IS YOUR PLAYGROUND!',
+      'TYPE YOUR NAME. START YOUR LEGEND.',
+      'YOUR RUN STARTS NOW.'
+    ];
+    let index=0;
+    const showNext=()=>{
+      if(index>=phrases.length)return;
+      typeGuideOnce(phrases[index++]);
+      if(index<phrases.length)window.setTimeout(showNext,3000);
+      else window.setTimeout(()=>guide.classList.remove('show'),2800);
+    };
+    window.setTimeout(showNext,1100);
+  }
+  runIntroGuidance();
+
   input.value = BR.state.nickname || '';
   input.oninput = () => BR.setNickname(input.value);
 
