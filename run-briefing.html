@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#071b2b">
 <meta name="description" content="BARAMEEL RUN — Stage briefing">
 <title>BARAMEEL RUN — YOUR RUN BRIEFING</title>
-<link rel="stylesheet" href="./styles.css?v=20261010-briefing-1">
+<link rel="stylesheet" href="./styles.css?v=20261011-compass-stable-1">
 <script src="./config.js?v=20261010-briefing-1"></script>
 <style>
 :root{color-scheme:dark}
@@ -14,7 +14,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 .briefing-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071b2b;isolation:isolate;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .briefing-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none;pointer-events:none}
 .compass-assembly{position:absolute;left:50.2%;top:35.5%;width:39%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:12;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.42))}
-.compass-core{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;backface-visibility:hidden;transition:transform .12s linear}
+.compass-core{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;backface-visibility:hidden;transition:none}
 .briefing-back{position:absolute;left:3%;top:1%;width:19%;height:4.7%;z-index:30;border:0;background:transparent;border-radius:22%;cursor:pointer}
 .briefing-cta{position:absolute;left:8%;top:92.1%;width:84%;height:5.7%;z-index:30;border:0;background:transparent;border-radius:999px;cursor:pointer;touch-action:manipulation}
 .briefing-cta:active{transform:scale(.985);filter:brightness(1.12)}
@@ -172,24 +172,53 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(typeof e.alpha==='number'&&Number.isFinite(e.alpha))return normalizedAngle(360-e.alpha);
     return null;
   }
+  // Stabilize noisy sensors: circular low-pass filtering, shortest-angle interpolation,
+  // and a velocity limit prevent wraparound jumps and sudden full-circle flips.
+  let filteredHeading=null,lastSensorAt=0,lastRenderAt=0,displayAngle=0,targetAngle=0,renderFrame=0;
+  function animateCompass(now){
+    renderFrame=0;
+    if(!Number.isFinite(lastRenderAt))lastRenderAt=now;
+    const dt=Math.min(.05,Math.max(.001,(now-lastRenderAt)/1000));lastRenderAt=now;
+    const difference=angleDelta(targetAngle,displayAngle);
+    const maxStep=115*dt;
+    const step=Math.max(-maxStep,Math.min(maxStep,difference));
+    displayAngle+=step;
+    const remaining=angleDelta(targetAngle,displayAngle);
+    displayAngle+=remaining*Math.min(.18,dt*3.2);
+    compass.style.transform='rotate('+displayAngle+'deg)';
+    if(Math.abs(angleDelta(targetAngle,displayAngle))>.12)renderFrame=requestAnimationFrame(animateCompass);
+  }
   function onOrientation(e){
     const heading=headingFromEvent(e);if(heading===null)return;
-    // Rotate the compass rose opposite the phone's heading so the rose behaves like a physical compass card.
-    const target=-heading;
-    compass.style.transform='rotate('+target+'deg)';
-    if(!firstHeadingTicked){
-      // Opening sound is separate; first valid magnetic reading gives the needle its initial directional settle.
-      playNeedleMovement(18);firstHeadingTicked=true;needleHasSettled=true;lastTickAt=performance.now();
-    }else if(lastHeading!==null){
-      const delta=Math.abs(angleDelta(heading,lastHeading));
-      const now=performance.now();
-      if(delta>=11 && now-lastTickAt>620){
-        playNeedleMovement(delta);
-        lastTickAt=now;
-      }
+    const now=performance.now();
+    // Ignore duplicated events arriving almost simultaneously from multiple sensor streams.
+    if(now-lastSensorAt<18)return;
+    lastSensorAt=now;
+    if(filteredHeading===null){
+      filteredHeading=heading;
+      targetAngle=-heading;
+      displayAngle=targetAngle;
+      compass.style.transform='rotate('+displayAngle+'deg)';
+      if(!firstHeadingTicked){playNeedleMovement(10);firstHeadingTicked=true;needleHasSettled=true;lastTickAt=now;}
+      lastHeading=heading;
+      return;
+    }
+    const rawDelta=angleDelta(heading,filteredHeading);
+    // Drop implausible single-sample magnetic spikes; real movement is picked up by later readings.
+    if(Math.abs(rawDelta)>68 && now-lastAcceptedHeadingAt<180)return;
+    lastAcceptedHeadingAt=now;
+    const priorFiltered=filteredHeading;
+    filteredHeading=normalizedAngle(filteredHeading+rawDelta*.16);
+    const smoothDelta=angleDelta(filteredHeading,priorFiltered);
+    targetAngle-=smoothDelta;
+    if(!renderFrame)renderFrame=requestAnimationFrame(animateCompass);
+    if(Math.abs(smoothDelta)>=3.5 && now-lastTickAt>900){
+      playNeedleMovement(Math.min(24,Math.abs(smoothDelta)*1.8));
+      lastTickAt=now;
     }
     lastHeading=heading;
   }
+  let lastAcceptedHeadingAt=0;
   // Start immediately. iOS permission is requested from the Checkpoint Run tap on the previous screen.
   let listening=false;
   function startCompass(){
