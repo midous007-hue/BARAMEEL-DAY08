@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHOOSE YOUR AVATAR</title>
-<link rel="stylesheet" href="./styles.css?v=20261011-avatar-art-2">
-<script src="./config.js?v=20261011-avatar-art-2"></script>
+<link rel="stylesheet" href="./styles.css?v=20261011-avatar-art-3">
+<script src="./config.js?v=20261011-avatar-art-3"></script>
 <style>
 .avatar-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071b2b}
 .avatar-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -16,19 +16,19 @@
 @keyframes avatarLogoSweep{0%,48%{transform:translateX(-85%) skewX(-9deg);opacity:0}56%{opacity:.9}76%{transform:translateX(85%) skewX(-9deg);opacity:.75}88%,100%{transform:translateX(85%) skewX(-9deg);opacity:0}}
 @media(prefers-reduced-motion:reduce){.avatar-logo-sheen{animation:none;opacity:0}}
 .avatar-hit{position:absolute;z-index:45;width:30.6%;height:auto;aspect-ratio:1/1;border:0;background:transparent;border-radius:50%;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.avatar-01{left:2.5%;top:47.5%;width:31.8%;aspect-ratio:1/1;height:auto}
-.avatar-02{left:34.1%;top:47.5%;width:31.8%;aspect-ratio:1/1;height:auto}
-.avatar-03{left:65.8%;top:47.5%;width:31.8%;aspect-ratio:1/1;height:auto}
-.avatar-04{left:2.5%;top:66.2%;width:31.8%;aspect-ratio:1/1;height:auto}
-.avatar-05{left:34.1%;top:66.2%;width:31.8%;aspect-ratio:1/1;height:auto}
-.avatar-06{left:65.8%;top:66.2%;width:31.8%;aspect-ratio:1/1;height:auto}
+.avatar-01{left:8.7%;top:48.3%;width:29.5%;height:auto;aspect-ratio:1/1}
+.avatar-02{left:35.25%;top:48.3%;width:29.5%;height:auto;aspect-ratio:1/1}
+.avatar-03{left:61.8%;top:48.3%;width:29.5%;height:auto;aspect-ratio:1/1}
+.avatar-04{left:8.7%;top:66.3%;width:29.5%;height:auto;aspect-ratio:1/1}
+.avatar-05{left:35.25%;top:66.3%;width:29.5%;height:auto;aspect-ratio:1/1}
+.avatar-06{left:61.8%;top:66.3%;width:29.5%;height:auto;aspect-ratio:1/1}
 .avatar-hit.is-selected{z-index:55}
-.avatar-hit.is-selected::after{content:"";position:absolute;inset:-1.4%;border-radius:50%;border:2px dashed #48f7ff;box-shadow:0 0 0 1px rgba(5,15,32,.95),0 0 7px #48f7ff,0 0 15px rgba(72,247,255,.9),0 0 25px rgba(255,39,221,.65);background:transparent;animation:avatarLock .24s cubic-bezier(.16,.9,.2,1) both,avatarDash 2.1s linear infinite;pointer-events:none}
-.avatar-hit.is-selected::before{content:"";position:absolute;inset:4.2%;border-radius:50%;border:2px dashed #ff39df;box-shadow:0 0 6px rgba(255,57,223,.95),inset 0 0 9px rgba(72,247,255,.2);background:radial-gradient(circle,transparent 69%,rgba(72,247,255,.08) 100%);animation:avatarInnerDash 3.2s linear infinite;pointer-events:none}
-@keyframes avatarLock{0%{transform:scale(.95);opacity:.2}65%{transform:scale(1.025);opacity:1}100%{transform:scale(1);opacity:1}}
+.avatar-hit.is-selected::after{content:"";position:absolute;inset:-2.5%;border-radius:50%;border:4px dashed #45f8ff;box-shadow:0 0 0 2px rgba(3,8,20,.98),0 0 7px 2px #45f8ff,0 0 15px 4px rgba(69,248,255,.95),0 0 28px 5px rgba(255,38,224,.8);background:transparent;animation:avatarLock .22s cubic-bezier(.16,.9,.2,1) both,avatarDash .9s linear infinite;pointer-events:none}
+.avatar-hit.is-selected::before{content:"";position:absolute;inset:5.2%;border-radius:50%;border:3px dashed #ff39df;box-shadow:0 0 7px 2px rgba(255,57,223,1),0 0 16px rgba(255,57,223,.7),inset 0 0 12px rgba(72,247,255,.28);background:radial-gradient(circle,transparent 68%,rgba(72,247,255,.1) 100%);animation:avatarInnerDash 1.35s linear infinite;pointer-events:none}
+@keyframes avatarLock{0%{transform:scale(.88);opacity:.2}65%{transform:scale(1.035);opacity:1}100%{transform:scale(1);opacity:1}}
 @keyframes avatarDash{to{transform:rotate(360deg)}}
 @keyframes avatarInnerDash{to{transform:rotate(-360deg)}}
-@keyframes avatarShine{0%{opacity:0;transform:rotate(-18deg) scale(.98)}35%{opacity:1}100%{opacity:0;transform:rotate(18deg) scale(1.02)}}35%{opacity:1}100%{opacity:0;transform:rotate(18deg) scale(1.02)}}
+@keyframes avatarShine{0%{opacity:0;transform:rotate(-18deg) scale(.98)}35%{opacity:1}100%{opacity:0;transform:rotate(18deg) scale(1.02)}}
 .player-name{position:absolute;left:34.2%;top:35.1%;width:50.0%;height:5.7%;z-index:40;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(15px,4.1vw,29px)/1 'Roboto Condensed',Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
 .avatar-error{position:absolute;left:18%;right:18%;top:80.2%;min-height:3.8%;z-index:70;display:flex;align-items:center;justify-content:center;padding:1.2% 3%;border:2px solid #f0c830;border-radius:999px;background:rgba(7,26,32,.94);color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-align:center;opacity:0;pointer-events:none;transition:.18s ease}
 .avatar-error.show{opacity:1}
@@ -36,9 +36,9 @@
 </head>
 <body>
 <main class="avatar-stage" id="avatarStage">
-<img class="avatar-art" src="./assets/avatar-selection-twilight.webp?v=20261011-avatar-art-2" alt="CHOOSE YOUR AVATAR" fetchpriority="high">
+<img class="avatar-art" src="./assets/avatar-selection-twilight.webp?v=20261011-avatar-art-3" alt="CHOOSE YOUR AVATAR" fetchpriority="high">
 <div class="avatar-logo-wrap" aria-hidden="true">
-<img class="avatar-logo" src="./assets/barameel-run-avatar-logo.webp?v=20261011-avatar-art-2" alt="">
+<img class="avatar-logo" src="./assets/barameel-run-avatar-logo.web.webp?v=20261011-avatar-art-3" alt="">
 <span class="avatar-logo-sheen"></span>
 </div>
 <div id="playerName" class="player-name" aria-live="polite"></div>
@@ -52,7 +52,7 @@
 <button id="confirm" class="avatar-hit" style="left:7.4%;top:84.0%;width:85.2%;height:8.8%;border-radius:8%" aria-label="Confirm Avatar"></button>
 <div id="error" class="avatar-error" aria-live="polite"></div>
 </main>
-<script src="./app.js?v=20261011-avatar-art-2"></script>
+<script src="./app.js?v=20261011-avatar-art-3"></script>
 <script>
 (() => {
   const playerName=document.getElementById('playerName');
