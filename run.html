@@ -46,6 +46,7 @@
       engine.currentTime = 0;
       const p = engine.play();
       if (p && p.catch) p.catch(() => {});
+      window.setTimeout(() => { engine.pause(); engine.currentTime = 0; }, 5200);
     }
   };
   window.setTimeout(startIgnition, 850);
