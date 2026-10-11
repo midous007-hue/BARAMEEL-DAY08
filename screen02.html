@@ -5,11 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHOOSE YOUR AVATAR</title>
-<link rel="stylesheet" href="./styles.css?v=20261006-23.8">
-<script src="./config.js?v=20261006-23.8"></script>
+<link rel="stylesheet" href="./styles.css?v=20261011-avatar-art-1">
+<script src="./config.js?v=20261011-avatar-art-1"></script>
 <style>
 .avatar-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071b2b}
 .avatar-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.avatar-logo-wrap{position:absolute;z-index:30;left:2%;top:.25%;width:96%;height:30%;pointer-events:none;overflow:hidden}
+.avatar-logo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center top;filter:drop-shadow(0 3px 0 rgba(0,0,0,.7))}
+.avatar-logo-sheen{position:absolute;inset:-35% -65%;background:linear-gradient(112deg,transparent 43%,rgba(255,255,255,0) 47%,rgba(255,255,255,.88) 50%,rgba(255,226,112,.35) 52%,transparent 57%);transform:translateX(-85%) skewX(-9deg);mix-blend-mode:screen;animation:avatarLogoSweep 4.8s ease-in-out 1.1s infinite}
+@keyframes avatarLogoSweep{0%,48%{transform:translateX(-85%) skewX(-9deg);opacity:0}56%{opacity:.9}76%{transform:translateX(85%) skewX(-9deg);opacity:.75}88%,100%{transform:translateX(85%) skewX(-9deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){.avatar-logo-sheen{animation:none;opacity:0}}
 .avatar-hit{position:absolute;z-index:45;width:30.6%;height:auto;aspect-ratio:1/1;border:0;background:transparent;border-radius:50%;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .avatar-01{left:3.5%;top:43.1%}
 .avatar-02{left:34.8%;top:43.1%}
@@ -31,7 +36,11 @@
 </head>
 <body>
 <main class="avatar-stage" id="avatarStage">
-<img class="avatar-art" src="./assets/avatar-selection.webp?v=20261006-23.8" alt="CHOOSE YOUR AVATAR" fetchpriority="high">
+<img class="avatar-art" src="./assets/avatar-selection-twilight.webp?v=20261011-avatar-art-1" alt="CHOOSE YOUR AVATAR" fetchpriority="high">
+<div class="avatar-logo-wrap" aria-hidden="true">
+<img class="avatar-logo" src="./assets/barameel-run-avatar-logo.webp?v=20261011-avatar-art-1" alt="">
+<span class="avatar-logo-sheen"></span>
+</div>
 <div id="playerName" class="player-name" aria-live="polite"></div>
 <button class="avatar-hit avatar-01" data-avatar="avatar01" aria-label="Avatar 1"></button>
 <button class="avatar-hit avatar-02" data-avatar="avatar02" aria-label="Avatar 2"></button>
@@ -43,7 +52,7 @@
 <button id="confirm" class="avatar-hit" style="left:7.4%;top:84.0%;width:85.2%;height:8.8%;border-radius:8%" aria-label="Confirm Avatar"></button>
 <div id="error" class="avatar-error" aria-live="polite"></div>
 </main>
-<script src="./app.js?v=20261006-23.8"></script>
+<script src="./app.js?v=20261011-avatar-art-1"></script>
 <script>
 (() => {
   const playerName=document.getElementById('playerName');
