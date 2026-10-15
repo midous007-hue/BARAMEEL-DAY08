@@ -368,7 +368,7 @@
       const u=new URL(s);
       const host=u.hostname.toLowerCase();
       const validHost=host==='midous007-hue.github.io';
-      const validPath=u.pathname.replace(/\\/+$/,'')==='/BARAMEEL-DAY08';
+      const validPath=u.pathname.replace(/\/+$/,'')==='/BARAMEEL-DAY08';
       if((u.protocol==='https:'||u.protocol==='http:')&&validHost&&validPath)return {type:'universal',token:'BARAMEEL-UNIVERSAL'};
     }catch{}
     return null;
