@@ -45,7 +45,7 @@
 <button id="collections" class="scan-hit scan-collections" aria-label="Continue"></button>
 <canvas id="scanCanvas" hidden></canvas>
 </main>
-<script src="./app.js?v=20261006-24.0"></script>
+<script src="./app.js?v=20261015-master-qr-1"></script>
 <script>
 (() => {
   const video=document.getElementById('video'),cam=document.getElementById('cameraWindow'),status=document.getElementById('scanStatus');
@@ -64,6 +64,13 @@
     if(ticketPromise)return ticketPromise;
     ticketPromise=(async()=>{
       setStatus(redemptionMode?'PREPARING FINAL REDEMPTION SCAN':'PREPARING COLLECTION SCAN');
+      // A first-time visitor may have an anonymous auth session but no player row yet.
+      // Create/sync the player before asking the server to issue a scan ticket.
+      const player=await BR.syncPlayer();
+      if(!player?.ok||!player?.player){
+        setStatus(player?.message||BR.friendlyError(player?.code||player?.error||'PLAYER_NOT_INITIALIZED'),'error');
+        return null;
+      }
       const r=await BR.api('/scan-ticket',{});
       if(r?.ok&&r.ticket_id){
         ticketId=r.ticket_id;
