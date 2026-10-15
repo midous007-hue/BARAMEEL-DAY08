@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261008-performance-1';
+  const VERSION = '20261015-master-qr-1';
   const STORAGE = 'barameel.world.player.v23.6';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -359,7 +359,20 @@
     }
     return null;
   }
-  function parseUniversalQR(raw){const s=decodeURIComponent(String(raw||'')).trim();if(/^BARAMEEL[-_:]?UNIVERSAL$/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};if(/(?:^|[?&])qr=BARAMEEL-UNIVERSAL(?:&|$)/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};return null;}
+  function parseUniversalQR(raw){
+    let s=String(raw||'').trim();
+    try{s=decodeURIComponent(s)}catch{}
+    if(/^BARAMEEL[-_:]?UNIVERSAL$/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};
+    if(/(?:^|[?&])qr=BARAMEEL-UNIVERSAL(?:&|$)/i.test(s))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};
+    try{
+      const u=new URL(s);
+      const host=u.hostname.toLowerCase();
+      const validHost=host==='midous007-hue.github.io';
+      const validPath=u.pathname.replace(/\\/+$/,'')==='/BARAMEEL-DAY08';
+      if((u.protocol==='https:'||u.protocol==='http:')&&validHost&&validPath)return {type:'universal',token:'BARAMEEL-UNIVERSAL'};
+    }catch{}
+    return null;
+  }
 
   window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,AVATARS,RARITY,get state(){return state},setNickname,setAvatar,setRunner,selectedAvatar,selected,playSelect,playAvatarSelect,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,scanCheckpoint,duoLink,fetchCollection,listCollections,parseUniversalQR,saveState,ensureAuth,API_BASE};
   if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v='+VERSION,{updateViaCache:'none'}).catch(()=>{});}
