@@ -471,6 +471,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     return 2*R*Math.asin(Math.min(1,Math.sqrt(x)));
   }
   function formatDistance(m){return m<1000?Math.max(1,Math.round(m))+' M':(m/1000).toFixed(m<10000?1:0)+' KM'}
+  let routeActionHandler=()=>{};
   function setAction(enabled,label='Open Checkpoint Scanner'){
     action.setAttribute('aria-label',label);
     action.disabled=!enabled;
@@ -937,7 +938,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         mapReady=true;
         map.on('dragstart',()=>{followPlayer=false;});
         map.on('wheel',()=>{followPlayer=false;});
-        map.on('touchstart',()=>{followPlayer=false;});
         const syncPlayerOverlay=()=>{ensurePlayerMarker();syncCp01ScreenMarker();syncCompassNeedle();};
         map.on('move',syncPlayerOverlay);
         map.on('zoom',syncPlayerOverlay);
@@ -991,6 +991,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     });
   }
   let lastMapFollowPosition=null;
+  let lastCameraFollowAt=0;
   function renderRoutePosition(pos){
     const previous=lastMapFollowPosition;
     latestPosition=pos;
@@ -1003,12 +1004,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       return;
     }
     if(followPlayer){
-      const moved=previous?haversine(previous,pos):0;
+      const moved=previous?haversine(previous,pos):Infinity;
       const canTrustHeading=moved>=5&&Number(pos.accuracy||999)<=35;
       const heading=(compassEnabled&&compassHeading!==null)?compassHeading:(canTrustHeading?bearing(previous,pos):map.getBearing());
-      map.easeTo({center:[pos.lng,pos.lat],zoom:navigationStarted?16.6:15.7,bearing:navigationStarted?heading:map.getBearing(),pitch:navigationStarted?34:map.getPitch(),duration:450,essential:true});
-    }
-    lastMapFollowPosition={lat:pos.lat,lng:pos.lng};
+      // Avoid restarting the camera animation on every GPS tick, which causes map stutter.
+      if(!map.isMoving()&&Date.now()-lastCameraFollowAt>=650&&(moved>=3||!previous)){
+        map.easeTo({center:[pos.lng,pos.lat],zoom:navigationStarted?16.6:15.7,bearing:navigationStarted?heading:map.getBearing(),pitch:navigationStarted?34:map.getPitch(),duration:320,essential:true});
+        lastCameraFollowAt=Date.now();
+        lastMapFollowPosition={lat:pos.lat,lng:pos.lng};
+      }
+    }else lastMapFollowPosition={lat:pos.lat,lng:pos.lng};
   }
   function addRouteSourceAndLayer(){
     if(!mapReady)return;
@@ -1052,6 +1057,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     if(source)source.setData({type:'Feature',properties:{},geometry});
   }
   let routeDashTimer=null;
+  let routeRequestController=null;
+  let routeRequestSequence=0;
+  let routeRequestTargetId='';
   function animateRoute(){
     if(routeDashTimer)clearInterval(routeDashTimer);
     let phase=0;
@@ -1063,11 +1071,19 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   }
   async function buildWalkingRoute(origin,target,fitCamera=false){
     if(!origin||!target)return false;
+    const targetId=String(target.id||'');
+    if(routeRequestController&&routeRequestTargetId===targetId)return false;
+    if(routeRequestController){try{routeRequestController.abort()}catch{}}
+    const controller=new AbortController();
+    routeRequestController=controller;
+    routeRequestTargetId=targetId;
+    const requestId=++routeRequestSequence;
     const url='https://routing.openstreetmap.de/routed-foot/route/v1/driving/'+origin.lng+','+origin.lat+';'+target.lng+','+target.lat+'?overview=full&geometries=geojson&steps=true';
     try{
-      const res=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store'});
+      const res=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store',signal:controller.signal});
       if(!res.ok)throw new Error('ROUTER_'+res.status);
       const data=await res.json();
+      if(requestId!==routeRequestSequence||String(navigationTarget?.id||'')!==targetId)return false;
       const route=data?.routes?.[0];
       if(!route?.geometry?.coordinates?.length)throw new Error('NO_WALKING_ROUTE');
       await waitForMap();
@@ -1098,6 +1114,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       // During navigation the map follows the live player; all geo markers remain map-anchored.
       return true;
     }catch(e){
+      if(e?.name==='AbortError'||requestId!==routeRequestSequence)return false;
       console.error('[BARAMEEL WALKING ROUTE]',e);
       navOverlay?.classList.remove('active');
       navCompass?.classList.remove('active');
@@ -1105,6 +1122,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       status.textContent='WALKING ROUTE UNAVAILABLE — USE MAP';
       status.classList.add('route-error');
       return false;
+    }finally{
+      if(requestId===routeRequestSequence){routeRequestController=null;routeRequestTargetId='';}
     }
   }
   function unlockRadarAudio(){
@@ -1186,6 +1205,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     status.textContent='CHECKPOINT DETECTED • SCAN QR';
     status.classList.remove('route-error');
     setAction(true,'Open Checkpoint Scanner');
+    routeActionHandler=()=>runCheckpoint();
     action.classList.add('checkpoint-ready');
     action.innerHTML='<span class="radar-glyph" aria-hidden="true">⌖</span><span class="radar-label">SCAN<br>CHECKPOINT</span>';
     if(lastRadarCheckpoint!==cp.id){
@@ -1252,6 +1272,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   }
   async function startNavigation(target){
     if(!target)return;
+    if(navigationTarget?.id!==target.id&&routeRequestController){try{routeRequestController.abort()}catch{};routeRequestController=null;routeRequestTargetId='';routeRequestSequence++;}
     if(!latestPosition){requestLocation();return;}
     if(Number(latestPosition.accuracy)>80){
       status.textContent='WAITING FOR MORE ACCURATE GPS';
@@ -1299,11 +1320,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     const radarRadius=Math.max(20,Math.min(35,reportedAccuracy*0.5));
     const radarExitRadius=radarRadius+15;
     const skipped=getSkippedCheckpoints();
-    const cp01=checkpoints.find(cp=>String(cp.id).toUpperCase()==='CP01'&&!discovered.has(cp.id)&&!skipped.has(String(cp.id)));
-    const cp01Distance=cp01?haversine(pos,cp01):Infinity;
+    const radarEligible=unlockedCheckpoints().filter(cp=>!discovered.has(cp.id)&&!skipped.has(String(cp.id)))
+      .map(cp=>({...cp,distance:haversine(pos,cp)})).sort((a,b)=>a.distance-b.distance);
+    const nearestRadarCheckpoint=radarEligible[0]||null;
     const barameelDistance=destination?haversine(pos,destination):Infinity;
-    const radarCandidate=cp01&&cp01Distance<=radarRadius
-      ?{target:cp01,type:'checkpoint',distance:cp01Distance}
+    const radarCandidate=nearestRadarCheckpoint&&nearestRadarCheckpoint.distance<=radarRadius
+      ?{target:nearestRadarCheckpoint,type:'checkpoint',distance:nearestRadarCheckpoint.distance}
       :destination&&barameelDistance<=radarRadius
         ?{target:destination,type:'barameel',distance:barameelDistance}:null;
     if(radarCandidate){
@@ -1511,7 +1533,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       handler();
     });
   }
-  bindTouchAction(routeButton,runCheckpoint);
+  bindTouchAction(routeButton,()=>routeActionHandler());
   const skipOverlay=document.getElementById('skipCheckpointOptions'),skipButton=document.getElementById('skipCheckpoint'),closeSkipOptions=document.getElementById('closeSkipOptions');
   let pendingSkipCheckpoint='';
   function closeSkipModal(){skipOverlay.classList.remove('is-open');skipOverlay.setAttribute('aria-hidden','true');skipButton?.focus({preventScroll:true});}
@@ -1565,6 +1587,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   },10000);
 
   window.addEventListener('pagehide',()=>{
+    if(routeRequestController){try{routeRequestController.abort()}catch{}}
+    if(routeDashTimer)clearInterval(routeDashTimer);
     if(watchId&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);
     if(testApproachTimer)clearInterval(testApproachTimer);
   });
