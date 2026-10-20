@@ -968,7 +968,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
           status.textContent='MAP STYLE FAILED — RELOAD';
           status.classList.add('route-error');
           setAction(true,'Reload Map');
-          action.onclick=()=>location.reload();
+          routeActionHandler=()=>location.reload();
         }
       },12000);
     }catch(err){
@@ -1205,7 +1205,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     status.textContent='CHECKPOINT DETECTED • SCAN QR';
     status.classList.remove('route-error');
     setAction(true,'Open Checkpoint Scanner');
-    routeActionHandler=()=>runCheckpoint();
+    routeActionHandler=()=>goToNearestCheckpoint();
     action.classList.add('checkpoint-ready');
     action.innerHTML='<span class="radar-glyph" aria-hidden="true">⌖</span><span class="radar-label">SCAN<br>CHECKPOINT</span>';
     if(lastRadarCheckpoint!==cp.id){
@@ -1259,6 +1259,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       status.textContent='BARAMEEL AREA REACHED • ARRIVE';
       status.classList.remove('route-error');
       setAction(true,'Switch to Checkpoint Navigation');
+    routeActionHandler=()=>goToNearestCheckpoint();
       startNavCard.disabled=false;
       startNavCard.textContent='ENTER BARAMEEL';
       startNavCard.onclick=()=>BR.goAfter('barameel-final-zone.html','confirm',240);
@@ -1357,7 +1358,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         status.textContent=available.length===1?'CHECKPOINT AVAILABLE':'NEAREST CHECKPOINT • '+available.length+' AVAILABLE';
         status.classList.remove('route-error');
         action.innerHTML='';
-        action.onclick=()=>startNavigation(available[0]);
+        routeActionHandler=()=>goToNearestCheckpoint();
         setAction(true,'Start Walking Navigation to Checkpoint');
       }
       return;
@@ -1394,7 +1395,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     status.classList.add('route-error');
     if(!mapLoadFailed)setMapStatus('GPS ERROR',true);
     setAction(true,'Try GPS Again');
-    action.onclick=()=>requestLocation();
+    routeActionHandler=()=>requestLocation();
   }
   function testPosition(){
     const cp=checkpoints.find(x=>x.id===TEST_CP_ID);
@@ -1435,7 +1436,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       if(!latestPosition){
         status.textContent='GPS IS TAKING TOO LONG — TAP LOCATE';
         setAction(true,'Try GPS Again');
-        action.onclick=()=>requestLocation();
+        routeActionHandler=()=>requestLocation();
       }
     },8000);
     try{
@@ -1493,22 +1494,19 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }
   },{passive:false});
   const routeButton=document.getElementById('routeAction');
-  const runCheckpoint=()=>{
+  function goToNearestCheckpoint(){
     if(!latestPosition)return requestLocation();
     const discovered=getDiscovered(),skipped=getSkippedCheckpoints();
-    const requestedId=String(next.dataset.cp||'');
-    let cp=checkpoints.find(x=>String(x.id)===requestedId);
-    if(!cp||cp.id==='barameel'||discovered.has(cp.id)){
-      cp=checkpoints.filter(x=>!discovered.has(x.id)&&!skipped.has(String(x.id)))
-        .map(x=>({...x,_distance:haversine(latestPosition,x)}))
-        .sort((a,b)=>a._distance-b._distance)[0]||null;
-    }
+    const cp=unlockedCheckpoints()
+      .filter(x=>!discovered.has(x.id)&&!skipped.has(String(x.id)))
+      .map(x=>({...x,_distance:haversine(latestPosition,x)}))
+      .sort((a,b)=>a._distance-b._distance)[0]||null;
     if(!cp){
       setBrunaGuide('You have found every checkpoint! Head to Barameel to claim your reward.','RUN COMPLETE');
       return;
     }
-    const remaining=haversine(latestPosition,cp);
-    if(remaining<=Math.max(5,cp.radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
+    next.dataset.cp=cp.id;
+    if(haversine(latestPosition,cp)<=Math.max(5,cp.radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
       enterCheckpointHotspot(cp);
       const url=TEST_MODE
         ?'checkpoint-scanner.html?v=20261009-65.0&test=1&cp='+encodeURIComponent(cp.id)
@@ -1516,9 +1514,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       BR.goAfter(url,'scan',220);
       return;
     }
-    next.dataset.cp=cp.id;
     startNavigation(cp);
-  };
+  }
+  const runCheckpoint=()=>goToNearestCheckpoint();
   function bindTouchAction(el,handler){
     let suppressClickUntil=0;
     el.addEventListener('pointerup',e=>{
@@ -1579,7 +1577,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     status.textContent='ROUTE BOOT FAILED';
     status.classList.add('route-error');
     setAction(true,'Retry Route');
-    action.onclick=()=>location.reload();
+    routeActionHandler=()=>location.reload();
   }
 
   setInterval(()=>{
