@@ -9,7 +9,7 @@
 </head>
 <body>
 <main class="stage collection-stage">
-<img class="base" src="./assets/screen06-puzzle.webp?v=20261009-1452.1" alt="Collection Puzzle">
+<img class="base" src="./assets/screen06-puzzle.webp?v=20261022-artwork-2" alt="Collection Puzzle">
 <button id="back" class="collection-back" aria-label="Back to Collection Scan"></button>
 <select id="select" class="collection-select" aria-label="Select collection"></select>
 <div id="collectionName" class="collection-name" aria-hidden="true"></div>
@@ -24,7 +24,7 @@
 <style>
 /* COLLECTION PUZZLE — exact geometry for the supplied 954×1649 artwork.
    The supplied frame is non-uniform; live cells mirror the visible inner windows. */
-.hero-grid{left:48.05%!important;top:37.95%!important;width:47.15%!important;height:19.65%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow:hidden!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
+.hero-grid{left:46.45%!important;top:36.20%!important;width:50.05%!important;height:23.85%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow:hidden!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
   left:61.0%!important;
   top:64.4%!important;
   width:20.5%!important;
@@ -100,14 +100,14 @@
   function pieceCollected(cid,iid,num){return BR.hasPiece(cid,iid,num)}
   function imageComplete(cid,im){return BR.count(cid,im.imageId)>=9}
 
-  const HERO_COLS=[{left:0,width:31.65},{left:34.17,width:31.88},{left:68.35,width:31.65}]; const HERO_ROWS=[{top:0,height:32.05},{top:35.58,height:32.05},{top:70.83,height:29.17}];
+  const HERO_COLS=[{left:2.25,width:30.25},{left:35.25,width:30.25},{left:68.25,width:29.75}]; const HERO_ROWS=[{top:2.0,height:36.6},{top:40.8,height:30.4},{top:73.8,height:23.4}];
   function syncHeroCrops(){if(!hero.children.length)return;const gw=hero.clientWidth,gh=hero.clientHeight;if(!gw||!gh)return;[...hero.children].forEach((cell,n)=>{const col=n%3,row=Math.floor(n/3),c=HERO_COLS[col],r=HERO_ROWS[row];cell.style.left=c.left+'%';cell.style.top=r.top+'%';cell.style.width=c.width+'%';cell.style.height=r.height+'%';cell.style.backgroundSize=gw+'px '+gh+'px';cell.style.backgroundPosition=(-gw*c.left/100)+'px '+(-gh*r.top/100)+'px';});}
   function renderHero(im){hero.classList.remove('completed');hero.innerHTML='';hero.style.backgroundImage='';if(!im)return;for(let n=1;n<=9;n++){const collected=pieceCollected(collectionId,im.imageId,n);const cell=document.createElement('div');cell.className='hero-piece '+(collected?'is-collected':'is-missing');hero.appendChild(cell);}loadMaster(im.masterFile).then(img=>{if(!img)return;const bg='url("' + img.src + '")';[...hero.children].forEach(cell=>cell.style.backgroundImage=bg);syncHeroCrops();if(imageComplete(collectionId,im)){hero.innerHTML='';hero.classList.add('completed');hero.style.backgroundImage=bg;hero.style.backgroundSize='100% 100%';hero.style.backgroundPosition='center';}});requestAnimationFrame(syncHeroCrops);}
   
 
   const positions=[
-    [2.83,73.07,17.50,9.82],[21.70,73.07,17.50,9.82],[40.46,73.07,17.50,9.82],[58.70,73.07,17.60,9.82],[77.36,73.07,17.60,9.82],
-    [2.83,83.32,17.50,9.82],[21.70,83.32,17.50,9.82],[40.46,83.32,17.50,9.82],[58.70,83.32,17.60,9.82],[77.36,83.32,17.60,9.82]
+    [3.14,73.98,17.30,8.80],[21.59,73.98,17.40,8.80],[40.04,73.98,17.40,8.80],[58.49,73.98,17.50,8.80],[76.94,73.98,17.40,8.80],
+    [3.14,83.32,17.30,9.16],[21.59,83.32,17.40,9.16],[40.04,83.32,17.40,9.16],[58.49,83.32,17.50,9.16],[76.94,83.32,17.40,9.16]
   ];
 
   async function buildThumbs(cfg){
