@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261009-1452.1">
+<link rel="stylesheet" href="./styles.css?v=20261022-precision-1">
 <script src="./config.js?v=20261006-23.8"></script>
 </head>
 <body>
@@ -24,7 +24,7 @@
 <style>
 /* COLLECTION PUZZLE — exact geometry for the supplied 954×1649 artwork.
    The supplied frame is non-uniform; live cells mirror the visible inner windows. */
-.hero-grid{left:46.96%!important;top:37.11%!important;width:45.70%!important;height:18.92%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
+.hero-grid{left:46.25%!important;top:37.20%!important;width:48.65%!important;height:20.90%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow:hidden!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
   left:61.0%!important;
   top:64.4%!important;
   width:20.5%!important;
@@ -85,11 +85,16 @@
     masters.set(url,promise);return promise;
   }
 
-  function crop(el,piece){
-    const row=Number(piece?.row||1),col=Number(piece?.column||1);
-    el.style.backgroundSize='300% 300%';
-    el.style.backgroundPosition=((col-1)*50)+'% '+((row-1)*50)+'%';
-    el.style.backgroundRepeat='no-repeat';
+  function syncThumbCrops(grid){
+    if(!grid)return;
+    const gw=grid.clientWidth,gh=grid.clientHeight;
+    if(!gw||!gh)return;
+    [...grid.children].forEach((cell,n)=>{
+      const col=n%3,row=Math.floor(n/3);
+      cell.style.backgroundSize=gw+'px '+gh+'px';
+      cell.style.backgroundPosition=(-gw*col/3)+'px '+(-gh*row/3)+'px';
+      cell.style.backgroundRepeat='no-repeat';
+    });
   }
 
   function pieceCollected(cid,iid,num){return BR.hasPiece(cid,iid,num)}
@@ -112,13 +117,13 @@
       const p=positions[idx];b.style.cssText='left:'+p[0]+'%;top:'+p[1]+'%;width:'+p[2]+'%;height:'+p[3]+'%';
       const grid=document.createElement('div');grid.className='thumb-grid';
       for(let n=1;n<=9;n++){
-        const cell=document.createElement('span');cell.className='thumb-piece';crop(cell,im.pieces?.[n-1]);
+        const cell=document.createElement('span');cell.className='thumb-piece';
         cell.classList.toggle('is-missing',!pieceCollected(collectionId,im.imageId,n));cell.classList.toggle('is-collected',pieceCollected(collectionId,im.imageId,n));
         grid.appendChild(cell);
       }
       b.appendChild(grid);thumbs.appendChild(b);
       b.onclick=()=>{BR.play('tap');BR.haptic('tap');renderImage(im.imageId)};
-      const thumb=thumbUrl(im.masterFile); [...grid.children].forEach(cell=>cell.style.backgroundImage='url("'+thumb+'")');
+      const thumb=thumbUrl(im.masterFile); [...grid.children].forEach(cell=>cell.style.backgroundImage='url("'+thumb+'")'); syncThumbCrops(grid);
     }
   }
 
@@ -211,7 +216,10 @@
     BR.safeSession.set('barameelCollectionParent','screen06.html');
     BR.goAfter('screen05.html','scan',220);
   };
-  window.addEventListener('resize',()=>{if(!hero.classList.contains('completed'))syncHeroCrops()},{passive:true});
+  window.addEventListener('resize',()=>{
+    if(!hero.classList.contains('completed'))syncHeroCrops();
+    thumbs.querySelectorAll('.thumb-grid').forEach(syncThumbCrops);
+  },{passive:true});
   BR.track('collection_hunt_view',{collection_id:collectionId});
 })();
 </script>
