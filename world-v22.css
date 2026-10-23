@@ -35,3 +35,17 @@
 
 /* Reduced-motion fallback: never leave the World Hub trapped on its dark/off artwork. */
 @media (prefers-reduced-motion: reduce){.world-hub-stage .world-dark-state{opacity:0!important;animation:none!important}.world-hub-stage .world-neon-logo{filter:brightness(1.08) saturate(1.12) drop-shadow(0 0 8px rgba(255,135,30,.7)) drop-shadow(0 0 20px rgba(255,77,25,.4)) drop-shadow(0 0 27px rgba(20,170,255,.35))!important}.world-hub-stage .world-neon-impact{animation:none!important;opacity:.09!important}}
+
+/* MOBILE WORLD HUB FIT — fill the available portrait viewport without changing hotspot coordinates.
+   Artwork layers use object-fit:fill, so the art and transparent hit areas stretch together. */
+@media screen and (max-width:600px) and (orientation:portrait){
+  .world-hub-stage#worldHub{
+    width:100vw!important;
+    height:100vh!important;
+    height:100dvh!important;
+    min-height:100svh;
+    max-width:none!important;
+    aspect-ratio:auto!important;
+    margin:0!important;
+  }
+}
