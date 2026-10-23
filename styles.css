@@ -206,7 +206,7 @@ button,input,select{font:inherit}
 
 .collection-thumbs{position:absolute;inset:0;z-index:35;pointer-events:none}
 .collection-thumb{position:absolute;border:0;background:transparent;padding:0;overflow:hidden;pointer-events:auto;cursor:pointer;min-width:0;min-height:0}
-.thumb-grid{position:absolute;left:4.70%;top:17.10%;width:89.40%;height:75.00%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);column-gap:3px;row-gap:2px;padding:0;overflow:hidden;z-index:2}
+.thumb-grid{position:absolute;left:4.50%;top:5.50%;width:91.00%;height:88.00%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);column-gap:3px;row-gap:2px;padding:0;overflow:hidden;z-index:2}
 .thumb-piece{min-width:0;min-height:0;background-repeat:no-repeat;background-color:transparent;background-clip:padding-box}
  .collection-thumb::before{content:attr(data-num);position:absolute;z-index:5;left:2.2%;top:1.4%;width:24.0%;aspect-ratio:1/1;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f6c51b;color:#071a20;font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:clamp(9px,2.02vw,18px);font-weight:400;line-height:1;letter-spacing:.015em;border:2px solid #071a20;box-shadow:0 2px 0 rgba(0,0,0,.55),0 0 0 1px #f6c51b,0 0 8px rgba(246,197,27,.28);text-shadow:none;pointer-events:none}
 /* No /9 or collected-count text: the supplied artwork intentionally owns the card footer. */
