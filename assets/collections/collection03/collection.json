@@ -1,0 +1,1110 @@
+{
+  "collectionId": "collection03",
+  "displayName": "EGYPTIAN TREASURES",
+  "status": "implementation-ready",
+  "imageCount": 10,
+  "piecesPerImage": 9,
+  "grid": {
+    "rows": 3,
+    "columns": 3
+  },
+  "printReferenceTotal": 10000,
+  "images": [
+    {
+      "imageId": "egyptiantreasures-image01",
+      "imageNumber": 1,
+      "displayName": "Bastet",
+      "description": "Bastet: The Sacred Cat",
+      "masterFile": "assets/collections/collection03/masters/image01-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image01-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image01-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image01-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image01-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image01-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image01-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image01-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image01-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image01-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image01-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "egyptiantreasures-image02",
+      "imageNumber": 2,
+      "displayName": "Cleopatra",
+      "description": "Cleopatra: Queen of the Nile",
+      "masterFile": "assets/collections/collection03/masters/image02-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image02-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image02-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image02-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image02-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image02-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image02-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image02-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image02-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image02-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image02-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "egyptiantreasures-image03",
+      "imageNumber": 3,
+      "displayName": "Tutankhamun",
+      "description": "Tutankhamun: Golden Pharaoh",
+      "masterFile": "assets/collections/collection03/masters/image03-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image03-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image03-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image03-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image03-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image03-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image03-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image03-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image03-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image03-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image03-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "egyptiantreasures-image04",
+      "imageNumber": 4,
+      "displayName": "Hatshepsut Temple",
+      "description": "Hatshepsut Temple Under a Starry Moon",
+      "masterFile": "assets/collections/collection03/masters/image04-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image04-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image04-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image04-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image04-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image04-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image04-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image04-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image04-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image04-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image04-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "egyptiantreasures-image05",
+      "imageNumber": 5,
+      "displayName": "Karnak Temple",
+      "description": "Karnak Temple: Echoes of Ancient Egypt",
+      "masterFile": "assets/collections/collection03/masters/image05-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image05-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image05-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image05-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image05-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image05-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image05-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image05-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image05-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image05-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image05-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "egyptiantreasures-image06",
+      "imageNumber": 6,
+      "displayName": "Nefertiti",
+      "description": "Nefertiti: Golden Queen of Antiquity",
+      "masterFile": "assets/collections/collection03/masters/image06-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image06-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image06-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image06-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image06-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image06-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image06-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image06-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image06-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image06-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image06-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "egyptiantreasures-image07",
+      "imageNumber": 7,
+      "displayName": "Psusennes I",
+      "description": "Psusennes I: Golden Pharaoh Mask",
+      "masterFile": "assets/collections/collection03/masters/image07-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image07-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image07-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image07-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image07-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image07-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image07-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image07-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image07-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image07-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image07-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "egyptiantreasures-image08",
+      "imageNumber": 8,
+      "displayName": "Ramses II",
+      "description": "Ramses II: Egypt’s Sunlit Colossus",
+      "masterFile": "assets/collections/collection03/masters/image08-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image08-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image08-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image08-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image08-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image08-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image08-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image08-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image08-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image08-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image08-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "egyptiantreasures-image09",
+      "imageNumber": 9,
+      "displayName": "Giza Pyramids",
+      "description": "Giza Pyramids: Ancient Wonders",
+      "masterFile": "assets/collections/collection03/masters/image09-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image09-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image09-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image09-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image09-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image09-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image09-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image09-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image09-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image09-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image09-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "egyptiantreasures-image10",
+      "imageNumber": 10,
+      "displayName": "Khafre Temple",
+      "description": "Khafre Temple: Ancient Egyptian Monument",
+      "masterFile": "assets/collections/collection03/masters/image10-master.webp",
+      "thumbnailFile": "assets/collections/collection03/masters/image10-master.webp",
+      "pieces": [
+        {
+          "piece_id": "egyptiantreasures-image10-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image10-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image10-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image10-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image10-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image10-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image10-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image10-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "egyptiantreasures-image10-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    }
+  ],
+  "uiRules": {
+    "topDropdown": "Select collection; current collection is EGYPTIAN TREASURES.",
+    "mainImage": "Shows selected image or auto-focuses to image identified by latest successful QR scan.",
+    "thumbnailGallery": "10 images; thumbnails follow the same geometry as ALEXANDRIA and CAR LEGENDS.",
+    "pieceGrid": "3x3; piece positions are fixed by piece_number."
+  }
+}
