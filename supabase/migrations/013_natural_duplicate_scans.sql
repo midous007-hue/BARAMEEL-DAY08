@@ -65,25 +65,25 @@ begin
   where cp.active
     and not exists(select 1 from public.player_pieces pp where pp.player_id=p_player_id and pp.piece_id=cp.id);
 
-  if total_missing > 0 then
-    select sum(cp.weight) into target
-    from public.collection_pieces cp
-    where cp.active;
+  -- Draw from the full weighted pool, including already-owned pieces.
+  -- A repeat remains a real scan attempt, but awards no points.
+  select sum(cp.weight) into target
+  from public.collection_pieces cp
+  where cp.active;
 
-    target := random() * target;
-    for rec in
-      select cp.*
-      from public.collection_pieces cp
-      where cp.active
-      order by cp.id
-    loop
-      cumulative := cumulative + rec.weight;
-      if cumulative >= target then
-        chosen := rec;
-        exit;
-      end if;
-    end loop;
-  end if;
+  target := random() * target;
+  for rec in
+    select cp.*
+    from public.collection_pieces cp
+    where cp.active
+    order by cp.id
+  loop
+    cumulative := cumulative + rec.weight;
+    if cumulative >= target then
+      chosen := rec;
+      exit;
+    end if;
+  end loop;
 
   if chosen.id is not null then
     select * into chosen_image from public.collection_images where id=chosen.image_id;
