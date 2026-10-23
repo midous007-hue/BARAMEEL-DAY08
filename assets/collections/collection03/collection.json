@@ -285,8 +285,8 @@
           "piece_number": 5,
           "row": 2,
           "column": 2,
-          "rarity": "UNCOMMON",
-          "points": 20000,
+          "rarity": "EPIC",
+          "points": 60000,
           "print_qty_per_10000": null,
           "print_share_percent": null,
           "piece_source": "master crop"
@@ -830,8 +830,8 @@
           "piece_number": 5,
           "row": 2,
           "column": 2,
-          "rarity": "UNCOMMON",
-          "points": 20000,
+          "rarity": "EPIC",
+          "points": 60000,
           "print_qty_per_10000": null,
           "print_share_percent": null,
           "piece_source": "master crop"
@@ -939,8 +939,8 @@
           "piece_number": 5,
           "row": 2,
           "column": 2,
-          "rarity": "UNCOMMON",
-          "points": 20000,
+          "rarity": "LEGENDARY",
+          "points": 80000,
           "print_qty_per_10000": null,
           "print_share_percent": null,
           "piece_source": "master crop"
@@ -1048,8 +1048,8 @@
           "piece_number": 5,
           "row": 2,
           "column": 2,
-          "rarity": "UNCOMMON",
-          "points": 20000,
+          "rarity": "MYTHIC",
+          "points": 100000,
           "print_qty_per_10000": null,
           "print_share_percent": null,
           "piece_source": "master crop"
