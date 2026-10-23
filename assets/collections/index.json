@@ -5,6 +5,11 @@
       "id": "collection01",
       "displayName": "ALEXANDRIA",
       "path": "assets/collections/collection01/collection.json"
+    },
+    {
+      "id": "collection02",
+      "displayName": "CAR LEGENDS",
+      "path": "assets/collections/collection02/collection.json"
     }
   ]
 }
