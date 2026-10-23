@@ -184,7 +184,7 @@
       else{audio.pause();try{audio.currentTime=0;}catch(e){}audio.muted=wasMuted;}
     });
   }
-  ['pointerdown','touchstart','keydown'].forEach(type=>document.addEventListener(type,unlockRewardAudio,{once:true,capture:true,passive:true}));
+  ['pointerdown','touchstart','keydown'].forEach(type=>document.addEventListener(type,unlockRewardAudio,{capture:true,passive:true}));
 
   function playRewardAudio(audio){
     if(!audio)return;
