@@ -10,6 +10,11 @@
       "id": "collection02",
       "displayName": "CAR LEGENDS",
       "path": "assets/collections/collection02/collection.json"
+    },
+    {
+      "id": "collection03",
+      "displayName": "EGYPTIAN TREASURES",
+      "path": "assets/collections/collection03/collection.json"
     }
   ]
 }
