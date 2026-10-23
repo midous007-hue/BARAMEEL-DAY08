@@ -3,8 +3,8 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261023-car-legends-1';
-  const STORAGE = 'barameel.world.player.v23.6';
+  const VERSION = '20261023-egyptian-treasures-1';
+  const STORAGE = 'barameel.world.player.v23.7';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
   const SUPABASE_KEY = String(window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY || '');
