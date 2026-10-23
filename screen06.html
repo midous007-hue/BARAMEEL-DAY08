@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261023-reward-position-duration-1">
+<link rel="stylesheet" href="./styles.css?v=20261023-duplicate-jackpot-1">
 <script src="./config.js?v=20261006-23.8"></script>
 </head>
 <body>
@@ -168,7 +168,10 @@
   const rewardWord=points=>Number(points)>=60000?'JACKPOT':Number(points)>=40000?'SPECTACULAR':Number(points)>=20000?'AMAZING':'SUPER';
   const rewardAssets={SUPER:'./assets/rewards/reward-super.webp',AMAZING:'./assets/rewards/reward-amazing.webp',SPECTACULAR:'./assets/rewards/reward-spectacular.webp',JACKPOT:'./assets/rewards/reward-jackpot.webp'};
   const rewardAudioFiles={SUPER:'./assets/rewards/reward-super.mp3',AMAZING:'./assets/rewards/reward-amazing.mp3',SPECTACULAR:'./assets/rewards/reward-spectacular.mp3',JACKPOT:'./assets/rewards/reward-jackpot.mp3'};
-  const rewardDisplayMs={SUPER:4957,AMAZING:5305,SPECTACULAR:5828,JACKPOT:10041};
+  const rewardDisplayMs={SUPER:4957,AMAZING:5305,SPECTACULAR:5828,JACKPOT:10041,DUPLICATE:2832};
+  const duplicateAsset='./assets/rewards/already-claimed.webp';
+  const duplicateAudioFile='./assets/rewards/reward-duplicate.mp3';
+  const duplicateAudio=new Audio(duplicateAudioFile);duplicateAudio.preload='auto';duplicateAudio.load();
   const rewardAudio={};
   let rewardAudioUnlocked=false;
   Object.entries(rewardAudioFiles).forEach(([word,src])=>{const audio=new Audio();audio.preload='auto';audio.src=src;audio.load();rewardAudio[word]=audio;});
@@ -193,9 +196,9 @@
     if(p&&typeof p.catch==='function')p.catch(err=>{console.warn('Reward audio playback was blocked or failed:',err);});
   }
 
-  function showReward(points){
-    const n=Number(points)||0;if(!n)return;
-    const word=rewardWord(n),src=rewardAssets[word],audio=rewardAudio[word];
+  function showReward(points,forceJackpot=false){
+    const n=Number(points)||0;if(!n&&!forceJackpot)return;
+    const word=forceJackpot?'JACKPOT':rewardWord(n),src=rewardAssets[word],audio=rewardAudio[word];
     rewardFlashImage.src=src;rewardFlashImage.alt=word;
     rewardFlash.style.setProperty('--flash-art','url("' + src + '")');
     rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
@@ -205,7 +208,7 @@
     showReward.timer=window.setTimeout(()=>rewardFlash.classList.remove('on'),rewardDisplayMs[word]||4000);
   }
 
-  async function reveal(points,rarity){
+  async function reveal(points,rarity,collectionCompleted=false){
     const n=Number(points)||0;if(!n)return;
     pointsNumber.textContent='';
     pointsBadge.className='points-badge '+String(rarity||'COMMON').toLowerCase()+' revealing';
@@ -220,8 +223,9 @@
     });
     pointsBadge.classList.remove('revealing');
     await new Promise(resolve=>setTimeout(resolve,90));
-    showReward(n);
-    if(['EPIC','LEGENDARY','MYTHIC'].includes(String(rarity||'').toUpperCase()))BR.playJackpot(rarity,.02);
+    showReward(n,collectionCompleted);
+    if(collectionCompleted)BR.playJackpot('MYTHIC',.02);
+    else if(['EPIC','LEGENDARY','MYTHIC'].includes(String(rarity||'').toUpperCase()))BR.playJackpot(rarity,.02);
   }
 
   try{index=await BR.listCollections()}catch(e){index=[{id:'collection01',displayName:'ALEXANDRIA'}]}
@@ -229,7 +233,14 @@
 
   if(handoff){
     const pts=Number(handoff.points||handoff.points_awarded||0);
-    if(pts&&!handoff.duplicate)reveal(pts,handoff.rarity);
+    if(handoff.duplicate){
+      rewardFlashImage.src=duplicateAsset;rewardFlashImage.alt='ALREADY CLAIMED';
+      rewardFlash.style.setProperty('--flash-art','url("'+duplicateAsset+'")');
+      rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
+      try{duplicateAudio.pause();duplicateAudio.currentTime=0;}catch(e){}
+      duplicateAudio.play().catch(err=>console.warn('Duplicate sound playback failed:',err));
+      window.clearTimeout(showReward.timer);showReward.timer=window.setTimeout(()=>rewardFlash.classList.remove('on'),rewardDisplayMs.DUPLICATE);
+    }else if(pts)reveal(pts,handoff.rarity,!!handoff.collection_completed);
     BR.safeSession.remove('barameelLastScan');
   }
 
