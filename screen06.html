@@ -126,7 +126,7 @@
       }
       b.appendChild(grid);thumbs.appendChild(b);
       b.onclick=()=>{BR.play('tap');BR.haptic('tap');renderImage(im.imageId)};
-      const thumb=thumbUrl(im.masterFile); [...grid.children].forEach(cell=>cell.style.backgroundImage='url("'+thumb+'")'); syncThumbCrops(grid);
+      const thumb=thumbUrl(im.masterFile); [...grid.children].forEach(cell=>cell.style.backgroundImage='url("'+thumb+'")'); loadMaster(im.masterFile).then(source=>syncThumbCrops(grid,source));
     }
   }
 
