@@ -1,0 +1,1110 @@
+{
+  "collectionId": "collection02",
+  "displayName": "CAR LEGENDS",
+  "status": "implementation-ready",
+  "imageCount": 10,
+  "piecesPerImage": 9,
+  "grid": {
+    "rows": 3,
+    "columns": 3
+  },
+  "printReferenceTotal": 10000,
+  "images": [
+    {
+      "imageId": "carlegends-image01",
+      "imageNumber": 1,
+      "displayName": "Ford Mustang Fastback 1967",
+      "description": "1967 Ford Mustang Fastback",
+      "masterFile": "assets/collections/collection02/masters/image01-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image01-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image01-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image01-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image01-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image01-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image01-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image01-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image01-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image01-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image01-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "carlegends-image02",
+      "imageNumber": 2,
+      "displayName": "Chevrolet Corvette Sting Ray 1963",
+      "description": "1963 Chevrolet Corvette Sting Ray",
+      "masterFile": "assets/collections/collection02/masters/image02-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image02-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image02-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image02-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image02-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image02-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image02-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image02-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image02-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image02-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image02-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "carlegends-image03",
+      "imageNumber": 3,
+      "displayName": "Porsche 911 Carrera RS 2.7 1973",
+      "description": "1973 Porsche 911 Carrera RS 2.7",
+      "masterFile": "assets/collections/collection02/masters/image03-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image03-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image03-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image03-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image03-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image03-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image03-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "EPIC",
+          "points": 60000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image03-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image03-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image03-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image03-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "carlegends-image04",
+      "imageNumber": 4,
+      "displayName": "Mercedes-Benz 300 SL Gullwing 1955",
+      "description": "1955 Mercedes-Benz 300 SL Gullwing",
+      "masterFile": "assets/collections/collection02/masters/image04-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image04-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image04-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image04-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image04-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image04-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image04-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image04-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image04-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image04-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image04-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "carlegends-image05",
+      "imageNumber": 5,
+      "displayName": "Dodge Charger R/T 1969",
+      "description": "1969 Dodge Charger R/T",
+      "masterFile": "assets/collections/collection02/masters/image05-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image05-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image05-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image05-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image05-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image05-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image05-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image05-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image05-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image05-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image05-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "carlegends-image06",
+      "imageNumber": 6,
+      "displayName": "Jaguar E-Type 1961",
+      "description": "1961 Jaguar E-Type",
+      "masterFile": "assets/collections/collection02/masters/image06-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image06-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image06-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image06-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image06-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image06-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image06-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image06-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image06-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image06-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image06-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "carlegends-image07",
+      "imageNumber": 7,
+      "displayName": "Volkswagen Beetle 1967",
+      "description": "1967 Volkswagen Beetle",
+      "masterFile": "assets/collections/collection02/masters/image07-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image07-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image07-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image07-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image07-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image07-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image07-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image07-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image07-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image07-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image07-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "carlegends-image08",
+      "imageNumber": 8,
+      "displayName": "Ford GT40 1966",
+      "description": "1966 Ford GT40",
+      "masterFile": "assets/collections/collection02/masters/image08-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image08-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image08-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image08-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image08-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image08-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image08-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "EPIC",
+          "points": 60000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image08-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image08-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image08-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image08-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "carlegends-image09",
+      "imageNumber": 9,
+      "displayName": "Aston Martin DB5 1965",
+      "description": "1965 Aston Martin DB5",
+      "masterFile": "assets/collections/collection02/masters/image09-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image09-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image09-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image09-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image09-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image09-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image09-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "LEGENDARY",
+          "points": 80000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image09-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image09-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image09-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image09-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    },
+    {
+      "imageId": "carlegends-image10",
+      "imageNumber": 10,
+      "displayName": "Lamborghini Miura P400 1968",
+      "description": "1968 Lamborghini Miura P400",
+      "masterFile": "assets/collections/collection02/masters/image10-master.webp",
+      "thumbnailFile": "assets/collections/collection02/masters/image10-master.webp",
+      "pieces": [
+        {
+          "piece_id": "carlegends-image10-piece01",
+          "piece_number": 1,
+          "row": 1,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image10-piece02",
+          "piece_number": 2,
+          "row": 1,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image10-piece03",
+          "piece_number": 3,
+          "row": 1,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image10-piece04",
+          "piece_number": 4,
+          "row": 2,
+          "column": 1,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image10-piece05",
+          "piece_number": 5,
+          "row": 2,
+          "column": 2,
+          "rarity": "MYTHIC",
+          "points": 100000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image10-piece06",
+          "piece_number": 6,
+          "row": 2,
+          "column": 3,
+          "rarity": "RARE",
+          "points": 40000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image10-piece07",
+          "piece_number": 7,
+          "row": 3,
+          "column": 1,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image10-piece08",
+          "piece_number": 8,
+          "row": 3,
+          "column": 2,
+          "rarity": "UNCOMMON",
+          "points": 20000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        },
+        {
+          "piece_id": "carlegends-image10-piece09",
+          "piece_number": 9,
+          "row": 3,
+          "column": 3,
+          "rarity": "COMMON",
+          "points": 10000,
+          "print_qty_per_10000": null,
+          "print_share_percent": null,
+          "piece_source": "master crop"
+        }
+      ]
+    }
+  ],
+  "uiRules": {
+    "topDropdown": "Select collection; current collection is CAR LEGENDS.",
+    "mainImage": "Shows selected image or auto-focuses to image identified by latest successful QR scan.",
+    "thumbnailGallery": "10 images; thumbnails follow the same geometry as ALEXANDRIA.",
+    "pieceGrid": "3x3; piece positions are fixed by piece_number."
+  }
+}
