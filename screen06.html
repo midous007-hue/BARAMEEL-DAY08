@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261022-alignment-4">
+<link rel="stylesheet" href="./styles.css?v=20261023-figma-geometry-1">
 <script src="./config.js?v=20261006-23.8"></script>
 </head>
 <body>
 <main class="stage collection-stage">
-<img class="base" src="./assets/screen06-puzzle.webp?v=20261022-alignment-4" alt="Collection Puzzle">
+<img class="base" src="./assets/screen06-puzzle.webp?v=20261023-figma-geometry-1" alt="Collection Puzzle">
 <button id="back" class="collection-back" aria-label="Back to Collection Scan"></button>
 <select id="select" class="collection-select" aria-label="Select collection"></select>
 <div id="collectionName" class="collection-name" aria-hidden="true"></div>
@@ -22,13 +22,12 @@
 <div id="completeFlash" class="complete-flash"></div>
 <div id="imagePreload"></div>
 <style>
-/* COLLECTION PUZZLE — exact geometry for the supplied 954×1649 artwork.
-   The supplied frame is non-uniform; live cells mirror the visible inner windows. */
-.hero-grid{left:45.25%!important;top:37.45%!important;width:49.0%!important;height:22.35%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow:hidden!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
-  left:53.0%!important;
-  top:64.5%!important;
-  width:25.0%!important;
-  height:4.0%!important;
+/* COLLECTION PUZZLE — geometry read from Figma frame 10:130 (989×1591). */
+.hero-grid{left:45.20%!important;top:37.40%!important;width:49.14%!important;height:25.14%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow:hidden!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
+  left:54.70%!important;
+  top:63.36%!important;
+  width:30.54%!important;
+  height:3.96%!important;
   filter:none!important;
 }
 .points-number{
@@ -85,14 +84,15 @@
     masters.set(url,promise);return promise;
   }
 
-  function syncThumbCrops(grid){
+  function syncThumbCrops(grid,img){
     if(!grid)return;
     const gw=grid.clientWidth,gh=grid.clientHeight;
     if(!gw||!gh)return;
+    const cover=img?coverGeometry(img,gw,gh):{bw:gw,bh:gh,ox:0,oy:0};
     [...grid.children].forEach((cell,n)=>{
-      const col=n%3,row=Math.floor(n/3);
-      cell.style.backgroundSize=gw+'px '+gh+'px';
-      cell.style.backgroundPosition=(-gw*col/3)+'px '+(-gh*row/3)+'px';
+      const col=n%3,row=Math.floor(n/3),x=grid.clientWidth*col/3,y=grid.clientHeight*row/3;
+      cell.style.backgroundSize=cover.bw+'px '+cover.bh+'px';
+      cell.style.backgroundPosition=(-cover.ox-x)+'px '+(-cover.oy-y)+'px';
       cell.style.backgroundRepeat='no-repeat';
     });
   }
@@ -105,9 +105,10 @@
   function renderHero(im){hero.classList.remove('completed');hero.innerHTML='';hero.style.backgroundImage='';if(!im)return;for(let n=1;n<=9;n++){const collected=pieceCollected(collectionId,im.imageId,n);const cell=document.createElement('div');cell.className='hero-piece '+(collected?'is-collected':'is-missing');hero.appendChild(cell);}loadMaster(im.masterFile).then(img=>{if(!img)return;const bg='url("' + img.src + '")';[...hero.children].forEach(cell=>cell.style.backgroundImage=bg);syncHeroCrops();if(imageComplete(collectionId,im)){hero.innerHTML='';hero.classList.add('completed');hero.style.backgroundImage=bg;hero.style.backgroundSize='100% 100%';hero.style.backgroundPosition='center';}});requestAnimationFrame(syncHeroCrops);}
   
 
+  // Exact Figma frame 10:130 thumbnail bounds, normalized to 989×1591.
   const positions=[
-    [3.45,76.45,17.25,9.05],[21.75,76.45,17.25,9.05],[40.05,76.45,17.25,9.05],[58.35,76.45,17.25,9.05],[76.65,76.45,17.25,9.05],
-    [3.45,86.15,17.25,9.05],[21.75,86.15,17.25,9.05],[40.05,86.15,17.25,9.05],[58.35,86.15,17.25,9.05],[76.65,86.15,17.25,9.05]
+    [3.842,76.304,16.582,8.485],[22.245,76.304,16.582,8.485],[40.546,76.304,16.582,8.485],[58.544,76.304,16.582,8.485],[76.946,76.304,16.582,8.485],
+    [3.842,85.984,16.582,8.485],[22.245,85.984,16.582,8.485],[40.546,85.984,16.582,8.485],[58.544,85.984,16.582,8.485],[76.946,85.984,16.582,8.485]
   ];
 
   async function buildThumbs(cfg){
@@ -218,7 +219,7 @@
   };
   window.addEventListener('resize',()=>{
     if(!hero.classList.contains('completed'))syncHeroCrops();
-    thumbs.querySelectorAll('.thumb-grid').forEach(syncThumbCrops);
+    thumbs.querySelectorAll('.thumb-grid').forEach(grid=>{const b=grid.closest('.collection-thumb'),im=activeCfg?.images?.[Number(b?.dataset.num)-1];if(im)loadMaster(im.masterFile).then(source=>syncThumbCrops(grid,source));});
   },{passive:true});
   BR.track('collection_hunt_view',{collection_id:collectionId});
 })();
