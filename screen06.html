@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261023-duplicate-jackpot-1">
+<link rel="stylesheet" href="./styles.css?v=20261023-reward-audio-duration-2">
 <script src="./config.js?v=20261006-23.8"></script>
 </head>
 <body>
@@ -168,9 +168,9 @@
   const rewardWord=points=>Number(points)>=60000?'JACKPOT':Number(points)>=40000?'SPECTACULAR':Number(points)>=20000?'AMAZING':'SUPER';
   const rewardAssets={SUPER:'./assets/rewards/reward-super.webp',AMAZING:'./assets/rewards/reward-amazing.webp',SPECTACULAR:'./assets/rewards/reward-spectacular.webp',JACKPOT:'./assets/rewards/reward-jackpot.webp'};
   const rewardAudioFiles={SUPER:'./assets/rewards/reward-super.mp3',AMAZING:'./assets/rewards/reward-amazing.mp3',SPECTACULAR:'./assets/rewards/reward-spectacular.mp3',JACKPOT:'./assets/rewards/reward-jackpot.mp3'};
-  const rewardDisplayMs={SUPER:4957,AMAZING:5305,SPECTACULAR:5828,JACKPOT:10041,DUPLICATE:4000};
+  const rewardDisplayMs={SUPER:7000,AMAZING:7500,SPECTACULAR:8000,JACKPOT:12000,DUPLICATE:6500};
   const duplicateAsset='./assets/rewards/already-claimed.webp';
-  const duplicateAudioFile='./assets/rewards/reward-duplicate.mp3';
+  const duplicateAudioFile='./assets/rewards/arcade_game_fall_tone_001.mp3';
   const duplicateAudio=new Audio(duplicateAudioFile);duplicateAudio.preload='auto';duplicateAudio.load();
   const rewardAudio={};
   let rewardAudioUnlocked=false;
@@ -180,7 +180,7 @@
   function unlockRewardAudio(){
     if(rewardAudioUnlocked)return;
     rewardAudioUnlocked=true;
-    Object.values(rewardAudio).forEach(audio=>{
+    [...Object.values(rewardAudio),duplicateAudio].forEach(audio=>{
       const wasMuted=audio.muted;audio.muted=true;
       const p=audio.play();
       if(p&&typeof p.then==='function')p.then(()=>{audio.pause();try{audio.currentTime=0;}catch(e){}audio.muted=wasMuted;}).catch(()=>{audio.muted=wasMuted;rewardAudioUnlocked=false;});
@@ -199,6 +199,8 @@
   function showReward(points,forceJackpot=false){
     const n=Number(points)||0;if(!n&&!forceJackpot)return;
     const word=forceJackpot?'JACKPOT':rewardWord(n),src=rewardAssets[word],audio=rewardAudio[word];
+    rewardFlash.style.setProperty('--reward-duration',(rewardDisplayMs[word]||7000)+'ms');
+    rewardFlash.dataset.rewardType=word;
     rewardFlashImage.src=src;rewardFlashImage.alt=word;
     rewardFlash.style.setProperty('--flash-art','url("' + src + '")');
     rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
@@ -233,11 +235,14 @@
   if(handoff){
     const pts=Number(handoff.points||handoff.points_awarded||0);
     if(handoff.duplicate){
+      rewardFlash.style.setProperty('--reward-duration',rewardDisplayMs.DUPLICATE+'ms');
+      rewardFlash.dataset.rewardType='DUPLICATE';
       rewardFlashImage.src=duplicateAsset;rewardFlashImage.alt='ALREADY CLAIMED';
       rewardFlash.style.setProperty('--flash-art','url("'+duplicateAsset+'")');
       rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
       try{duplicateAudio.pause();duplicateAudio.currentTime=0;}catch(e){}
-      duplicateAudio.play().catch(err=>console.warn('Duplicate sound playback failed:',err));
+      const duplicatePlay=duplicateAudio.play();
+      if(duplicatePlay&&typeof duplicatePlay.catch==='function')duplicatePlay.catch(err=>console.warn('Duplicate sound playback failed:',err));
       window.clearTimeout(showReward.timer);showReward.timer=window.setTimeout(()=>rewardFlash.classList.remove('on'),rewardDisplayMs.DUPLICATE);
     }else if(pts)reveal(pts,handoff.rarity,!!handoff.collection_completed);
     BR.safeSession.remove('barameelLastScan');
