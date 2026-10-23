@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261023-reward-audio-duration-2">
+<link rel="stylesheet" href="./styles.css?v=20261023-reliable-reward-audio-1">
 <script src="./config.js?v=20261006-23.8"></script>
 </head>
 <body>
@@ -174,26 +174,44 @@
   const duplicateAudio=new Audio(duplicateAudioFile);duplicateAudio.preload='auto';duplicateAudio.load();
   const rewardAudio={};
   let rewardAudioUnlocked=false;
+  let pendingRewardAudio=null;
   Object.entries(rewardAudioFiles).forEach(([word,src])=>{const audio=new Audio();audio.preload='auto';audio.src=src;audio.load();rewardAudio[word]=audio;});
-  // Unlock every reward clip during the first real user gesture; mobile browsers may block
-  // playback when the reward appears later after asynchronous animations.
+
+  // Prime audio elements on a real gesture. If a browser still blocks a clip,
+  // keep it pending and retry on the next user interaction rather than silently dropping it.
   function unlockRewardAudio(){
-    if(rewardAudioUnlocked)return;
     rewardAudioUnlocked=true;
     [...Object.values(rewardAudio),duplicateAudio].forEach(audio=>{
-      const wasMuted=audio.muted;audio.muted=true;
-      const p=audio.play();
-      if(p&&typeof p.then==='function')p.then(()=>{audio.pause();try{audio.currentTime=0;}catch(e){}audio.muted=wasMuted;}).catch(()=>{audio.muted=wasMuted;rewardAudioUnlocked=false;});
-      else{audio.pause();try{audio.currentTime=0;}catch(e){}audio.muted=wasMuted;}
+      const wasMuted=audio.muted;
+      audio.muted=true;
+      try{
+        const p=audio.play();
+        if(p&&typeof p.then==='function'){
+          p.then(()=>{audio.pause();try{audio.currentTime=0;}catch(e){}audio.muted=wasMuted;})
+           .catch(()=>{audio.muted=wasMuted;});
+        }else{audio.pause();try{audio.currentTime=0;}catch(e){}audio.muted=wasMuted;}
+      }catch(e){audio.muted=wasMuted;}
     });
+    if(pendingRewardAudio){
+      const pending=pendingRewardAudio;pendingRewardAudio=null;
+      playRewardAudio(pending);
+    }
   }
   ['pointerdown','touchstart','keydown'].forEach(type=>document.addEventListener(type,unlockRewardAudio,{capture:true,passive:true}));
 
   function playRewardAudio(audio){
     if(!audio)return;
     try{audio.pause();audio.currentTime=0;}catch(e){}
-    const p=audio.play();
-    if(p&&typeof p.catch==='function')p.catch(err=>{console.warn('Reward audio playback was blocked or failed:',err);});
+    try{
+      const p=audio.play();
+      if(p&&typeof p.catch==='function')p.catch(err=>{
+        console.warn('Reward audio playback was blocked; waiting for next user gesture:',err);
+        pendingRewardAudio=audio;
+      });
+    }catch(err){
+      console.warn('Reward audio playback failed; waiting for next user gesture:',err);
+      pendingRewardAudio=audio;
+    }
   }
 
   function showReward(points,forceJackpot=false){
@@ -241,8 +259,7 @@
       rewardFlash.style.setProperty('--flash-art','url("'+duplicateAsset+'")');
       rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
       try{duplicateAudio.pause();duplicateAudio.currentTime=0;}catch(e){}
-      const duplicatePlay=duplicateAudio.play();
-      if(duplicatePlay&&typeof duplicatePlay.catch==='function')duplicatePlay.catch(err=>console.warn('Duplicate sound playback failed:',err));
+      playRewardAudio(duplicateAudio);
       window.clearTimeout(showReward.timer);showReward.timer=window.setTimeout(()=>rewardFlash.classList.remove('on'),rewardDisplayMs.DUPLICATE);
     }else if(pts)reveal(pts,handoff.rarity,!!handoff.collection_completed);
     BR.safeSession.remove('barameelLastScan');
