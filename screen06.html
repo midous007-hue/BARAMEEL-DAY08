@@ -168,7 +168,7 @@
   const rewardWord=points=>Number(points)>=60000?'JACKPOT':Number(points)>=40000?'SPECTACULAR':Number(points)>=20000?'AMAZING':'SUPER';
   const rewardAssets={SUPER:'./assets/rewards/reward-super.webp',AMAZING:'./assets/rewards/reward-amazing.webp',SPECTACULAR:'./assets/rewards/reward-spectacular.webp',JACKPOT:'./assets/rewards/reward-jackpot.webp'};
   const rewardAudioFiles={SUPER:'./assets/rewards/reward-super.mp3',AMAZING:'./assets/rewards/reward-amazing.mp3',SPECTACULAR:'./assets/rewards/reward-spectacular.mp3',JACKPOT:'./assets/rewards/reward-jackpot.mp3'};
-  const rewardDisplayMs={SUPER:4957,AMAZING:5305,SPECTACULAR:5828,JACKPOT:10041,DUPLICATE:2832};
+  const rewardDisplayMs={SUPER:4957,AMAZING:5305,SPECTACULAR:5828,JACKPOT:10041,DUPLICATE:4000};
   const duplicateAsset='./assets/rewards/already-claimed.webp';
   const duplicateAudioFile='./assets/rewards/reward-duplicate.mp3';
   const duplicateAudio=new Audio(duplicateAudioFile);duplicateAudio.preload='auto';duplicateAudio.load();
@@ -224,8 +224,7 @@
     pointsBadge.classList.remove('revealing');
     await new Promise(resolve=>setTimeout(resolve,90));
     showReward(n,collectionCompleted);
-    if(collectionCompleted)BR.playJackpot('MYTHIC',.02);
-    else if(['EPIC','LEGENDARY','MYTHIC'].includes(String(rarity||'').toUpperCase()))BR.playJackpot(rarity,.02);
+    if(!collectionCompleted&&['EPIC','LEGENDARY','MYTHIC'].includes(String(rarity||'').toUpperCase()))BR.playJackpot(rarity,.02);
   }
 
   try{index=await BR.listCollections()}catch(e){index=[{id:'collection01',displayName:'ALEXANDRIA'}]}
