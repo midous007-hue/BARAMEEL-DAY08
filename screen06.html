@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261023-reward-audio-1">
+<link rel="stylesheet" href="./styles.css?v=20261023-reward-audio-2">
 <script src="./config.js?v=20261006-23.8"></script>
 </head>
 <body>
 <main class="stage collection-stage">
-<img class="base" src="./assets/screen06-puzzle.webp?v=20261023-reward-audio-1" alt="Collection Puzzle">
+<img class="base" src="./assets/screen06-puzzle.webp?v=20261023-reward-audio-2" alt="Collection Puzzle">
 <button id="back" class="collection-back" aria-label="Back to Collection Scan"></button>
 <select id="select" class="collection-select" aria-label="Select collection"></select>
 <div id="collectionName" class="collection-name" aria-hidden="true"></div>
@@ -170,7 +170,28 @@
   const rewardAudioFiles={SUPER:'./assets/rewards/reward-super.mp3',AMAZING:'./assets/rewards/reward-amazing.mp3',SPECTACULAR:'./assets/rewards/reward-spectacular.mp3',JACKPOT:'./assets/rewards/reward-jackpot.mp3'};
   const rewardDisplayMs={SUPER:3718,AMAZING:3979,SPECTACULAR:4371,JACKPOT:7531};
   const rewardAudio={};
-  Object.entries(rewardAudioFiles).forEach(([word,src])=>{const audio=new Audio(src);audio.preload='auto';rewardAudio[word]=audio;});
+  let rewardAudioUnlocked=false;
+  Object.entries(rewardAudioFiles).forEach(([word,src])=>{const audio=new Audio();audio.preload='auto';audio.src=src;audio.load();rewardAudio[word]=audio;});
+  // Unlock every reward clip during the first real user gesture; mobile browsers may block
+  // playback when the reward appears later after asynchronous animations.
+  function unlockRewardAudio(){
+    if(rewardAudioUnlocked)return;
+    rewardAudioUnlocked=true;
+    Object.values(rewardAudio).forEach(audio=>{
+      const wasMuted=audio.muted;audio.muted=true;
+      const p=audio.play();
+      if(p&&typeof p.then==='function')p.then(()=>{audio.pause();try{audio.currentTime=0;}catch(e){}audio.muted=wasMuted;}).catch(()=>{audio.muted=wasMuted;rewardAudioUnlocked=false;});
+      else{audio.pause();try{audio.currentTime=0;}catch(e){}audio.muted=wasMuted;}
+    });
+  }
+  ['pointerdown','touchstart','keydown'].forEach(type=>document.addEventListener(type,unlockRewardAudio,{once:true,capture:true,passive:true}));
+
+  function playRewardAudio(audio){
+    if(!audio)return;
+    try{audio.pause();audio.currentTime=0;}catch(e){}
+    const p=audio.play();
+    if(p&&typeof p.catch==='function')p.catch(err=>{console.warn('Reward audio playback was blocked or failed:',err);});
+  }
 
   function showReward(points){
     const n=Number(points)||0;if(!n)return;
@@ -179,8 +200,8 @@
     rewardFlash.style.setProperty('--flash-art','url("' + src + '")');
     rewardFlash.classList.remove('on');void rewardFlash.offsetWidth;rewardFlash.classList.add('on');
     window.clearTimeout(showReward.timer);
-    if(showReward.audio){showReward.audio.pause();showReward.audio.currentTime=0;}
-    if(audio){showReward.audio=audio;audio.currentTime=0;const play=audio.play();if(play&&typeof play.catch==='function')play.catch(()=>{});}
+    if(showReward.audio&&showReward.audio!==audio){showReward.audio.pause();try{showReward.audio.currentTime=0;}catch(e){}}
+    if(audio){showReward.audio=audio;playRewardAudio(audio);}
     showReward.timer=window.setTimeout(()=>rewardFlash.classList.remove('on'),rewardDisplayMs[word]||4000);
   }
 
