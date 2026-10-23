@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261015-master-qr-2';
+  const VERSION = '20261023-car-legends-1';
   const STORAGE = 'barameel.world.player.v23.6';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -329,14 +329,14 @@
   }
   async function duoLink(otherPlayerCode){const r=await api('/duo-link',{player_id:state.playerId,other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:makeId('duo')});if(r?.player)mergePlayer(r.player);return r;}
   async function fetchCollection(id='collection01'){
-    const key='barameel.collection.'+id+'.v23.2';
+    const key='barameel.collection.'+id+'.v23.3';
     try{const c=sessionStorage.getItem(key);if(c)return JSON.parse(c);}catch{}
     const r=await fetch(`./assets/collections/${id}/collection.json?v=${VERSION}`,{cache:'no-store'});
     if(!r.ok)throw Error('COLLECTION_UNAVAILABLE');
     const d=await r.json();try{sessionStorage.setItem(key,JSON.stringify(d));}catch{}return d;
   }
   async function listCollections(){
-    const key='barameel.collections.index.v23.2';
+    const key='barameel.collections.index.v23.3';
     try{const cached=sessionStorage.getItem(key);if(cached)return JSON.parse(cached);}catch{}
     const r=await fetch('./assets/collections/index.json?v='+VERSION,{cache:'no-store'});
     if(!r.ok)throw Error('COLLECTION_INDEX_UNAVAILABLE');
