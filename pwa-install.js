@@ -36,8 +36,8 @@
   card.setAttribute('aria-label', 'Add BARAMEEL WORLD to your home screen');
   card.innerHTML = `
     <img src="./icon-192.png" alt="">
-    <div id="bw-install-copy"><strong>BARAMEEL WORLD</strong><span>ضيف اللعبة على شاشة موبايلك وافتحها بضغطة واحدة.</span></div>
-    <div id="bw-install-actions"><button id="bw-install-now" type="button">إضافة اللعبة</button><button id="bw-install-later" type="button" aria-label="إغلاق">لاحقًا ×</button></div>`;
+    <div id="bw-install-copy"><strong>BARAMEEL WORLD</strong><span>أضف عالم براميل إلى شاشة موبايلك وافتحه بضغطة واحدة.</span></div>
+    <div id="bw-install-actions"><button id="bw-install-now" type="button">إضافة عالم براميل</button><button id="bw-install-later" type="button" aria-label="إغلاق">لاحقًا ×</button></div>`;
   document.body.appendChild(card);
 
   const help = document.createElement('div');

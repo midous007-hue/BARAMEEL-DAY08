@@ -2,7 +2,7 @@
   "id": "./",
   "name": "BARAMEEL WORLD",
   "short_name": "BARAMEEL",
-  "description": "Enter the BARAMEEL WORLD game.",
+  "description": "Explore BARAMEEL WORLD and access everything in the Barameel universe.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

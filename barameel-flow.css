@@ -23,3 +23,16 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .haptic-pulse{animation:barameel-flow-haptic .14s ease-out both}
 @keyframes barameel-flow-haptic{0%{filter:brightness(1)}45%{filter:brightness(1.07)}100%{filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){.haptic-pulse{animation:none!important}}
+
+
+/* RESPONSIVE BARAMEEL LETTERBOX — keep all artwork and its hit areas proportional. */
+html,body{background-color:#061f27}
+body{
+  background-image:
+    repeating-linear-gradient(135deg,rgba(242,169,59,.11) 0 3px,transparent 3px 18px),
+    linear-gradient(180deg,#14234f 0%,#14234f 2px,#061f27 2px 74%,#14234f 74%,#14234f 78%,#d9481f 78%,#d9481f 81%,#f2a93b 81%,#f2a93b 83%,#14234f 83%,#061f27 89%);
+  background-attachment:fixed;
+}
+@media screen and (orientation:portrait) and (min-height:1300px){
+  body{padding-top:clamp(14px,1.5dvh,24px)}
+}
