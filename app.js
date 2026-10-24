@@ -367,9 +367,11 @@
     try{
       const u=new URL(s);
       const host=u.hostname.toLowerCase();
-      const validHost=host==='midous007-hue.github.io';
-      const validPath=u.pathname.replace(/\/+$/,'')==='/BARAMEEL-DAY08';
-      if((u.protocol==='https:'||u.protocol==='http:')&&validHost&&validPath)return {type:'universal',token:'BARAMEEL-UNIVERSAL'};
+      const path=u.pathname.replace(/\/+$/,'')||'/';
+      // Accept both the original GitHub Pages master QR and the branded custom-domain QR.
+      const legacyUrl=host==='midous007-hue.github.io'&&path==='/BARAMEEL-DAY08';
+      const brandedUrl=host==='barameel.runs-at.dev'&&(path==='/'||path==='/index.html');
+      if((u.protocol==='https:'||u.protocol==='http:')&&(legacyUrl||brandedUrl))return {type:'universal',token:'BARAMEEL-UNIVERSAL'};
     }catch{}
     return null;
   }
