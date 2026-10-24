@@ -1,7 +1,8 @@
 /* BARAMEEL WORLD — lightweight PWA install invitation */
 (() => {
   if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) return;
-  const KEY = 'barameel-pwa-invite-dismissed-v1';
+  const KEY = 'barameel-pwa-invite-dismissed-v2';
+  const SESSION_KEY = 'barameel-pwa-invite-hidden-session-v2';
   let deferredPrompt = null;
   let helpOpen = false;
   try { if (localStorage.getItem(KEY) === '1') return; } catch {}
@@ -69,11 +70,17 @@
   }
   card.querySelector('#bw-install-now').addEventListener('click', async () => {
     if (deferredPrompt) {
-      deferredPrompt.prompt();
-      try { await deferredPrompt.userChoice; } catch {}
+      const installPrompt = deferredPrompt;
       deferredPrompt = null;
       card.hidden = true;
-      try { localStorage.setItem(KEY, '1'); } catch {}
+      installPrompt.prompt();
+      let outcome = 'dismissed';
+      try { outcome = (await installPrompt.userChoice)?.outcome || 'dismissed'; } catch {}
+      if (outcome === 'accepted') {
+        try { localStorage.setItem(KEY, '1'); } catch {}
+      } else {
+        try { sessionStorage.setItem(SESSION_KEY, '1'); } catch {}
+      }
     } else {
       showHelp();
     }
@@ -84,13 +91,22 @@
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
     deferredPrompt = event;
-    if (!card.hidden) card.querySelector('#bw-install-now').textContent = 'تثبيت الآن';
+    card.querySelector('#bw-install-now').textContent = 'تثبيت الآن';
+    let hiddenThisSession = false;
+    try { hiddenThisSession = sessionStorage.getItem(SESSION_KEY) === '1'; } catch {}
+    if (!hiddenThisSession) card.hidden = false;
   });
   window.addEventListener('appinstalled', () => { card.hidden=true; try {localStorage.setItem(KEY,'1')}catch{} });
+  // Do not advertise a native install before Chrome confirms it can install the PWA.
+  // The old timer showed a fake install invitation even when no install prompt existed,
+  // sending Android users to manual "Add to Home screen" and creating only a shortcut.
+  // iOS has no beforeinstallprompt event, so keep its explicit Safari instructions.
   window.setTimeout(() => {
-    if (!helpOpen && !window.matchMedia('(display-mode: standalone)').matches && window.navigator.standalone !== true) {
-      card.hidden = false;
-      if (deferredPrompt) card.querySelector('#bw-install-now').textContent = 'تثبيت الآن';
+    if (isIOS() && !helpOpen && !window.matchMedia('(display-mode: standalone)').matches && window.navigator.standalone !== true) {
+      let hiddenThisSession = false;
+      try { hiddenThisSession = sessionStorage.getItem(SESSION_KEY) === '1'; } catch {}
+      if (!hiddenThisSession) card.hidden = false;
+      card.querySelector('#bw-install-now').textContent = 'طريقة الإضافة';
     }
   }, 2200);
 })();
