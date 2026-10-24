@@ -52,6 +52,7 @@
 </main>
 <script src="./config.js?v=20261024-registration"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261024-registration-state-1"></script>
 <script>
 (() => {
   const countries = [
@@ -70,6 +71,14 @@
   const status = $('statusMessage');
   const suggestions = ['RetroRunner','NeonSkater','BrounaFan','SunsetRacer','ArcadeHero','CoastalRunner','GoldenPlayer','DiscoRider'];
   function message(text) { status.textContent = text; status.classList.add('visible'); }
+  function saveRegisteredPlayer(result) {
+    try {
+      if (window.BR) {
+        window.BR.setNickname(pendingUsername);
+        if (result?.player) window.BR.mergePlayer(result.player);
+      }
+    } catch (err) { console.error('Could not save local player state', err); }
+  }
   function clearMessage() { status.textContent = ''; status.classList.remove('visible'); }
   let supabaseClient = null;
   let pendingPhone = '';
@@ -145,6 +154,7 @@
       });
       if (playerError) throw playerError;
       if (!player?.ok || !player?.player) throw new Error('Profile creation failed.');
+      saveRegisteredPlayer(player);
       $('otpHint').textContent = 'Phone verified. Your Barameel profile is ready!';
       $('otpTitle').textContent = 'PROFILE CREATED!';
       $('otpCode').hidden = true;
@@ -203,6 +213,7 @@
       });
       if (error) throw error;
       if (!data?.ok || !data?.player) throw new Error(data?.error || 'PROFILE_CREATION_FAILED');
+      saveRegisteredPlayer(data);
       message('Profile created successfully. Continuing to Barameel...');
       window.setTimeout(() => { window.location.href = './world.html'; }, 900);
     } catch (err) {
