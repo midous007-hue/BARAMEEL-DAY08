@@ -117,8 +117,15 @@
 
   document.getElementById('runBack').onclick = () => BR.goAfter('world.html', 'back', 180);
 
-  document.getElementById('start').onclick = () => {
-    const name = String(BR.state.nickname || input.value || '').trim().replace(/\s+/g, ' ');
+  document.getElementById('start').onclick = async () => {
+    let name = String(BR.state.nickname || input.value || '').trim().replace(/\s+/g, ' ');
+    if (!name && typeof BR.syncPlayer === 'function') {
+      try {
+        await BR.syncPlayer();
+        name = String(BR.state.nickname || '').trim().replace(/\s+/g, ' ');
+        input.value = name;
+      } catch (err) { console.error('Could not restore registered Barameel player', err); }
+    }
     if (!name) {
       BR.play('error');
       BR.haptic('error');
