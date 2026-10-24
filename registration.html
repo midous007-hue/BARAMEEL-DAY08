@@ -186,7 +186,7 @@
   username.addEventListener('input', clearMessage); phone.addEventListener('input', clearMessage);
   $('registrationForm').addEventListener('submit', e => {
     e.preventDefault(); clearMessage();
-    const name=username.value.trim(), digits=phone.value.replace(/\D/g,'');
+    const name=username.value.trim(), digits=phone.value.replace(/\D/g,'').replace(/^0+/, '');
     if(name.length<3){message('Please enter a username with at least 3 characters.');username.focus();return;}
     if(!/^[a-zA-Z0-9_.-]+$/.test(name)){message('Use letters, numbers, dots, underscores, or hyphens in your username.');username.focus();return;}
     if(digits.length<6||digits.length>14){message('Please enter a valid mobile number.');phone.focus();return;}
