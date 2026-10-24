@@ -23,8 +23,8 @@
     </button>
     <input id="phone" name="tel-national" class="phone-input" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Enter your mobile number" required>
 
-    <button id="submitRegistration" class="submit-hotspot" type="submit" aria-label="Verify and create profile">
-      <img src="./assets/verify-create-profile-button.webp" alt="Verify and create profile">
+    <button id="submitRegistration" class="submit-hotspot" type="submit" aria-label="Create profile">
+      <img src="./assets/verify-create-profile-button.webp" alt="Create profile">
     </button>
   </form>
 
@@ -184,6 +184,34 @@
   dialog.addEventListener('click', e => { if(e.target===dialog){dialog.hidden=true;$('countryTrigger').setAttribute('aria-expanded','false');} });
   $('shuffleUsername').addEventListener('click', () => { const base=suggestions[Math.floor(Math.random()*suggestions.length)]; username.value=base+Math.floor(10+Math.random()*90); username.dispatchEvent(new Event('input',{bubbles:true})); username.focus(); clearMessage(); });
   username.addEventListener('input', clearMessage); phone.addEventListener('input', clearMessage);
+  async function createProfileWithoutPhoneVerification() {
+    const submit = $('submitRegistration');
+    if (submit.disabled) return;
+    submit.disabled = true;
+    submit.setAttribute('aria-busy', 'true');
+    clearMessage();
+    try {
+      if (!supabaseClient) throw new Error('SUPABASE_NOT_CONFIGURED');
+      const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!sessionData?.session) {
+        const { error: signInError } = await supabaseClient.auth.signInAnonymously();
+        if (signInError) throw signInError;
+      }
+      const { data, error } = await supabaseClient.functions.invoke('player', {
+        body: { nickname: pendingUsername, phone_number: pendingPhone }
+      });
+      if (error) throw error;
+      if (!data?.ok || !data?.player) throw new Error(data?.error || 'PROFILE_CREATION_FAILED');
+      message('Profile created successfully. Continuing to Barameel...');
+      window.setTimeout(() => { window.location.href = './world.html'; }, 900);
+    } catch (err) {
+      console.error('Registration failed', err);
+      message('We could not save your profile. Please check your connection and try again.');
+      submit.disabled = false;
+      submit.removeAttribute('aria-busy');
+    }
+  }
   $('registrationForm').addEventListener('submit', e => {
     e.preventDefault(); clearMessage();
     const name=username.value.trim(), digits=phone.value.replace(/\D/g,'').replace(/^0+/, '');
@@ -192,7 +220,7 @@
     if(digits.length<6||digits.length>14){message('Please enter a valid mobile number.');phone.focus();return;}
     pendingPhone = selectedCountry[2] + digits;
     pendingUsername = name;
-    sendVerificationCode();
+    createProfileWithoutPhoneVerification();
   });
   $('verifyOtp').addEventListener('click', verifyCodeAndCreateProfile);
   $('otpCode').addEventListener('input', () => {
