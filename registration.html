@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#071c34">
 <title>Join Barameel</title>
 <link rel="preload" as="image" href="./assets/barameel-registration-screen.webp">
-<link rel="stylesheet" href="./registration.css?v=22.0">
+<link rel="stylesheet" href="./registration.css?v=23.5">
 </head>
 <body>
 <main class="registration-shell" id="registrationShell" aria-label="Barameel player registration">
@@ -40,12 +40,18 @@
     <div class="otp-panel">
       <div class="dialog-heading"><h2 id="otpTitle">Verify your phone</h2><button id="closeOtp" type="button" aria-label="Close verification">×</button></div>
       <p id="otpSummary"></p>
-      <p class="demo-notice">The screen is ready for integration. SMS delivery and account creation require the production verification service; no code has been sent by this demo.</p>
-      <button id="editDetails" type="button" class="secondary-action">EDIT DETAILS</button>
+      <label class="otp-label" for="otpCode">6-DIGIT VERIFICATION CODE</label>
+      <input id="otpCode" class="otp-code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="••••••" aria-label="Six digit verification code">
+      <p id="otpHint" class="otp-hint">Enter the code sent to your phone.</p>
+      <button id="verifyOtp" type="button" class="secondary-action primary-action">VERIFY PHONE &amp; CREATE PROFILE</button>
+      <button id="resendOtp" type="button" class="secondary-action">RESEND CODE</button>
+      <button id="editDetails" type="button" class="secondary-action">EDIT PHONE NUMBER</button>
     </div>
   </section>
   <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
 </main>
+<script src="./config.js?v=20261024-registration"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (() => {
   const countries = [
@@ -65,6 +71,96 @@
   const suggestions = ['RetroRunner','NeonSkater','BrounaFan','SunsetRacer','ArcadeHero','CoastalRunner','GoldenPlayer','DiscoRider'];
   function message(text) { status.textContent = text; status.classList.add('visible'); }
   function clearMessage() { status.textContent = ''; status.classList.remove('visible'); }
+  let supabaseClient = null;
+  let pendingPhone = '';
+  let pendingUsername = '';
+  let sendingOtp = false;
+  let verifyingOtp = false;
+  try {
+    if (window.supabase?.createClient && window.BARAMEEL_SUPABASE_URL && window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY) {
+      supabaseClient = window.supabase.createClient(window.BARAMEEL_SUPABASE_URL, window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY);
+    }
+  } catch (err) { console.error('Supabase client initialization failed', err); }
+  function setOtpBusy(busy, buttonId) {
+    $(buttonId).disabled = busy;
+    $(buttonId).setAttribute('aria-busy', String(busy));
+  }
+  async function sendVerificationCode() {
+    if (sendingOtp) return;
+    if (!supabaseClient) {
+      message('Verification is not configured yet. Please try again later.');
+      return;
+    }
+    sendingOtp = true;
+    setOtpBusy(true, 'submitRegistration');
+    clearMessage();
+    try {
+      const { error } = await supabaseClient.auth.signInWithOtp({
+        phone: pendingPhone,
+        options: { shouldCreateUser: true, data: { username: pendingUsername } }
+      });
+      if (error) throw error;
+      $('otpTitle').textContent = 'VERIFY YOUR PHONE';
+      $('otpSummary').textContent = 'We sent a verification code to ' + pendingPhone + '.';
+      $('otpHint').textContent = 'Enter the 6-digit SMS code to verify your number and create your profile.';
+      $('otpCode').hidden = false;
+      $('verifyOtp').hidden = false;
+      $('resendOtp').hidden = false;
+      $('editDetails').textContent = 'EDIT PHONE NUMBER';
+      $('otpCode').value = '';
+      $('otpDialog').hidden = false;
+      $('otpCode').focus();
+    } catch (err) {
+      console.error('Phone OTP request failed', err);
+      const detail = String(err?.message || '').toLowerCase();
+      message(detail.includes('sms') || detail.includes('provider') || detail.includes('phone')
+        ? 'SMS delivery is not configured or the number was rejected. Check the Supabase phone-auth SMS provider and try again.'
+        : 'We could not send the verification code. Check the number and try again.');
+    } finally {
+      sendingOtp = false;
+      setOtpBusy(false, 'submitRegistration');
+    }
+  }
+  async function verifyCodeAndCreateProfile() {
+    if (verifyingOtp) return;
+    const token = $('otpCode').value.replace(/\D/g, '');
+    if (!/^[0-9]{6}$/.test(token)) {
+      $('otpHint').textContent = 'Enter the 6-digit code from your SMS.';
+      $('otpCode').focus();
+      return;
+    }
+    if (!supabaseClient) {
+      $('otpHint').textContent = 'Phone verification is not configured yet.';
+      return;
+    }
+    verifyingOtp = true;
+    setOtpBusy(true, 'verifyOtp');
+    $('otpHint').textContent = 'Verifying your number...';
+    try {
+      const { data, error } = await supabaseClient.auth.verifyOtp({ phone: pendingPhone, token, type: 'sms' });
+      if (error) throw error;
+      if (!data?.session) throw new Error('Verification succeeded but no session was created.');
+      const { data: player, error: playerError } = await supabaseClient.functions.invoke('player', {
+        body: { nickname: pendingUsername }
+      });
+      if (playerError) throw playerError;
+      if (!player?.ok || !player?.player) throw new Error('Profile creation failed.');
+      $('otpHint').textContent = 'Phone verified. Your Barameel profile is ready!';
+      $('otpTitle').textContent = 'PROFILE CREATED!';
+      $('otpCode').hidden = true;
+      $('verifyOtp').hidden = true;
+      $('resendOtp').hidden = true;
+      $('editDetails').textContent = 'CONTINUE TO BARAMEEL';
+      $('editDetails').onclick = () => { window.location.href = './world.html'; };
+      window.setTimeout(() => { window.location.href = './world.html'; }, 1200);
+    } catch (err) {
+      console.error('Phone verification/profile creation failed', err);
+      $('otpHint').textContent = 'The code could not be verified or the profile could not be created. Check the code and try again.';
+    } finally {
+      verifyingOtp = false;
+      setOtpBusy(false, 'verifyOtp');
+    }
+  }
   function renderCountries(query='') {
     const q = query.trim().toLowerCase();
     const filtered = countries.filter(c => c[1].toLowerCase().includes(q) || c[2].includes(q) || c[0].toLowerCase().includes(q));
@@ -94,10 +190,17 @@
     if(name.length<3){message('Please enter a username with at least 3 characters.');username.focus();return;}
     if(!/^[a-zA-Z0-9_.-]+$/.test(name)){message('Use letters, numbers, dots, underscores, or hyphens in your username.');username.focus();return;}
     if(digits.length<6||digits.length>14){message('Please enter a valid mobile number.');phone.focus();return;}
-    $('otpSummary').textContent='Verification will be prepared for '+selectedCountry[2]+' '+digits+'.';
-    $('otpDialog').hidden=false;
+    pendingPhone = selectedCountry[2] + digits;
+    pendingUsername = name;
+    sendVerificationCode();
   });
-  $('closeOtp').addEventListener('click', () => $('otpDialog').hidden=true);
+  $('verifyOtp').addEventListener('click', verifyCodeAndCreateProfile);
+  $('otpCode').addEventListener('input', () => {
+    $('otpCode').value = $('otpCode').value.replace(/\D/g, '').slice(0, 6);
+    $('otpHint').textContent = 'Enter the 6-digit SMS code to verify your number.';
+  });
+  $('resendOtp').addEventListener('click', sendVerificationCode);
+  $('closeOtp').addEventListener('click', () => { $('otpDialog').hidden=true; });
   $('editDetails').addEventListener('click', () => { $('otpDialog').hidden=true; phone.focus(); });
   $('otpDialog').addEventListener('click', e => { if(e.target===$('otpDialog')) $('otpDialog').hidden=true; });
   username.value='';
