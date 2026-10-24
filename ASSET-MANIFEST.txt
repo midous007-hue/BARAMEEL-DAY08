@@ -45,3 +45,15 @@ assets/collections/collection01/masters/
 
 Keep the 10 master images. Do not create a QR folder inside the collection.
 The pieces are selected by the server-side reward engine, not by printed QR codes.
+
+
+UNIFIED REGISTRATION SCREEN — V22.0
+-----------------------------------
+Upload the approved blank registration artwork to:
+assets/barameel-registration-screen.png
+
+Upload the isolated confirmation button artwork to:
+assets/verify-create-profile-button.png
+
+These two assets are used by registration.html and registration.css.
+The splash screen routes to registration.html before the Barameel World cards.
