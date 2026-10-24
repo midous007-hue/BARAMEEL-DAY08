@@ -1,29 +1,302 @@
-export const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type, x-player-id, x-idempotency-key","Access-Control-Allow-Methods":"POST, OPTIONS"};
 import { createClient } from "npm:@supabase/supabase-js@2";
-function adminClient(){const url=Deno.env.get("SUPABASE_URL")!;const keys=JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS")||"{}");const key=keys.default||Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");if(!key)throw new Error("Server secret key is not configured");return createClient(url,key,{auth:{persistSession:false}})}
-function json(body:unknown,status=200){return new Response(JSON.stringify(body),{status,headers:{...corsHeaders,"Content-Type":"application/json"}})}
-function getBearer(req:Request){const h=req.headers.get("Authorization")||"";return h.startsWith("Bearer ")?h.slice(7):""}
-async function requireUser(req:Request,admin:ReturnType<typeof adminClient>){const token=getBearer(req);if(!token)return null;const {data,error}=await admin.auth.getUser(token);if(error||!data.user)return null;return data.user}
-function newPlayerCode(){return "BM-"+crypto.randomUUID().replaceAll("-","").slice(0,8).toUpperCase()}
-Deno.serve(async(req)=>{if(req.method==="OPTIONS")return new Response("ok",{headers:corsHeaders});if(req.method!=="POST")return json({error:"METHOD_NOT_ALLOWED"},405);const admin=adminClient();const user=await requireUser(req,admin);if(!user)return json({error:"AUTH_REQUIRED"},401);let body:any={};try{body=await req.json()}catch{}const nickname=String(body.nickname||"").trim().slice(0,24);const phoneNumber=String(body.phone_number||"").trim().slice(0,32);
-const avatars=["avatar01","avatar02","avatar03","avatar04","avatar05","avatar06"];
-const legacy={rookie:"avatar01",skater:"avatar02",brona:"avatar03",racer:"avatar04",chiller:"avatar05",dreamer:"avatar06"};
-const requested=String(body.avatar||body.runner||"").toLowerCase();
-const avatar=avatars.includes(requested)?requested:(legacy[requested]||"avatar01");let {data:player}=await admin.from("players").select("*").eq("auth_user_id",user.id).maybeSingle();if(!player){let code="";for(let i=0;i<5;i++){code=newPlayerCode();const {error}=await admin.from("players").insert({auth_user_id:user.id,player_code:code,nickname,runner:avatar,phone_number:phoneNumber||null}).select("*").single();if(!error)break}const retry=await admin.from("players").select("*").eq("auth_user_id",user.id).single();player=retry.data}else{const patch:any={};if(nickname)patch.nickname=nickname;if(phoneNumber)patch.phone_number=phoneNumber;if(body.avatar||body.runner)patch.runner=avatar;if(Object.keys(patch).length){const r=await admin.from("players").update(patch).eq("id",player.id).select("*").single();if(!r.error)player=r.data}}const {data:legacyClaims,error:legacyClaimsError}=await admin.from('checkpoint_claims').select('checkpoint_id').eq('player_id',player.id).order('created_at',{ascending:true});if(legacyClaimsError)return json({ok:false,error:'CHECKPOINT_STATE_FAILED',code:'CHECKPOINT_STATE_FAILED'},500);const {data:challengeClaims,error:challengeClaimsError}=await admin.from('checkpoint_challenge_claims').select('challenge_id').eq('player_id',player.id).order('created_at',{ascending:true});if(challengeClaimsError)return json({ok:false,error:'CHECKPOINT_STATE_FAILED',code:'CHECKPOINT_STATE_FAILED'},500);const challengeIds=(challengeClaims||[]).map((row:any)=>String(row.challenge_id));const {data:challengeRows,error:challengeRowsError}=challengeIds.length?await admin.from('checkpoint_challenges').select('id,location_id').in('id',challengeIds):{data:[],error:null};if(challengeRowsError)return json({ok:false,error:'CHECKPOINT_STATE_FAILED',code:'CHECKPOINT_STATE_FAILED'},500);const locationByChallenge=new Map((challengeRows||[]).map((row:any)=>[String(row.id),String(row.location_id)]));const checkpointIds=[...new Set([...(legacyClaims||[]).map((row:any)=>String(row.checkpoint_id)),...challengeIds.map((id:string)=>locationByChallenge.get(id)).filter(Boolean)])];
-const {data:ownedPieces}=await admin.from('player_pieces').select('piece_id').eq('player_id',player.id);
-const pieceIds=(ownedPieces||[]).map((row:any)=>row.piece_id).filter(Boolean);
-let collected:any={};
-if(pieceIds.length){
-  const {data:pieceRows}=await admin.from('collection_pieces').select('id,image_id,piece_number').in('id',pieceIds);
-  const imageIds=(pieceRows||[]).map((row:any)=>row.image_id).filter(Boolean);
-  const {data:imageRows}=imageIds.length?await admin.from('collection_images').select('id,collection_id').in('id',imageIds):{data:[]};
-  const imageMap=new Map((imageRows||[]).map((row:any)=>[String(row.id),String(row.collection_id)]));
-  for(const row of pieceRows||[]){
-    const collectionId=imageMap.get(String(row.image_id));if(!collectionId)continue;
-    if(!collected[collectionId])collected[collectionId]={};
-    const imageId=String(row.image_id);if(!collected[collectionId][imageId])collected[collectionId][imageId]=[];
-    collected[collectionId][imageId].push(Number(row.piece_number));
-  }
+
+export const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-player-id, x-idempotency-key",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 }
-for(const cid of Object.keys(collected))for(const iid of Object.keys(collected[cid]))collected[cid][iid]=[...new Set(collected[cid][iid])].sort((a:number,b:number)=>a-b);
-const {data:rank}=await admin.rpc("player_rank",{p_player_id:player.id});return json({ok:true,player:{id:player.id,playerId:player.player_code,nickname:player.nickname,runner:player.runner,avatar:avatars.includes(String(player.runner||"").toLowerCase())?String(player.runner).toLowerCase():(legacy[String(player.runner||"").toLowerCase()]||"avatar01"),points:player.points,weeklyPoints:player.weekly_points,checkpoints:checkpointIds,collected,scans:player.scans_count,rank:Number(rank||0)}})});
+
+function adminClient() {
+  const url = Deno.env.get("SUPABASE_URL");
+  const keys = JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") || "{}");
+  const key = keys.default || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) throw new Error("Server secret key is not configured");
+  return createClient(url, key, { auth: { persistSession: false } });
+}
+
+function getBearer(req: Request) {
+  const header = req.headers.get("Authorization") || "";
+  return header.startsWith("Bearer ") ? header.slice(7) : "";
+}
+
+async function requireUser(req: Request, admin: ReturnType<typeof adminClient>) {
+  const token = getBearer(req);
+  if (!token) return null;
+  const { data, error } = await admin.auth.getUser(token);
+  if (error || !data.user) return null;
+  return data.user;
+}
+
+function newPlayerCode() {
+  return "BM-" + crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase();
+}
+
+const avatars = ["avatar01", "avatar02", "avatar03", "avatar04", "avatar05", "avatar06"];
+const legacyAvatars: Record<string, string> = {
+  rookie: "avatar01",
+  skater: "avatar02",
+  brona: "avatar03",
+  racer: "avatar04",
+  chiller: "avatar05",
+  dreamer: "avatar06",
+};
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "POST") return json({ ok: false, error: "METHOD_NOT_ALLOWED" }, 405);
+
+  let admin: ReturnType<typeof adminClient>;
+  try {
+    admin = adminClient();
+  } catch (error) {
+    console.error("Player function configuration error:", error);
+    return json({ ok: false, error: "SERVER_CONFIGURATION_ERROR" }, 500);
+  }
+
+  try {
+    const user = await requireUser(req, admin);
+    if (!user) return json({ ok: false, error: "AUTH_REQUIRED" }, 401);
+
+    let body: Record<string, unknown> = {};
+    try {
+      const parsed = await req.json();
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) body = parsed;
+    } catch {
+      return json({ ok: false, error: "INVALID_REQUEST_BODY" }, 400);
+    }
+
+    const nickname = String(body.nickname || "").trim().slice(0, 24);
+    const phoneNumber = String(body.phone_number || "").trim().slice(0, 32);
+    if (nickname.length < 3) return json({ ok: false, error: "INVALID_NICKNAME" }, 400);
+
+    const requestedAvatar = String(body.avatar || body.runner || "").toLowerCase();
+    const avatar = avatars.includes(requestedAvatar)
+      ? requestedAvatar
+      : (legacyAvatars[requestedAvatar] || "avatar01");
+
+    // First look up the authenticated user's player profile.
+    const existingLookup = await admin
+      .from("players")
+      .select("*")
+      .eq("auth_user_id", user.id)
+      .maybeSingle();
+
+    if (existingLookup.error) {
+      console.error("Player lookup failed:", existingLookup.error);
+      return json({ ok: false, error: "PLAYER_LOOKUP_FAILED" }, 500);
+    }
+
+    let player = existingLookup.data;
+
+    if (!player) {
+      let insertError: unknown = null;
+
+      // Retry only for generated player-code collisions. If another request
+      // creates the same user's profile concurrently, re-read that profile.
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const inserted = await admin
+          .from("players")
+          .insert({
+            auth_user_id: user.id,
+            player_code: newPlayerCode(),
+            nickname,
+            runner: avatar,
+            phone_number: phoneNumber || null,
+          })
+          .select("*")
+          .single();
+
+        if (!inserted.error && inserted.data) {
+          player = inserted.data;
+          insertError = null;
+          break;
+        }
+
+        insertError = inserted.error;
+        const concurrentLookup = await admin
+          .from("players")
+          .select("*")
+          .eq("auth_user_id", user.id)
+          .maybeSingle();
+
+        if (!concurrentLookup.error && concurrentLookup.data) {
+          player = concurrentLookup.data;
+          insertError = null;
+          break;
+        }
+
+        // Do not retry non-unique-constraint errors.
+        if (inserted.error?.code !== "23505") break;
+      }
+
+      if (!player) {
+        console.error("Player profile insert failed:", insertError);
+        return json({ ok: false, error: "PLAYER_CREATE_FAILED" }, 500);
+      }
+    } else {
+      const patch: Record<string, unknown> = {};
+      if (nickname) patch.nickname = nickname;
+      if (phoneNumber) patch.phone_number = phoneNumber;
+      if (body.avatar || body.runner) patch.runner = avatar;
+
+      if (Object.keys(patch).length) {
+        const updated = await admin
+          .from("players")
+          .update(patch)
+          .eq("id", player.id)
+          .select("*")
+          .single();
+
+        if (updated.error || !updated.data) {
+          console.error("Player profile update failed:", updated.error);
+          return json({ ok: false, error: "PLAYER_UPDATE_FAILED" }, 500);
+        }
+        player = updated.data;
+      }
+    }
+
+    if (!player?.id) {
+      console.error("Player profile missing after create/lookup.");
+      return json({ ok: false, error: "PLAYER_PROFILE_MISSING" }, 500);
+    }
+
+    // The current schema uses checkpoint_challenge_claims. Do not query the
+    // removed legacy checkpoint_claims table.
+    const claimsResult = await admin
+      .from("checkpoint_challenge_claims")
+      .select("challenge_id,created_at")
+      .eq("player_id", player.id)
+      .order("created_at", { ascending: true });
+
+    if (claimsResult.error) {
+      console.error("Checkpoint challenge claims lookup failed:", claimsResult.error);
+      return json({ ok: false, error: "CHECKPOINT_STATE_FAILED" }, 500);
+    }
+
+    const challengeIds = [...new Set((claimsResult.data || [])
+      .map((row: { challenge_id: string }) => String(row.challenge_id))
+      .filter(Boolean))];
+
+    let checkpointIds: string[] = [];
+    if (challengeIds.length) {
+      const challengeResult = await admin
+        .from("checkpoint_challenges")
+        .select("id,location_id")
+        .in("id", challengeIds);
+
+      if (challengeResult.error) {
+        console.error("Checkpoint challenge lookup failed:", challengeResult.error);
+        return json({ ok: false, error: "CHECKPOINT_STATE_FAILED" }, 500);
+      }
+
+      const locationByChallenge = new Map(
+        (challengeResult.data || []).map((row: { id: string; location_id: string }) => [
+          String(row.id),
+          String(row.location_id),
+        ]),
+      );
+
+      checkpointIds = [...new Set(challengeIds
+        .map((id) => locationByChallenge.get(id))
+        .filter((id): id is string => Boolean(id)))];
+    }
+
+    const ownedPiecesResult = await admin
+      .from("player_pieces")
+      .select("piece_id")
+      .eq("player_id", player.id);
+
+    if (ownedPiecesResult.error) {
+      console.error("Player pieces lookup failed:", ownedPiecesResult.error);
+      return json({ ok: false, error: "COLLECTION_STATE_FAILED" }, 500);
+    }
+
+    const pieceIds = (ownedPiecesResult.data || [])
+      .map((row: { piece_id: string | null }) => row.piece_id)
+      .filter((id): id is string => Boolean(id));
+
+    const collected: Record<string, Record<string, number[]>> = {};
+    if (pieceIds.length) {
+      const pieceResult = await admin
+        .from("collection_pieces")
+        .select("id,image_id,piece_number")
+        .in("id", pieceIds);
+
+      if (pieceResult.error) {
+        console.error("Collection pieces lookup failed:", pieceResult.error);
+        return json({ ok: false, error: "COLLECTION_STATE_FAILED" }, 500);
+      }
+
+      const imageIds = [...new Set((pieceResult.data || [])
+        .map((row: { image_id: string | null }) => row.image_id)
+        .filter((id): id is string => Boolean(id)))];
+
+      const imageResult = imageIds.length
+        ? await admin.from("collection_images").select("id,collection_id").in("id", imageIds)
+        : { data: [], error: null };
+
+      if (imageResult.error) {
+        console.error("Collection images lookup failed:", imageResult.error);
+        return json({ ok: false, error: "COLLECTION_STATE_FAILED" }, 500);
+      }
+
+      const collectionByImage = new Map(
+        (imageResult.data || []).map((row: { id: string; collection_id: string }) => [
+          String(row.id),
+          String(row.collection_id),
+        ]),
+      );
+
+      for (const row of pieceResult.data || []) {
+        const collectionId = collectionByImage.get(String(row.image_id));
+        if (!collectionId || !row.image_id) continue;
+        const imageId = String(row.image_id);
+        collected[collectionId] ||= {};
+        collected[collectionId][imageId] ||= [];
+        collected[collectionId][imageId].push(Number(row.piece_number));
+      }
+    }
+
+    for (const collectionId of Object.keys(collected)) {
+      for (const imageId of Object.keys(collected[collectionId])) {
+        collected[collectionId][imageId] = [...new Set(collected[collectionId][imageId])]
+          .sort((a, b) => a - b);
+      }
+    }
+
+    const rankResult = await admin.rpc("player_rank", { p_player_id: player.id });
+    if (rankResult.error) {
+      console.error("Player rank lookup failed:", rankResult.error);
+      return json({ ok: false, error: "PLAYER_RANK_FAILED" }, 500);
+    }
+
+    const runner = String(player.runner || "").toLowerCase();
+    return json({
+      ok: true,
+      player: {
+        id: player.id,
+        playerId: player.player_code,
+        nickname: player.nickname,
+        phone_number: player.phone_number || null,
+        runner,
+        avatar: avatars.includes(runner) ? runner : (legacyAvatars[runner] || "avatar01"),
+        points: player.points,
+        weeklyPoints: player.weekly_points,
+        checkpoints: checkpointIds,
+        collected,
+        scans: player.scans_count,
+        rank: Number(rankResult.data || 0),
+      },
+    });
+  } catch (error) {
+    console.error("Unexpected player function error:", error);
+    return json({ ok: false, error: "PLAYER_FUNCTION_FAILED" }, 500);
+  }
+});
