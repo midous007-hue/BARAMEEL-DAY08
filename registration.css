@@ -38,3 +38,14 @@ button,input{font:inherit}
 .status-message.visible{display:block}
 @media(max-height:620px){.country-panel,.otp-panel{max-height:90%;padding:3%}.country-options{max-height:35dvh}}
 @media(prefers-reduced-motion:no-preference){.submit-hotspot:active{transform:scale(.985)}}
+
+/* OTP step — real verification controls, matching the Barameel arcade palette. */
+.otp-label{display:block;margin:14px 0 8px;color:#ffd21c;font-size:12px;font-weight:900;letter-spacing:.08em}
+.otp-code{display:block;width:100%;height:54px;border:1px solid var(--cyan);border-radius:10px;background:#04172d;color:#fff;text-align:center;font-size:28px;font-weight:900;letter-spacing:.32em;padding:8px 12px;outline:none}
+.otp-code:focus{box-shadow:0 0 0 2px #ffd21c66}
+.otp-hint{min-height:2.8em;font-size:13px}
+.secondary-action{display:block;margin-top:10px;min-height:46px;cursor:pointer;touch-action:manipulation}
+.primary-action{background:linear-gradient(110deg,#ffd21c,#ff9d12 65%,#ff4828);border:2px solid #061a32;color:#061a32;box-shadow:0 0 0 1px #ffd21c;font-weight:900}
+.secondary-action:disabled{opacity:.55;cursor:wait}
+.secondary-action[hidden],.otp-code[hidden]{display:none}
+@media(max-width:420px){.otp-panel{padding:4%}.otp-code{height:48px;font-size:24px}}
