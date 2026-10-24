@@ -75,3 +75,9 @@ RULES
 - One Universal BARAMEEL QR only.
 - No images outside assets/.
 - Dynamic player name, avatar, collection name, points, rank, reward values and route data are injected by code into reserved areas.
+
+
+UNIFIED REGISTRATION SCREEN
+---------------------------
+assets/barameel-registration-screen.webp
+assets/verify-create-profile-button.webp
