@@ -27,7 +27,7 @@
 <audio id="runEngineStart" preload="auto" src="./assets/run-classic-engine-start.mp3?v=20261011-run-engine-1"></audio>
 <button id="runBack" class="ui-back-button" aria-label="Back to Barameel World"></button>
 <div id="nameGuide" class="scan-message" aria-live="polite"></div>
-<input id="nickname" class="nickname-input" maxlength="24" placeholder="TYPE YOUR NICKNAME" aria-label="Nickname" autocomplete="off" autocapitalize="words" spellcheck="false">
+<input id="nickname" class="nickname-input" maxlength="24" placeholder="REGISTER FIRST" aria-label="Registered player name" autocomplete="off" autocapitalize="words" spellcheck="false" readonly tabindex="-1">
 <button id="start" class="hotspot start-hotspot" aria-label="Start Run"></button>
 </main>
 <script src="./app.js?v=20261005-23.4"></script>
@@ -93,7 +93,7 @@
   function runIntroGuidance(){
     const phrases=[
       'ALEXANDRIA IS YOUR PLAYGROUND!',
-      'TYPE YOUR NAME. START YOUR LEGEND.',
+      'YOUR NAME IS ALREADY REGISTERED.',
       'YOUR RUN STARTS NOW.'
     ];
     let index=0;
@@ -108,29 +108,35 @@
   runIntroGuidance();
 
   input.value = BR.state.nickname || '';
+  input.readOnly = true;
+  input.setAttribute('aria-readonly', 'true');
   input.style.setProperty('left','8.0%','important');
   input.style.setProperty('top','77.8%','important');
   input.style.setProperty('width','84.0%','important');
   input.style.setProperty('height','7.3%','important');
-  input.oninput = () => BR.setNickname(input.value);
 
   document.getElementById('runBack').onclick = () => BR.goAfter('world.html', 'back', 180);
 
   document.getElementById('start').onclick = () => {
-    const name = input.value.trim().replace(/\s+/g, ' ');
+    const name = String(BR.state.nickname || input.value || '').trim().replace(/\s+/g, ' ');
+    if (!name) {
+      BR.play('error');
+      BR.haptic('error');
+      guide.textContent = 'REGISTER YOUR PLAYER FIRST';
+      guide.classList.add('show', 'error');
+      window.setTimeout(() => guide.classList.remove('show'), 2200);
+      return;
+    }
     if (!/^[A-Z0-9 _-]{2,24}$/i.test(name)) {
       BR.play('error');
       BR.haptic('error');
-      guide.textContent = name.length < 2
-        ? 'TYPE AT LEAST 2 CHARACTERS'
-        : 'USE LETTERS, NUMBERS, SPACES OR - _';
+      guide.textContent = 'PLAYER NAME NEEDS TO BE UPDATED IN REGISTRATION';
       guide.classList.add('show', 'error');
-      input.focus();
       window.setTimeout(() => guide.classList.remove('show'), 2200);
       return;
     }
 
-    BR.setNickname(name);
+    input.value = name;
     BR.safeSession.set('barameelStartFlashPending', '0');
     BR.safeSession.set('barameelStartFlashShown', '1');
     BR.track('run_start');
