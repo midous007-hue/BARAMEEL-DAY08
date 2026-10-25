@@ -150,7 +150,7 @@
       if (error) throw error;
       if (!data?.session) throw new Error('Verification succeeded but no session was created.');
       const { data: player, error: playerError } = await supabaseClient.functions.invoke('player', {
-        body: { nickname: pendingUsername }
+        body: { nickname: pendingUsername, phone_number: pendingPhone }
       });
       if (playerError) throw playerError;
       if (!player?.ok || !player?.player) throw new Error('Profile creation failed.');
