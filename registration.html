@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#071c34">
 <title>Join Barameel</title>
 <link rel="preload" as="image" href="./assets/barameel-registration-screen.webp">
-<link rel="stylesheet" href="./registration.css?v=20261025-otp-required-pin-fix">
+<link rel="stylesheet" href="./registration.css?v=20261025-phone-pin-auth-fix">
 </head>
 <body>
 <main class="registration-shell" id="registrationShell" aria-label="Barameel player registration">
@@ -35,22 +35,6 @@
     </div>
   </section>
 
-
-  <section class="otp-dialog" id="otpDialog" role="dialog" aria-modal="true" aria-labelledby="otpTitle" hidden>
-    <div class="otp-panel">
-      <div class="dialog-heading">
-        <h2 id="otpTitle">VERIFY YOUR PHONE</h2>
-        <button id="closeOtp" type="button" aria-label="Close verification">×</button>
-      </div>
-      <p id="otpSummary">We will send a verification code to your mobile number.</p>
-      <label class="otp-label" for="otpCode">6-DIGIT SMS CODE</label>
-      <input id="otpCode" class="otp-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="••••••" hidden>
-      <p id="otpHint" class="otp-hint" aria-live="polite">Verify the phone number to create or recover your profile.</p>
-      <button id="verifyOtp" class="secondary-action primary-action" type="button" hidden>VERIFY & CONTINUE</button>
-      <button id="resendOtp" class="secondary-action" type="button" hidden>RESEND CODE</button>
-      <button id="editDetails" class="secondary-action" type="button">BACK TO REGISTRATION</button>
-    </div>
-  </section>
 
   <div class="inline-pin-group" role="group" aria-label="Six digit player PIN">
     <input class="inline-pin-digit" id="pinDigit1" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="new-password" aria-label="PIN digit 1" required>
@@ -95,92 +79,50 @@
   let supabaseClient = null;
   let pendingPhone = '';
   let pendingUsername = '';
-  let sendingOtp = false;
-  let verifyingOtp = false;
+  let registering = false;
   try {
     if (window.supabase?.createClient && window.BARAMEEL_SUPABASE_URL && window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY) {
       supabaseClient = window.supabase.createClient(window.BARAMEEL_SUPABASE_URL, window.BARAMEEL_SUPABASE_PUBLISHABLE_KEY);
     }
   } catch (err) { console.error('Supabase client initialization failed', err); }
-  function setOtpBusy(busy, buttonId) {
-    $(buttonId).disabled = busy;
-    $(buttonId).setAttribute('aria-busy', String(busy));
-  }
-  async function sendVerificationCode() {
-    if (sendingOtp) return;
+  async function createOrRecoverProfile() {
+    if (registering) return;
     if (!supabaseClient) {
-      message('Verification is not configured yet. Please try again later.');
+      message('Registration is not available right now. Please try again later.');
       return;
     }
-    sendingOtp = true;
-    setOtpBusy(true, 'submitRegistration');
+    registering = true;
+    $('submitRegistration').disabled = true;
     clearMessage();
     try {
-      const { error } = await supabaseClient.auth.signInWithOtp({
-        phone: pendingPhone,
-        options: { shouldCreateUser: true, data: { username: pendingUsername } }
-      });
-      if (error) throw error;
-      $('otpTitle').textContent = 'VERIFY YOUR PHONE';
-      $('otpSummary').textContent = 'We sent a verification code to ' + pendingPhone + '.';
-      $('otpHint').textContent = 'Enter the 6-digit SMS code to verify your number and create your profile.';
-      $('otpCode').hidden = false;
-      $('verifyOtp').hidden = false;
-      $('resendOtp').hidden = false;
-      $('editDetails').textContent = 'EDIT PHONE NUMBER';
-      $('otpCode').value = '';
-      $('otpDialog').hidden = false;
-      $('otpCode').focus();
-    } catch (err) {
-      console.error('Phone OTP request failed', err);
-      const detail = String(err?.message || '').toLowerCase();
-      message(detail.includes('sms') || detail.includes('provider') || detail.includes('phone')
-        ? 'SMS delivery is not configured or the number was rejected. Check the Supabase phone-auth SMS provider and try again.'
-        : 'We could not send the verification code. Check the number and try again.');
-    } finally {
-      sendingOtp = false;
-      setOtpBusy(false, 'submitRegistration');
-    }
-  }
-  async function verifyCodeAndCreateProfile() {
-    if (verifyingOtp) return;
-    const token = $('otpCode').value.replace(/\D/g, '');
-    if (!/^[0-9]{6}$/.test(token)) {
-      $('otpHint').textContent = 'Enter the 6-digit code from your SMS.';
-      $('otpCode').focus();
-      return;
-    }
-    if (!supabaseClient) {
-      $('otpHint').textContent = 'Phone verification is not configured yet.';
-      return;
-    }
-    verifyingOtp = true;
-    setOtpBusy(true, 'verifyOtp');
-    $('otpHint').textContent = 'Verifying your number...';
-    try {
-      const { data, error } = await supabaseClient.auth.verifyOtp({ phone: pendingPhone, token, type: 'sms' });
-      if (error) throw error;
-      if (!data?.session) throw new Error('Verification succeeded but no session was created.');
-      const { data: player, error: playerError } = await supabaseClient.functions.invoke('player', {
+      // Barameel uses phone + player PIN, not SMS OTP. An anonymous Supabase
+      // session supplies a scoped bearer token for the Edge Function.
+      const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!sessionData?.session) {
+        const { error } = await supabaseClient.auth.signInAnonymously();
+        if (error) throw error;
+      }
+      const { data: result, error } = await supabaseClient.functions.invoke('player', {
         body: { nickname: pendingUsername, phone_number: pendingPhone, pin: pendingPin }
       });
-      if (playerError) throw playerError;
-      if (!player?.ok || !player?.player) throw new Error('Profile creation failed.');
-      saveRegisteredPlayer(player);
-      $('otpHint').textContent = 'Your Barameel profile is ready!';
-      $('otpTitle').textContent = 'PROFILE READY!';
-      $('otpCode').hidden = true;
-      $('verifyOtp').hidden = true;
-      $('resendOtp').hidden = true;
-      $('editDetails').textContent = 'CONTINUE TO BARAMEEL';
-      $('editDetails').onclick = () => { window.location.href = './world.html'; };
-      window.setTimeout(() => { window.location.href = './world.html'; }, 1200);
+      if (error) throw error;
+      if (!result?.ok || !result?.player) {
+        const reason = result?.error;
+        if (reason === 'PIN_MISMATCH') throw new Error('This phone number is already registered. Enter the correct PIN.');
+        if (reason === 'PHONE_ALREADY_REGISTERED') throw new Error('This phone number is already registered. Enter your existing PIN.');
+        if (reason === 'INVALID_PIN') throw new Error('Enter a valid 6-digit PIN.');
+        throw new Error('We could not create or recover your profile. Please try again.');
+      }
+      saveRegisteredPlayer(result);
+      message('Profile ready! Opening Barameel...');
+      window.location.href = './world.html';
     } catch (err) {
-      console.error('Phone verification/profile creation failed', err);
-      $('otpHint').textContent = 'The code could not be verified or the profile could not be created. Check the code and try again.';
+      console.error('Player registration/login failed', err);
+      message(err?.message || 'We could not complete your registration. Please try again.');
     } finally {
-      verifyingOtp = false;
-      setOtpBusy(false, 'verifyOtp');
+      registering = false;
+      $('submitRegistration').disabled = false;
     }
   }
   function renderCountries(query='') {
@@ -221,16 +163,10 @@
     pendingUsername = name;
     pendingPin=Array.from(document.querySelectorAll('.inline-pin-digit')).map(el=>el.value).join('');
     if(!/^\d{6}$/.test(pendingPin)){message('Enter your 6-digit PIN.');document.querySelector('.inline-pin-digit:not([value])')?.focus();return;}
-    sendVerificationCode();
+    createOrRecoverProfile();
   });
 
-  $('verifyOtp').addEventListener('click', verifyCodeAndCreateProfile);
-  $('resendOtp').addEventListener('click', sendVerificationCode);
-  $('closeOtp').addEventListener('click', () => { $('otpDialog').hidden = true; });
-  $('editDetails').addEventListener('click', () => { $('otpDialog').hidden = true; });
-  $('otpCode').addEventListener('input', () => {
-    $('otpCode').value = $('otpCode').value.replace(/\D/g, '').slice(0, 6);
-  });
+
 
   username.value='';
   renderCountries();
