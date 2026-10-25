@@ -36,6 +36,16 @@
     </div>
   </section>
 
+  <section class="otp-dialog" id="pinDialog" role="dialog" aria-modal="true" aria-labelledby="pinTitle" hidden>
+    <div class="otp-panel">
+      <div class="dialog-heading"><h2 id="pinTitle">CREATE YOUR PLAYER PIN</h2><button id="closePin" type="button" aria-label="Close PIN dialog">×</button></div>
+      <p id="pinDescription">Choose a 6-digit PIN to protect your points and progress. You will use it with your phone number when returning.</p>
+      <label class="otp-label" for="playerPin">6-DIGIT PIN</label>
+      <input id="playerPin" class="otp-code" type="password" inputmode="numeric" autocomplete="new-password" pattern="[0-9]*" maxlength="6" placeholder="••••••" aria-label="Six digit player PIN">
+      <p id="pinHint" class="otp-hint">Keep your PIN private.</p>
+      <button id="confirmPin" type="button" class="secondary-action primary-action">CONTINUE</button>
+    </div>
+  </section>
   <section class="otp-dialog" id="otpDialog" role="dialog" aria-modal="true" aria-labelledby="otpTitle" hidden>
     <div class="otp-panel">
       <div class="dialog-heading"><h2 id="otpTitle">Phone verification</h2><button id="closeOtp" type="button" aria-label="Close verification">×</button></div>
@@ -150,7 +160,7 @@
       if (error) throw error;
       if (!data?.session) throw new Error('Verification succeeded but no session was created.');
       const { data: player, error: playerError } = await supabaseClient.functions.invoke('player', {
-        body: { nickname: pendingUsername, phone_number: pendingPhone }
+        body: { nickname: pendingUsername, phone_number: pendingPhone, pin: pendingPin }
       });
       if (playerError) throw playerError;
       if (!player?.ok || !player?.player) throw new Error('Profile creation failed.');
@@ -223,6 +233,7 @@
       submit.removeAttribute('aria-busy');
     }
   }
+  let pendingPin = '';
   $('registrationForm').addEventListener('submit', e => {
     e.preventDefault(); clearMessage();
     const name=username.value.trim(), digits=phone.value.replace(/\D/g,'').replace(/^0+/, '');
@@ -231,8 +242,22 @@
     if(digits.length<6||digits.length>14){message('Please enter a valid mobile number.');phone.focus();return;}
     pendingPhone = selectedCountry[2] + digits;
     pendingUsername = name;
-    createProfileWithoutPhoneVerification();
+    $('pinDialog').hidden=false;
+    $('playerPin').value='';
+    $('pinHint').textContent='Choose a 6-digit PIN and keep it private.';
+    $('confirmPin').textContent='CREATE / RECOVER PROFILE';
+    $('playerPin').focus();
   });
+  $('confirmPin').addEventListener('click', async () => {
+    const pin=$('playerPin').value.replace(/\D/g,'');
+    if(!/^\d{6}$/.test(pin)){ $('pinHint').textContent='Enter exactly 6 digits.'; $('playerPin').focus(); return; }
+    pendingPin=pin;
+    $('pinDialog').hidden=true;
+    await createProfileWithoutPhoneVerification();
+  });
+  $('closePin').addEventListener('click',()=>{$('pinDialog').hidden=true;});
+  $('pinDialog').addEventListener('click',e=>{if(e.target===$('pinDialog'))$('pinDialog').hidden=true;});
+  $('playerPin').addEventListener('input',()=>{$('playerPin').value=$('playerPin').value.replace(/\D/g,'').slice(0,6);});
   $('verifyOtp').addEventListener('click', verifyCodeAndCreateProfile);
   $('otpCode').addEventListener('input', () => {
     $('otpCode').value = $('otpCode').value.replace(/\D/g, '').slice(0, 6);
