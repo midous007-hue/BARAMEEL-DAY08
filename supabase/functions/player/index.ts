@@ -156,6 +156,10 @@ Deno.serve(async (req) => {
       }
       if (phoneMatches.length === 1) {
         const recovered = phoneMatches[0];
+        // Verify the PIN before reattaching a legacy profile to this auth identity.
+        if (recovered.pin_hash && !constantTimeEqual(String(recovered.pin_hash), pinHash)) {
+          return json({ ok: false, error: "PIN_MISMATCH" }, 401);
+        }
         const reclaimed = await admin
           .from("players")
           .update({ auth_user_id: user.id, nickname: nickname || recovered.nickname, phone_number: verifiedPhone, runner: avatar })
