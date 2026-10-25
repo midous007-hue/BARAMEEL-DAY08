@@ -1,6 +1,6 @@
 :root{color-scheme:dark;--cyan:#00eaff;--navy:#061a32;--gold:#ffd21c}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#020811;font-family:Arial,Helvetica,sans-serif}
+html,body{margin:0;min-height:100%;background:#071c34 url("./assets/barameel-mobile-background.webp") center center / cover no-repeat fixed;font-family:Arial,Helvetica,sans-serif}
 body{min-height:100dvh;display:flex;justify-content:center;align-items:center;overflow:hidden}
 button,input{font:inherit}
 .registration-shell{position:relative;width:min(100vw,56.24dvh);aspect-ratio:928/1650;max-height:100dvh;overflow:hidden;background:#061a32;isolation:isolate}
