@@ -23,7 +23,7 @@
     <input id="phone" name="tel-national" class="phone-input" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Enter your mobile number" required>
 
     <button id="submitRegistration" class="submit-hotspot" type="submit" aria-label="Create profile">
-      <span class="submit-label">CREATE / RECOVER PROFILE <span aria-hidden="true">➜</span></span>
+      <img src="./assets/verify-create-profile-button.webp" alt=""><span class="submit-label">CREATE / RECOVER PROFILE</span>
     </button>
   </form>
 
@@ -220,7 +220,7 @@
   }
   let pendingPin = '';
   document.querySelectorAll('.inline-pin-digit').forEach((field,index,all)=>{
-    field.addEventListener('input',()=>{field.value=field.value.replace(/\\D/g,'').slice(-1);if(field.value&&all[index+1])all[index+1].focus();});
+    field.addEventListener('input',()=>{field.value=field.value.replace(/\D/g,'').slice(-1);if(field.value&&all[index+1])all[index+1].focus();});
     field.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!field.value&&all[index-1])all[index-1].focus();});
   });
   $('registrationForm').addEventListener('submit', e => {
@@ -232,7 +232,7 @@
     pendingPhone = selectedCountry[2] + digits;
     pendingUsername = name;
     pendingPin=Array.from(document.querySelectorAll('.inline-pin-digit')).map(el=>el.value).join('');
-    if(!/^\\d{6}$/.test(pendingPin)){message('Enter your 6-digit PIN.');document.querySelector('.inline-pin-digit:not([value])')?.focus();return;}
+    if(!/^\d{6}$/.test(pendingPin)){message('Enter your 6-digit PIN.');document.querySelector('.inline-pin-digit:not([value])')?.focus();return;}
     createProfileWithoutPhoneVerification();
   });
   username.value='';
