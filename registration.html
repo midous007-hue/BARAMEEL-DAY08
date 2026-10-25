@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#071c34">
 <title>Join Barameel</title>
 <link rel="preload" as="image" href="./assets/barameel-registration-screen.webp">
-<link rel="stylesheet" href="./registration.css?v=20261025-wallpaper-center-1">
+<link rel="stylesheet" href="./registration.css?v=20261025-figma-input-26-18">
 </head>
 <body>
 <main class="registration-shell" id="registrationShell" aria-label="Barameel player registration">
@@ -15,8 +15,7 @@
   <form id="registrationForm" autocomplete="on">
     <label class="visually-hidden" for="username">Choose your username</label>
     <input id="username" name="username" class="username-input" type="text" maxlength="24" minlength="3" autocomplete="nickname" placeholder="Enter your nickname" required>
-    <button class="shuffle-hotspot" id="shuffleUsername" type="button" aria-label="Generate a random username"></button>
-
+  
     <label class="visually-hidden" for="phone">Mobile number</label>
     <button class="country-hotspot" id="countryTrigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Choose country code">
       <span id="countryFlag" aria-hidden="true">🇪🇬</span><span id="countryCode">+20</span><span class="country-caret" aria-hidden="true">▼</span>
@@ -36,28 +35,14 @@
     </div>
   </section>
 
-  <section class="otp-dialog" id="pinDialog" role="dialog" aria-modal="true" aria-labelledby="pinTitle" hidden>
-    <div class="otp-panel">
-      <div class="dialog-heading"><h2 id="pinTitle">CREATE YOUR PLAYER PIN</h2><button id="closePin" type="button" aria-label="Close PIN dialog">×</button></div>
-      <p id="pinDescription">Choose a 6-digit PIN to protect your points and progress. You will use it with your phone number when returning.</p>
-      <label class="otp-label" for="playerPin">6-DIGIT PIN</label>
-      <input id="playerPin" class="otp-code" type="password" inputmode="numeric" autocomplete="new-password" pattern="[0-9]*" maxlength="6" placeholder="••••••" aria-label="Six digit player PIN">
-      <p id="pinHint" class="otp-hint">Keep your PIN private.</p>
-      <button id="confirmPin" type="button" class="secondary-action primary-action">CONTINUE</button>
-    </div>
-  </section>
-  <section class="otp-dialog" id="otpDialog" role="dialog" aria-modal="true" aria-labelledby="otpTitle" hidden>
-    <div class="otp-panel">
-      <div class="dialog-heading"><h2 id="otpTitle">Phone verification</h2><button id="closeOtp" type="button" aria-label="Close verification">×</button></div>
-      <p id="otpSummary"></p>
-      <label class="otp-label" for="otpCode">6-DIGIT VERIFICATION CODE</label>
-      <input id="otpCode" class="otp-code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="••••••" aria-label="Six digit verification code">
-      <p id="otpHint" class="otp-hint">Enter the code sent to your phone.</p>
-      <button id="verifyOtp" type="button" class="secondary-action primary-action">CREATE / RECOVER PROFILE</button>
-      <button id="resendOtp" type="button" class="secondary-action">RESEND CODE</button>
-      <button id="editDetails" type="button" class="secondary-action">EDIT PHONE NUMBER</button>
-    </div>
-  </section>
+  <div class="inline-pin-group" role="group" aria-label="Six digit player PIN">
+    <input class="inline-pin-digit" id="pinDigit1" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="new-password" aria-label="PIN digit 1" required>
+    <input class="inline-pin-digit" id="pinDigit2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 2" required>
+    <input class="inline-pin-digit" id="pinDigit3" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 3" required>
+    <input class="inline-pin-digit" id="pinDigit4" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 4" required>
+    <input class="inline-pin-digit" id="pinDigit5" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 5" required>
+    <input class="inline-pin-digit" id="pinDigit6" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 6" required>
+  </div>
   <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
 </main>
 <script src="./config.js?v=20261024-registration"></script>
@@ -202,7 +187,7 @@
   $('closeCountries').addEventListener('click', () => { dialog.hidden=true; $('countryTrigger').setAttribute('aria-expanded','false'); $('countryTrigger').focus(); });
   search.addEventListener('input', () => renderCountries(search.value));
   dialog.addEventListener('click', e => { if(e.target===dialog){dialog.hidden=true;$('countryTrigger').setAttribute('aria-expanded','false');} });
-  $('shuffleUsername').addEventListener('click', () => { const base=suggestions[Math.floor(Math.random()*suggestions.length)]; username.value=base+Math.floor(10+Math.random()*90); username.dispatchEvent(new Event('input',{bubbles:true})); username.focus(); clearMessage(); });
+
   username.addEventListener('input', clearMessage); phone.addEventListener('input', clearMessage);
   async function createProfileWithoutPhoneVerification() {
     const submit = $('submitRegistration');
@@ -219,7 +204,7 @@
         if (signInError) throw signInError;
       }
       const { data, error } = await supabaseClient.functions.invoke('player', {
-        body: { nickname: pendingUsername, phone_number: pendingPhone }
+        body: { nickname: pendingUsername, phone_number: pendingPhone, pin: pendingPin }
       });
       if (error) throw error;
       if (!data?.ok || !data?.player) throw new Error(data?.error || 'PROFILE_CREATION_FAILED');
@@ -234,6 +219,10 @@
     }
   }
   let pendingPin = '';
+  document.querySelectorAll('.inline-pin-digit').forEach((field,index,all)=>{
+    field.addEventListener('input',()=>{field.value=field.value.replace(/\\D/g,'').slice(-1);if(field.value&&all[index+1])all[index+1].focus();});
+    field.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!field.value&&all[index-1])all[index-1].focus();});
+  });
   $('registrationForm').addEventListener('submit', e => {
     e.preventDefault(); clearMessage();
     const name=username.value.trim(), digits=phone.value.replace(/\D/g,'').replace(/^0+/, '');
@@ -242,11 +231,9 @@
     if(digits.length<6||digits.length>14){message('Please enter a valid mobile number.');phone.focus();return;}
     pendingPhone = selectedCountry[2] + digits;
     pendingUsername = name;
-    $('pinDialog').hidden=false;
-    $('playerPin').value='';
-    $('pinHint').textContent='Choose a 6-digit PIN and keep it private.';
-    $('confirmPin').textContent='CREATE / RECOVER PROFILE';
-    $('playerPin').focus();
+    pendingPin=Array.from(document.querySelectorAll('.inline-pin-digit')).map(el=>el.value).join('');
+    if(!/^\\d{6}$/.test(pendingPin)){message('Enter your 6-digit PIN.');document.querySelector('.inline-pin-digit:not([value])')?.focus();return;}
+    createProfileWithoutPhoneVerification();
   });
   $('confirmPin').addEventListener('click', async () => {
     const pin=$('playerPin').value.replace(/\D/g,'');
@@ -258,15 +245,12 @@
   $('closePin').addEventListener('click',()=>{$('pinDialog').hidden=true;});
   $('pinDialog').addEventListener('click',e=>{if(e.target===$('pinDialog'))$('pinDialog').hidden=true;});
   $('playerPin').addEventListener('input',()=>{$('playerPin').value=$('playerPin').value.replace(/\D/g,'').slice(0,6);});
-  $('verifyOtp').addEventListener('click', verifyCodeAndCreateProfile);
-  $('otpCode').addEventListener('input', () => {
-    $('otpCode').value = $('otpCode').value.replace(/\D/g, '').slice(0, 6);
-    $('otpHint').textContent = 'Enter the 6-digit SMS code to verify your number.';
-  });
-  $('resendOtp').addEventListener('click', sendVerificationCode);
-  $('closeOtp').addEventListener('click', () => { $('otpDialog').hidden=true; });
-  $('editDetails').addEventListener('click', () => { $('otpDialog').hidden=true; phone.focus(); });
-  $('otpDialog').addEventListener('click', e => { if(e.target===$('otpDialog')) $('otpDialog').hidden=true; });
+
+
+
+
+
+
   username.value='';
   renderCountries();
 })();
