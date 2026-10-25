@@ -133,9 +133,12 @@ Deno.serve(async (req) => {
     }
 
     let player = existingLookup.data;
+    if (player && player.phone_number && String(player.phone_number).replace(/[\s()-]/g, "") !== normalizedPhone) {
+      return json({ ok: false, error: "PHONE_SESSION_MISMATCH" }, 409);
+    }
 
-    // If browser history/storage was cleared, OTP creates a fresh client session.
-    // Reattach the existing player row so points, pieces and checkpoint claims remain intact.
+    // If browser storage was cleared, a new anonymous session can recover the profile
+    // by matching the submitted phone and PIN. Existing player data stays attached.
     if (!player) {
       const phoneLookup = await admin
         .from("players")
@@ -144,7 +147,7 @@ Deno.serve(async (req) => {
         .limit(2);
 
       if (phoneLookup.error) {
-        console.error("Verified phone profile lookup failed:", phoneLookup.error);
+        console.error("Player phone lookup failed:", phoneLookup.error);
         return json({ ok: false, error: "PLAYER_PHONE_LOOKUP_FAILED" }, 500);
       }
       const phoneMatches = phoneLookup.data || [];
@@ -154,7 +157,7 @@ Deno.serve(async (req) => {
       }
       if (phoneMatches.length === 1) {
         const recovered = phoneMatches[0];
-        // Verify the PIN before reattaching a legacy profile to this auth identity.
+        // Verify the PIN before reattaching a profile to this anonymous session.
         if (recovered.pin_hash && !constantTimeEqual(String(recovered.pin_hash), pinHash)) {
           return json({ ok: false, error: "PIN_MISMATCH" }, 401);
         }
@@ -178,7 +181,7 @@ Deno.serve(async (req) => {
           return json({ ok: false, error: "PIN_MISMATCH" }, 401);
         }
       } else {
-        // Legacy profiles did not persist a PIN. Enroll one once, only after phone-auth verification.
+        // Legacy profiles without a stored PIN can enroll one once during recovery.
         const enrolled = await admin
           .from("players")
           .update({ pin_hash: pinHash })
@@ -216,7 +219,7 @@ Deno.serve(async (req) => {
             player_code: newPlayerCode(),
             nickname,
             runner: avatar,
-            phone_number: phoneNumber || null,
+            phone_number: normalizedPhone,
             pin_hash: pinHash,
           })
           .select("*")
