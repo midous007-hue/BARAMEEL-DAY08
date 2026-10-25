@@ -112,14 +112,12 @@ Deno.serve(async (req) => {
       ? requestedAvatar
       : (legacyAvatars[requestedAvatar] || "avatar01");
 
-    // A phone-authenticated user is the durable identity. Never create an anonymous
-    // profile from the registration form; recover an older profile by the verified phone.
-    const verifiedPhone = String(user.phone || "").trim();
-    if (!verifiedPhone) {
-      return json({ ok: false, error: "VERIFIED_PHONE_REQUIRED" }, 403);
-    }
-    if (phoneNumber && phoneNumber !== verifiedPhone) {
-      return json({ ok: false, error: "VERIFIED_PHONE_MISMATCH" }, 403);
+    // Barameel account identity is the normalized phone number + six-digit PIN.
+    // SMS OTP is intentionally not used. The anonymous Supabase session only
+    // authenticates this API request; the phone/PIN checks below determine the player.
+    const normalizedPhone = phoneNumber.replace(/[\s()-]/g, "");
+    if (!/^\+[1-9]\d{6,14}$/.test(normalizedPhone)) {
+      return json({ ok: false, error: "INVALID_PHONE" }, 400);
     }
 
     // First look up the authenticated user's player profile.
@@ -142,7 +140,7 @@ Deno.serve(async (req) => {
       const phoneLookup = await admin
         .from("players")
         .select("*")
-        .eq("phone_number", verifiedPhone)
+        .eq("phone_number", normalizedPhone)
         .limit(2);
 
       if (phoneLookup.error) {
@@ -151,7 +149,7 @@ Deno.serve(async (req) => {
       }
       const phoneMatches = phoneLookup.data || [];
       if (phoneMatches.length > 1) {
-        console.error("Multiple legacy profiles share verified phone:", verifiedPhone);
+        console.error("Multiple legacy profiles share verified phone:", normalizedPhone);
         return json({ ok: false, error: "PLAYER_PHONE_DUPLICATE" }, 409);
       }
       if (phoneMatches.length === 1) {
@@ -162,7 +160,7 @@ Deno.serve(async (req) => {
         }
         const reclaimed = await admin
           .from("players")
-          .update({ auth_user_id: user.id, nickname: nickname || recovered.nickname, phone_number: verifiedPhone, runner: avatar })
+          .update({ auth_user_id: user.id, nickname: nickname || recovered.nickname, phone_number: normalizedPhone, runner: avatar })
           .eq("id", recovered.id)
           .select("*")
           .single();
