@@ -235,22 +235,6 @@
     if(!/^\\d{6}$/.test(pendingPin)){message('Enter your 6-digit PIN.');document.querySelector('.inline-pin-digit:not([value])')?.focus();return;}
     createProfileWithoutPhoneVerification();
   });
-  $('confirmPin').addEventListener('click', async () => {
-    const pin=$('playerPin').value.replace(/\D/g,'');
-    if(!/^\d{6}$/.test(pin)){ $('pinHint').textContent='Enter exactly 6 digits.'; $('playerPin').focus(); return; }
-    pendingPin=pin;
-    $('pinDialog').hidden=true;
-    await createProfileWithoutPhoneVerification();
-  });
-  $('closePin').addEventListener('click',()=>{$('pinDialog').hidden=true;});
-  $('pinDialog').addEventListener('click',e=>{if(e.target===$('pinDialog'))$('pinDialog').hidden=true;});
-  $('playerPin').addEventListener('input',()=>{$('playerPin').value=$('playerPin').value.replace(/\D/g,'').slice(0,6);});
-
-
-
-
-
-
   username.value='';
   renderCountries();
 })();
