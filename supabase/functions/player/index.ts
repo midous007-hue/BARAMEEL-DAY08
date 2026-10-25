@@ -81,6 +81,16 @@ Deno.serve(async (req) => {
       ? requestedAvatar
       : (legacyAvatars[requestedAvatar] || "avatar01");
 
+    // A phone-authenticated user is the durable identity. Never create an anonymous
+    // profile from the registration form; recover an older profile by the verified phone.
+    const verifiedPhone = String(user.phone || "").trim();
+    if (!verifiedPhone) {
+      return json({ ok: false, error: "VERIFIED_PHONE_REQUIRED" }, 403);
+    }
+    if (phoneNumber && phoneNumber !== verifiedPhone) {
+      return json({ ok: false, error: "VERIFIED_PHONE_MISMATCH" }, 403);
+    }
+
     // First look up the authenticated user's player profile.
     const existingLookup = await admin
       .from("players")
@@ -94,6 +104,40 @@ Deno.serve(async (req) => {
     }
 
     let player = existingLookup.data;
+
+    // If browser history/storage was cleared, OTP creates a fresh client session.
+    // Reattach the existing player row so points, pieces and checkpoint claims remain intact.
+    if (!player) {
+      const phoneLookup = await admin
+        .from("players")
+        .select("*")
+        .eq("phone_number", verifiedPhone)
+        .limit(2);
+
+      if (phoneLookup.error) {
+        console.error("Verified phone profile lookup failed:", phoneLookup.error);
+        return json({ ok: false, error: "PLAYER_PHONE_LOOKUP_FAILED" }, 500);
+      }
+      const phoneMatches = phoneLookup.data || [];
+      if (phoneMatches.length > 1) {
+        console.error("Multiple legacy profiles share verified phone:", verifiedPhone);
+        return json({ ok: false, error: "PLAYER_PHONE_DUPLICATE" }, 409);
+      }
+      if (phoneMatches.length === 1) {
+        const recovered = phoneMatches[0];
+        const reclaimed = await admin
+          .from("players")
+          .update({ auth_user_id: user.id, nickname: nickname || recovered.nickname, phone_number: verifiedPhone, runner: avatar })
+          .eq("id", recovered.id)
+          .select("*")
+          .single();
+        if (reclaimed.error || !reclaimed.data) {
+          console.error("Could not reattach verified phone profile:", reclaimed.error);
+          return json({ ok: false, error: "PLAYER_RECOVERY_FAILED" }, 500);
+        }
+        player = reclaimed.data;
+      }
+    }
 
     if (!player) {
       let insertError: unknown = null;
