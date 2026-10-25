@@ -206,46 +206,6 @@
   dialog.addEventListener('click', e => { if(e.target===dialog){dialog.hidden=true;$('countryTrigger').setAttribute('aria-expanded','false');} });
 
   username.addEventListener('input', clearMessage); phone.addEventListener('input', clearMessage);
-  async function createProfileWithoutPhoneVerification() {
-    const submit = $('submitRegistration');
-    if (submit.disabled) return;
-    submit.disabled = true;
-    submit.setAttribute('aria-busy', 'true');
-    clearMessage();
-    try {
-      if (!supabaseClient) throw new Error('SUPABASE_NOT_CONFIGURED');
-      const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
-      if (sessionError) throw sessionError;
-      if (!sessionData?.session) {
-        const { error: signInError } = await supabaseClient.auth.signInAnonymously();
-        if (signInError) throw signInError;
-      }
-      const { data, error } = await supabaseClient.functions.invoke('player', {
-        body: { nickname: pendingUsername, phone_number: pendingPhone, pin: pendingPin }
-      });
-      if (error) throw error;
-      if (!data?.ok || !data?.player) throw new Error(data?.error || 'PROFILE_CREATION_FAILED');
-      saveRegisteredPlayer(data);
-      message('Profile created successfully. Continuing to Barameel...');
-      window.setTimeout(() => { window.location.href = './world.html'; }, 900);
-    } catch (err) {
-      console.error('Registration failed', err);
-      let detail = String(err?.message || '');
-      try {
-        if (err?.context && typeof err.context.clone === 'function') {
-          const responseBody = await err.context.clone().json();
-          detail = String(responseBody?.error || detail);
-        }
-      } catch (_) {}
-      if (detail.includes('PIN_MISMATCH')) {
-        $('otpHint').textContent = 'Incorrect PIN for this phone number. Use the original PIN and try again.';
-      } else {
-        $('otpHint').textContent = 'The code could not be verified or the profile could not be recovered. Check the SMS code and try again.';
-      }
-      submit.disabled = false;
-      submit.removeAttribute('aria-busy');
-    }
-  }
   let pendingPin = '';
   document.querySelectorAll('.inline-pin-digit').forEach((field,index,all)=>{
     field.addEventListener('input',()=>{field.value=field.value.replace(/\D/g,'').slice(-1);if(field.value&&all[index+1])all[index+1].focus();});
