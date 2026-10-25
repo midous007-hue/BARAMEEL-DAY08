@@ -213,7 +213,20 @@
       window.setTimeout(() => { window.location.href = './world.html'; }, 900);
     } catch (err) {
       console.error('Registration failed', err);
-      message('We could not save your profile. Please check your connection and try again.');
+      let detail = String(err?.message || '');
+      try {
+        if (err?.context && typeof err.context.clone === 'function') {
+          const responseBody = await err.context.clone().json();
+          detail = String(responseBody?.error || detail);
+        }
+      } catch (_) {}
+      if (detail.includes('PIN_MISMATCH')) {
+        message('This phone number already has a profile. Enter the original 6-digit PIN to recover it.');
+      } else if (detail.includes('VERIFIED_PHONE_REQUIRED') || detail.includes('AUTH_REQUIRED')) {
+        message('Verify this phone number first, then return to create or recover your profile.');
+      } else {
+        message('We could not save your profile. Please check your connection and try again.');
+      }
       submit.disabled = false;
       submit.removeAttribute('aria-busy');
     }
