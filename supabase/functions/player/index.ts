@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
     const phoneNumber = String(body.phone_number || "").trim().slice(0, 32);
     const suppliedPin = String(body.pin || "").trim();
     if (nickname.length < 3) return json({ ok: false, error: "INVALID_NICKNAME" }, 400);
-    if (!/^\\d{6}$/.test(suppliedPin)) return json({ ok: false, error: "INVALID_PIN" }, 400);
+    if (!/^\d{6}$/.test(suppliedPin)) return json({ ok: false, error: "INVALID_PIN" }, 400);
     const pinHash = await hashPlayerPin(suppliedPin);
 
     const requestedAvatar = String(body.avatar || body.runner || "").toLowerCase();
