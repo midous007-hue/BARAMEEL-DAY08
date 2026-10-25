@@ -34,6 +34,34 @@ async function requireUser(req: Request, admin: ReturnType<typeof adminClient>) 
   return data.user;
 }
 
+async function hashPlayerPin(pin: string) {
+  const secretKeys = JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") || "{}");
+  const secret = Deno.env.get("SUPABASE_PIN_PEPPER") ||
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ||
+    secretKeys.default;
+  if (!secret) throw new Error("PIN hashing secret is not configured");
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const digest = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode("barameel-player-pin:v1:" + pin),
+  );
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function constantTimeEqual(a: string, b: string) {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
 function newPlayerCode() {
   return "BM-" + crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase();
 }
@@ -74,7 +102,10 @@ Deno.serve(async (req) => {
 
     const nickname = String(body.nickname || "").trim().slice(0, 24);
     const phoneNumber = String(body.phone_number || "").trim().slice(0, 32);
+    const suppliedPin = String(body.pin || "").trim();
     if (nickname.length < 3) return json({ ok: false, error: "INVALID_NICKNAME" }, 400);
+    if (!/^\\d{6}$/.test(suppliedPin)) return json({ ok: false, error: "INVALID_PIN" }, 400);
+    const pinHash = await hashPlayerPin(suppliedPin);
 
     const requestedAvatar = String(body.avatar || body.runner || "").toLowerCase();
     const avatar = avatars.includes(requestedAvatar)
@@ -139,6 +170,37 @@ Deno.serve(async (req) => {
       }
     }
 
+    if (player) {
+      if (player.pin_hash) {
+        if (!constantTimeEqual(String(player.pin_hash), pinHash)) {
+          return json({ ok: false, error: "PIN_MISMATCH" }, 401);
+        }
+      } else {
+        // Legacy profiles did not persist a PIN. Enroll one once, only after phone-auth verification.
+        const enrolled = await admin
+          .from("players")
+          .update({ pin_hash: pinHash })
+          .eq("id", player.id)
+          .is("pin_hash", null)
+          .select("*")
+          .maybeSingle();
+        if (enrolled.error) {
+          console.error("Legacy player PIN enrollment failed:", enrolled.error);
+          return json({ ok: false, error: "PIN_ENROLLMENT_FAILED" }, 500);
+        }
+        if (enrolled.data) {
+          player = enrolled.data;
+        } else {
+          const reread = await admin.from("players").select("*").eq("id", player.id).single();
+          if (reread.error || !reread.data || !reread.data.pin_hash ||
+              !constantTimeEqual(String(reread.data.pin_hash), pinHash)) {
+            return json({ ok: false, error: "PIN_MISMATCH" }, 401);
+          }
+          player = reread.data;
+        }
+      }
+    }
+
     if (!player) {
       let insertError: unknown = null;
 
@@ -153,6 +215,7 @@ Deno.serve(async (req) => {
             nickname,
             runner: avatar,
             phone_number: phoneNumber || null,
+            pin_hash: pinHash,
           })
           .select("*")
           .single();
