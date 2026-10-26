@@ -592,7 +592,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
   function addDestinationMarker(){
     if(!map||!mapReady||!destination||destinationMarker)return;
     const el=markerElement('barameel','BARAMEEL');
-    destinationMarker=new maplibregl.Marker({element:el,anchor:'bottom',pitchAlignment:'viewport',rotationAlignment:'viewport',clickTolerance:4}).setLngLat([destination.lng,destination.lat]).addTo(map); destinationMarker.getElement().style.zIndex='80';
+    destinationMarker=new maplibregl.Marker({element:el,anchor:'bottom',pitchAlignment:'viewport',rotationAlignment:'viewport',clickTolerance:4}).setLngLat([destination.lng,destination.lat]).addTo(map); destinationMarker.getElement().style.zIndex='80'; destinationMarker.getElement().style.cursor='pointer'; destinationMarker.getElement().setAttribute('role','button'); destinationMarker.getElement().setAttribute('aria-label','Navigate to Barameel'); destinationMarker.getElement().addEventListener('click',e=>{e.stopPropagation();if(latestPosition)startNavigation(destination);else requestLocation();});
   }
   function syncCheckpointMarkers(){
     if(!map||!mapReady)return;
@@ -617,7 +617,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
         continue;
       }
       const el=markerElement(isCleared?'cleared':'checkpoint',cp.name);
-      const m=new maplibregl.Marker({element:el,anchor:'center',pitchAlignment:'viewport',rotationAlignment:'viewport'}).setLngLat([cp.lng,cp.lat]).addTo(map); m.getElement().style.zIndex='70';
+      const m=new maplibregl.Marker({element:el,anchor:'center',pitchAlignment:'viewport',rotationAlignment:'viewport',clickTolerance:4}).setLngLat([cp.lng,cp.lat]).addTo(map); m.getElement().style.zIndex='70'; m.getElement().style.cursor='pointer'; m.getElement().setAttribute('role','button'); m.getElement().setAttribute('aria-label','Navigate to '+cp.name); m.getElement().addEventListener('click',e=>{e.stopPropagation();if(getDiscovered().has(cp.id))return;if(!unlockedCheckpoints().some(item=>item.id===cp.id))return;if(latestPosition)startNavigation(cp);else requestLocation();});
       checkpointMarkers.set(cp.id,m);
     }
   }
@@ -1270,7 +1270,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       return;
     }
     setAction(true,'Switch to Checkpoint Navigation');
-    if(!lastRoutePosition||haversine(pos,lastRoutePosition)>35||Date.now()-lastRouteAt>20000)buildWalkingRoute(pos,navigationTarget,false);
+    if(!lastRoutePosition||haversine(pos,lastRoutePosition)>70||Date.now()-lastRouteAt>45000)buildWalkingRoute(pos,navigationTarget,false);
   }
   async function startNavigation(target){
     if(!target)return;
