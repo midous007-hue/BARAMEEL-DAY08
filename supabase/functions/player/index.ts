@@ -288,8 +288,9 @@ Deno.serve(async (req) => {
       .order("created_at", { ascending: true });
 
     if (claimsResult.error) {
+      // Profile creation/login must not fail because optional checkpoint state
+      // tables are unavailable during a schema migration.
       console.error("Checkpoint challenge claims lookup failed:", claimsResult.error);
-      return json({ ok: false, error: "CHECKPOINT_STATE_FAILED" }, 500);
     }
 
     const challengeIds = [...new Set((claimsResult.data || [])
@@ -305,7 +306,6 @@ Deno.serve(async (req) => {
 
       if (challengeResult.error) {
         console.error("Checkpoint challenge lookup failed:", challengeResult.error);
-        return json({ ok: false, error: "CHECKPOINT_STATE_FAILED" }, 500);
       }
 
       const locationByChallenge = new Map(
@@ -326,8 +326,8 @@ Deno.serve(async (req) => {
       .eq("player_id", player.id);
 
     if (ownedPiecesResult.error) {
+      // Keep auth/profile usable; collection state can be hydrated on a later sync.
       console.error("Player pieces lookup failed:", ownedPiecesResult.error);
-      return json({ ok: false, error: "COLLECTION_STATE_FAILED" }, 500);
     }
 
     const pieceIds = (ownedPiecesResult.data || [])
@@ -343,7 +343,6 @@ Deno.serve(async (req) => {
 
       if (pieceResult.error) {
         console.error("Collection pieces lookup failed:", pieceResult.error);
-        return json({ ok: false, error: "COLLECTION_STATE_FAILED" }, 500);
       }
 
       const imageIds = [...new Set((pieceResult.data || [])
@@ -356,7 +355,6 @@ Deno.serve(async (req) => {
 
       if (imageResult.error) {
         console.error("Collection images lookup failed:", imageResult.error);
-        return json({ ok: false, error: "COLLECTION_STATE_FAILED" }, 500);
       }
 
       const collectionByImage = new Map(
@@ -385,8 +383,8 @@ Deno.serve(async (req) => {
 
     const rankResult = await admin.rpc("player_rank", { p_player_id: player.id });
     if (rankResult.error) {
+      // Ranking is supplementary and must not block registration or login.
       console.error("Player rank lookup failed:", rankResult.error);
-      return json({ ok: false, error: "PLAYER_RANK_FAILED" }, 500);
     }
 
     const runner = String(player.runner || "").toLowerCase();
