@@ -9,7 +9,7 @@
 </head>
 <body>
 <main class="stage collection-stage">
-<img class="base" src="./assets/screen06-puzzle.webp?v=20261026-frame16-input-geometry-1" alt="Collection Puzzle">
+<img class="base" src="./assets/screen06-puzzle.webp?v=20261027-frame17-exact-inputs-1" alt="Collection Puzzle">
 <button id="back" class="collection-back" aria-label="Back to Collection Scan"></button>
 <select id="select" class="collection-select" aria-label="Select collection"></select>
 <div id="collectionName" class="collection-name" aria-hidden="true"></div>
@@ -22,14 +22,8 @@
 <div id="completeFlash" class="complete-flash"></div>
 <div id="imagePreload"></div>
 <style>
-/* COLLECTION PUZZLE — exact input bounds from supplied Frame 16.svg (1023×1646). */
-.hero-grid{left:17.896%!important;top:26.335%!important;width:61.375%!important;height:31.112%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow:hidden!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{display:flex!important;left:13.650%!important;top:60.402%!important;width:27.300%!important;height:5.217%!important;
-  left:54.70%!important;
-  top:63.36%!important;
-  width:30.54%!important;
-  height:3.96%!important;
-  filter:none!important;
-}
+/* Frame 17.svg exact input bounds; canvas is 989×1591. */
+.hero-grid{left:18.5035%!important;top:27.1521%!important;width:63.0940%!important;height:31.9925%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow:hidden!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{display:flex!important;left:14.1557%!important;top:62.3507%!important;width:28.0081%!important;height:5.0911%!important;filter:none!important;}
 .points-number{
   font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif!important;
   font-size:clamp(18px,4.25vw,42px)!important;font-weight:900!important;line-height:1!important;letter-spacing:-.02em!important;color:#f6e7ce!important;text-shadow:0 2px 0 #071a20,0 0 5px rgba(246,231,206,.18)!important;transform:none!important;-webkit-text-stroke:1px #071a20!important;
@@ -100,16 +94,16 @@
   function pieceCollected(cid,iid,num){return BR.hasPiece(cid,iid,num)}
   function imageComplete(cid,im){return BR.count(cid,im.imageId)>=9}
 
-  const HERO_COLS=[{left:0,width:31.96},{left:33.83,width:31.96},{left:68.04,width:31.96}]; const HERO_ROWS=[{top:0,height:32.12},{top:33.94,height:32.12},{top:67.68,height:32.32}];
+  const HERO_COLS=[{left:0,width:31.8910},{left:33.8141,width:31.8910},{left:68.1090,width:31.8910}]; const HERO_ROWS=[{top:0,height:32.2200},{top:33.9882,height:32.0236},{top:67.7800,height:32.2200}];
   let heroMaster=null;
   function coverGeometry(img,w,h){const scale=Math.max(w/img.naturalWidth,h/img.naturalHeight);const bw=img.naturalWidth*scale,bh=img.naturalHeight*scale;return {bw,bh,ox:(bw-w)/2,oy:(bh-h)/2};}
   function syncHeroCrops(){if(!hero.children.length)return;const gw=hero.clientWidth,gh=hero.clientHeight;if(!gw||!gh)return;const cover=heroMaster?coverGeometry(heroMaster,gw,gh):{bw:gw,bh:gh,ox:0,oy:0};[...hero.children].forEach((cell,n)=>{const col=n%3,row=Math.floor(n/3),c=HERO_COLS[col],r=HERO_ROWS[row],x=gw*c.left/100,y=gh*r.top/100;cell.style.left=c.left+'%';cell.style.top=r.top+'%';cell.style.width=c.width+'%';cell.style.height=r.height+'%';cell.style.backgroundSize=cover.bw+'px '+cover.bh+'px';cell.style.backgroundPosition=(-cover.ox-x)+'px '+(-cover.oy-y)+'px';});}
   function renderHero(im){hero.classList.remove('completed');hero.innerHTML='';hero.style.backgroundImage='';heroMaster=null;if(!im)return;for(let n=1;n<=9;n++){const collected=pieceCollected(collectionId,im.imageId,n);const cell=document.createElement('div');cell.className='hero-piece '+(collected?'is-collected':'is-missing');hero.appendChild(cell);}loadMaster(im.masterFile).then(img=>{if(!img)return;heroMaster=img;const bg='url("' + img.src + '")';[...hero.children].forEach(cell=>cell.style.backgroundImage=bg);syncHeroCrops();if(imageComplete(collectionId,im)){hero.innerHTML='';hero.classList.add('completed');const cover=coverGeometry(img,hero.clientWidth,hero.clientHeight);hero.style.backgroundImage=bg;hero.style.backgroundSize=cover.bw+'px '+cover.bh+'px';hero.style.backgroundPosition=(-cover.ox)+'px '+(-cover.oy)+'px';}});requestAnimationFrame(syncHeroCrops);}
 
-  // Frame 17 thumbnail input bounds, normalized to the 989×1591 artwork.
+  // Frame 17.svg exact thumbnail gray rectangles normalized to 989×1591.
   const positions=[
-    [6.269,75.613,15.369,7.856],[23.559,75.613,15.369,7.856],[40.748,75.613,15.369,7.856],[58.241,75.613,15.369,7.856],[75.531,75.613,15.369,7.856],
-    [6.269,84.224,15.369,7.919],[23.559,84.224,15.369,7.919],[40.748,84.224,15.369,7.919],[58.241,84.224,15.369,7.919],[75.531,84.224,15.369,7.919]
+    [7.1780,78.3155,14.3579,7.3532],[24.9747,78.3155,14.3579,7.3532],[42.8716,78.3155,14.3579,7.3532],[60.7685,78.3155,14.3579,7.3532],[78.6653,78.3155,14.3579,7.3532],
+    [7.1780,87.1779,14.3579,7.3532],[24.9747,87.1779,14.3579,7.3532],[42.8716,87.1779,14.3579,7.3532],[60.7685,87.1779,14.3579,7.3532],[78.6653,87.1779,14.3579,7.3532]
   ];
 
   async function buildThumbs(cfg){
