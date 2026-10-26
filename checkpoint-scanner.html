@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHECKPOINT SCANNER</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261026-camera-window-align-3">
-<script src="./config.js?v=20261026-camera-window-align-3"></script>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261026-camera-align-mobile-4">
+<script src="./config.js?v=20261026-camera-align-mobile-4"></script>
 <style>
-/* Align the live camera layer to the QR window in checkpoint-scanner.webp. */
-.checkpoint-camera{position:absolute;left:48.0%;top:54.0%;width:46.0%;height:21.0%;z-index:60;overflow:hidden;pointer-events:none;background:#071b2b;visibility:visible}
+/* Camera preview is aligned to the artwork's inner QR window. Percentages scale with the stage on desktop and mobile. */
+.checkpoint-camera{position:absolute;left:48.0%;top:47.5%;width:46.0%;height:17.0%;z-index:60;overflow:hidden;pointer-events:none;background:#071b2b;visibility:visible}
 .checkpoint-camera video{display:block;position:absolute;left:7.0%;top:5.0%;width:86.0%;height:90.0%;object-fit:cover;border-radius:5px;background:#071b2b;z-index:2;opacity:0}
 .checkpoint-camera.active video{opacity:1}
 .checkpoint-camera.active{outline:1px solid rgba(244,197,47,.25)}
@@ -21,7 +21,7 @@
 .checkpoint-corners i:nth-child(4){right:0;bottom:0;border-width:0 4px 4px 0}
 .checkpoint-scan-line{position:absolute;left:12%;right:12%;top:50%;height:3px;background:#ef2d24;box-shadow:0 0 12px rgba(239,45,36,.9);animation:checkpointScan 1.5s ease-in-out infinite alternate;z-index:6}
 @keyframes checkpointScan{from{top:22%}to{top:78%}}
-.checkpoint-status{position:absolute;left:48%;top:69.5%;width:45%;height:4.1%;z-index:70;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-align:center;text-shadow:0 2px 0 #071b2b;pointer-events:none}
+.checkpoint-status{position:absolute;left:48%;top:78.2%;width:45%;height:4.1%;z-index:70;display:flex;align-items:center;justify-content:center;color:#f6e7ce;font:900 clamp(10px,2.4vw,18px)/1 'Roboto Condensed',Arial,sans-serif;text-transform:uppercase;text-align:center;text-shadow:0 2px 0 #071b2b;pointer-events:none}
 .checkpoint-status.error{color:#ff9489}.checkpoint-status.success{color:#f4c52f}
 .checkpoint-scan-hit{position:absolute;left:7.4%;top:82.8%;width:85.2%;height:10%;z-index:70;border:0;background:transparent;touch-action:manipulation;cursor:pointer}
 @media(prefers-reduced-motion:reduce){.checkpoint-scan-line{animation:none}}
@@ -29,7 +29,7 @@
 </head>
 <body>
 <main class="flow-stage art-948x1659">
-<img class="flow-art" src="./assets/checkpoint-scanner.webp?v=20261026-camera-window-align-3" alt="SCAN CHECKPOINT QR" fetchpriority="high">
+<img class="flow-art" src="./assets/checkpoint-scanner.webp?v=20261026-camera-align-mobile-4" alt="SCAN CHECKPOINT QR" fetchpriority="high">
 <div id="camera" class="checkpoint-camera">
 <video id="video" playsinline webkit-playsinline muted autoplay></video>
 <div class="checkpoint-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -44,7 +44,7 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script src="./app.js?v=20261026-camera-window-align-3"></script>
+<script src="./app.js?v=20261026-camera-align-mobile-4"></script>
 <script>
 (() => {
   const video=document.getElementById('video'),camera=document.getElementById('camera'),status=document.getElementById('status'),canvas=document.getElementById('canvas');
