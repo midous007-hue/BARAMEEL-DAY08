@@ -34,7 +34,7 @@
   if (!state.playerId) { state.playerId = makeId('player'); saveState(); }
 
   function loadState(){
-    const legacyKeys=['barameel.world.player.v23.5','barameel.world.player.v23.4','barameel.world.player.v23.3','barameel.world.player.v23.2'];
+    const legacyKeys=['barameel.world.player.v23.6','barameel.world.player.v23.5','barameel.world.player.v23.4','barameel.world.player.v23.3','barameel.world.player.v23.2'];
     try{
       let raw=safeStorage.get(STORAGE);
       if(!raw){
