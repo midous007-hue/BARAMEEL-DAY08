@@ -1286,20 +1286,25 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     navigationStepIndex=0;
     lastNavigationCueKey='';
     navigationStarted=true;
-    // Active walking navigation follows the live GPS position; dragging the map pauses follow mode.
+    lastRoutePosition=null;
+    lastRouteAt=0;
+    next.textContent=target.id==='barameel'?'BARAMEEL':String(target.name||'CHECKPOINT').toUpperCase();
+    next.dataset.cp=target.id==='barameel'?'':String(target.id);
+    distance.textContent=formatDistance(haversine(latestPosition,target));
+    status.textContent=target.id==='barameel'?'NAVIGATING DIRECTLY TO BARAMEEL':'NAVIGATING TO '+String(target.name||'CHECKPOINT').toUpperCase();
+    status.classList.remove('route-error');
     followPlayer=true;
-    if(mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:16.6,pitch:34,duration:450,essential:true});
+    if(mapReady)map.easeTo({center:[latestPosition.lng,latestPosition.lat],zoom:16.6,pitch:34,duration:350,essential:true});
     startNavCard.disabled=true;
     startNavCard.textContent=target.id==='barameel'?'NAVIGATING TO BARAMEEL':'NAVIGATING TO '+String(target.name||'CHECKPOINT').toUpperCase();
-    status.classList.remove('route-error');
     navOverlay?.classList.add('active');
     navCompass?.classList.add('active');
     const turnIcon=document.getElementById('navTurnIcon');if(turnIcon)turnIcon.textContent='↑';
     if(navDirection)navDirection.textContent='CALCULATING WALKING ROUTE';
     if(navDistance)navDistance.textContent='PLEASE WAIT';
-    setBrunaGuide("Hang tight, I'm finding us a walking route!",'CALCULATING ROUTE');
-    if(navDistance)navDistance.textContent='ROUTE';
-    setAction(true,'Switch to Checkpoint Navigation');
+    setBrunaGuide(target.id==='barameel'?"Taking you straight to BARAMEEL. I'm finding the walking route now.":"Taking you to "+String(target.name||'CHECKPOINT')+". I'm finding the walking route now.",'CALCULATING ROUTE');
+    setAction(true,'Switch Navigation Target');
+    routeActionHandler=()=>target.id==='barameel'?goToNearestCheckpoint():runDirect();
     await buildWalkingRoute(latestPosition,target,true);
   }
   function renderRoutePositionAndState(pos){
@@ -1495,17 +1500,45 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
     }
   },{passive:false});
   const routeButton=document.getElementById('routeAction');
-  function goToNearestCheckpoint(){
+  async function nearestCheckpointByWalkingDistance(candidates){
+    if(!latestPosition||!candidates.length)return null;
+    const coords=[latestPosition.lng+','+latestPosition.lat,...candidates.map(cp=>cp.lng+','+cp.lat)].join(';');
+    const destinations=candidates.map((_,i)=>i+1).join(';');
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),6500);
+    try{
+      const url='https://routing.openstreetmap.de/routed-foot/table/v1/driving/'+coords+'?sources=0&destinations='+destinations+'&annotations=distance';
+      const res=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store',signal:controller.signal});
+      if(!res.ok)throw new Error('WALKING_TABLE_'+res.status);
+      const data=await res.json();
+      const distances=data?.distances?.[0];
+      if(!Array.isArray(distances)||distances.length!==candidates.length||!distances.some(Number.isFinite))throw new Error('WALKING_TABLE_NO_DISTANCES');
+      return candidates.map((cp,i)=>({...cp,_routeDistance:Number.isFinite(distances[i])?distances[i]:Infinity}))
+        .filter(cp=>Number.isFinite(cp._routeDistance))
+        .sort((a,b)=>a._routeDistance-b._routeDistance)[0]||null;
+    }catch(err){
+      console.warn('[BARAMEEL CHECKPOINT ROUTE DISTANCE]',err);
+      return [...candidates].map(cp=>({...cp,_routeDistance:haversine(latestPosition,cp)}))
+        .sort((a,b)=>a._routeDistance-b._routeDistance)[0]||null;
+    }finally{clearTimeout(timeout);}
+  }
+  async function goToNearestCheckpoint(){
     if(!latestPosition)return requestLocation();
     const discovered=getDiscovered(),skipped=getSkippedCheckpoints();
-    const cp=unlockedCheckpoints()
-      .filter(x=>!discovered.has(x.id)&&!skipped.has(String(x.id)))
-      .map(x=>({...x,_distance:haversine(latestPosition,x)}))
-      .sort((a,b)=>a._distance-b._distance)[0]||null;
-    if(!cp){
+    const candidates=unlockedCheckpoints().filter(x=>!discovered.has(x.id)&&!skipped.has(String(x.id)));
+    if(!candidates.length){
+      next.textContent='BARAMEEL';
+      next.dataset.cp='';
       setBrunaGuide('You have found every checkpoint! Head to Barameel to claim your reward.','RUN COMPLETE');
       return;
     }
+    action.disabled=true;
+    status.textContent='FINDING NEAREST WALKABLE CHECKPOINT…';
+    next.textContent='CHECKING ROUTES…';
+    const cp=await nearestCheckpointByWalkingDistance(candidates);
+    action.disabled=false;
+    if(!cp){status.textContent='NO WALKABLE CHECKPOINT FOUND';return;}
+    next.textContent=String(cp.name||cp.id).toUpperCase();
     next.dataset.cp=cp.id;
     if(haversine(latestPosition,cp)<=Math.max(5,cp.radius_meters||CHECKPOINT_HOTSPOT_RADIUS)){
       enterCheckpointHotspot(cp);
@@ -1515,7 +1548,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
       BR.goAfter(url,'scan',220);
       return;
     }
-    startNavigation(cp);
+    await startNavigation(cp);
   }
   const runCheckpoint=()=>goToNearestCheckpoint();
   function bindTouchAction(el,handler){
@@ -1545,7 +1578,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b2b}
 
   const directButton=document.getElementById('directBarameel');
   const runDirect=()=>{
-    if(latestPosition&&destination)startNavigation(destination);
+    if(!destination){
+      status.textContent='BARAMEEL DESTINATION IS NOT CONFIGURED';
+      status.classList.add('route-error');
+      setBrunaGuide("I can't find the Barameel destination on this map yet.",'DESTINATION UNAVAILABLE',{force:true});
+      return;
+    }
+    next.textContent='BARAMEEL';
+    next.dataset.cp='';
+    startNavCard.textContent='NAVIGATE TO BARAMEEL';
+    if(latestPosition)startNavigation(destination);
     else requestLocation();
   };
   bindTouchAction(directButton,runDirect);
