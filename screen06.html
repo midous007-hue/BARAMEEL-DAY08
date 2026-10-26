@@ -9,7 +9,7 @@
 </head>
 <body>
 <main class="stage collection-stage">
-<img class="base" src="./assets/screen06-puzzle.webp?v=20261026-screen06-puzzle-replacement-1" alt="Collection Puzzle">
+<img class="base" src="./assets/screen06-puzzle.webp?v=20261026-frame16-input-geometry-1" alt="Collection Puzzle">
 <button id="back" class="collection-back" aria-label="Back to Collection Scan"></button>
 <select id="select" class="collection-select" aria-label="Select collection"></select>
 <div id="collectionName" class="collection-name" aria-hidden="true"></div>
@@ -22,8 +22,8 @@
 <div id="completeFlash" class="complete-flash"></div>
 <div id="imagePreload"></div>
 <style>
-/* COLLECTION PUZZLE — geometry read from Figma frame 10:130 (989×1591). */
-.hero-grid{left:45.20%!important;top:37.40%!important;width:49.14%!important;height:25.14%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow:hidden!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{
+/* COLLECTION PUZZLE — exact input bounds from supplied Frame 16.svg (1023×1646). */
+.hero-grid{left:19.745%!important;top:29.648%!important;width:61.095%!important;height:30.923%!important;display:block!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow:hidden!important}.hero-piece{position:absolute!important;margin:0!important;padding:0!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}.points-badge{display:none!important;
   left:54.70%!important;
   top:63.36%!important;
   width:30.54%!important;
@@ -100,7 +100,7 @@
   function pieceCollected(cid,iid,num){return BR.hasPiece(cid,iid,num)}
   function imageComplete(cid,im){return BR.count(cid,im.imageId)>=9}
 
-  const HERO_COLS=[{left:2.06,width:30.04},{left:33.95,width:30.04},{left:66.26,width:30.04}]; const HERO_ROWS=[{top:3.0,height:30.0},{top:34.75,height:30.0},{top:66.5,height:30.0}];
+  const HERO_COLS=[{left:0,width:31.89},{left:33.81,width:31.89},{left:68.11,width:31.89}]; const HERO_ROWS=[{top:0,height:32.22},{top:33.99,height:32.02},{top:67.78,height:32.22}];
   let heroMaster=null;
   function coverGeometry(img,w,h){const scale=Math.max(w/img.naturalWidth,h/img.naturalHeight);const bw=img.naturalWidth*scale,bh=img.naturalHeight*scale;return {bw,bh,ox:(bw-w)/2,oy:(bh-h)/2};}
   function syncHeroCrops(){if(!hero.children.length)return;const gw=hero.clientWidth,gh=hero.clientHeight;if(!gw||!gh)return;const cover=heroMaster?coverGeometry(heroMaster,gw,gh):{bw:gw,bh:gh,ox:0,oy:0};[...hero.children].forEach((cell,n)=>{const col=n%3,row=Math.floor(n/3),c=HERO_COLS[col],r=HERO_ROWS[row],x=gw*c.left/100,y=gh*r.top/100;cell.style.left=c.left+'%';cell.style.top=r.top+'%';cell.style.width=c.width+'%';cell.style.height=r.height+'%';cell.style.backgroundSize=cover.bw+'px '+cover.bh+'px';cell.style.backgroundPosition=(-cover.ox-x)+'px '+(-cover.oy-y)+'px';});}
@@ -108,13 +108,13 @@
 
   // Exact Figma frame 10:130 thumbnail bounds, normalized to 989×1591.
   const positions=[
-    [3.842,76.304,16.582,8.485],[22.245,76.304,16.582,8.485],[40.546,76.304,16.582,8.485],[58.544,76.304,16.582,8.485],[76.946,76.304,16.582,8.485],
-    [3.842,85.984,16.582,8.485],[22.245,85.984,16.582,8.485],[40.546,85.984,16.582,8.485],[58.544,85.984,16.582,8.485],[76.946,85.984,16.582,8.485]
+    [10.068,73.451,16.031,8.201],[31.671,73.451,16.031,8.201],[52.493,73.451,16.031,8.201],[74.095,73.451,16.031,8.201],
+    [10.068,84.447,16.031,8.201],[31.671,84.447,16.031,8.201],[52.493,84.447,16.031,8.201],[74.095,84.447,16.031,8.201]
   ];
 
   async function buildThumbs(cfg){
     thumbs.innerHTML='';
-    for(const [idx,im] of (cfg.images||[]).entries()){
+    for(const [idx,im] of (cfg.images||[]).slice(0,positions.length).entries()){
       const b=document.createElement('button');b.type='button';b.className='collection-thumb';b.dataset.num=String(idx+1);
       const p=positions[idx];b.style.cssText='left:'+p[0]+'%;top:'+p[1]+'%;width:'+p[2]+'%;height:'+p[3]+'%';
       const grid=document.createElement('div');grid.className='thumb-grid';
