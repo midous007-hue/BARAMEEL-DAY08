@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — COLLECTION QR</title>
-<link rel="stylesheet" href="./styles.css?v=20261027-frame18-native-buttons-6">
-<script src="./config.js?v=20261027-frame18-native-buttons-6"></script>
+<link rel="stylesheet" href="./styles.css?v=20261027-tldraw-exact-layout-7">
+<script src="./config.js?v=20261027-tldraw-exact-layout-7"></script>
 <style>
-.scan-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071c28}
+.scan-stage{position:relative;width:min(100vw,calc(100dvh*952/1652));height:min(100dvh,calc(100vw*1652/952));aspect-ratio:952/1652;margin:auto;overflow:hidden;background:#071c28}
 .scan-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
 /* Camera viewport follows Figma node 30:4 (x=496, y=927, w=338, h=283)
    on the 952 x 1652 artwork; percentages keep the slot aligned on mobile. */
@@ -38,12 +38,12 @@
 .scan-hit:focus-visible{outline:3px solid #fff0a6;outline-offset:-5px;border-radius:999px}
 .scan-back{left:3.7%;top:1.1%;width:11.6%;height:6.4%}
 /* Visible transparent button artwork sits inside the existing interactive hitboxes. */
-.scan-open{left:31.7%;top:76.9%;width:61.8%;height:7.4%}
-.scan-collections{left:31.7%;top:84.8%;width:61.8%;height:7.5%}
+.scan-open{left:32.18%;top:79.57%;width:65.43%;height:8.28%}
+.scan-collections{left:31.47%;top:88.19%;width:65.72%;height:8.28%}
 /* Keep the transparent artwork's native ~3:1 proportions. The invisible tap zones
    stay exactly where they were; only the visible art is centered and ratio-locked. */
 .scan-button-art{position:absolute;left:50%;top:50%;width:100%;height:100%;max-width:none;aspect-ratio:auto;object-fit:contain;object-position:center;display:block;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-drag:none}
-.scan-open .scan-button-art,.scan-collections .scan-button-art{width:100%;height:100%;max-width:none;object-fit:fill;object-position:center}
+.scan-open .scan-button-art,.scan-collections .scan-button-art{width:100%;height:100%;max-width:none;object-fit:contain;object-position:center}
 
 .scan-hit.scan-open::after,.scan-hit.scan-collections::after{inset:0;z-index:2;border:3px solid rgba(255,238,166,.98);border-radius:999px;background:transparent;box-shadow:0 0 0 2px rgba(2,8,23,.95),0 0 10px 3px rgba(255,207,45,.58);opacity:1}
 .scan-hit.pressed .scan-button-art{filter:brightness(1.08);transform:translate(-50%,-50%) scale(.985);transition:transform .09s ease,filter .09s ease}
