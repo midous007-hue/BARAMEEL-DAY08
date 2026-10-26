@@ -32,9 +32,14 @@
 .scan-hit:active::after,.scan-hit.pressed::after{background:rgba(255,190,20,.22);border-color:rgba(255,239,153,.96);box-shadow:inset 0 0 18px rgba(255,192,0,.55),0 0 16px rgba(255,192,0,.55);transform:scale(.965);opacity:1}
 .scan-hit:focus-visible{outline:3px solid #fff0a6;outline-offset:-5px;border-radius:999px}
 .scan-back{left:3.7%;top:1.1%;width:11.6%;height:6.4%}
-/* Button hitboxes follow the latest screen05 artwork: camera first, collections second. */
-.scan-open{left:37.0%;top:76.8%;width:60.5%;height:8.0%}
-.scan-collections{left:37.0%;top:85.2%;width:60.5%;height:7.8%}
+/* Visible transparent button artwork sits inside the existing interactive hitboxes. */
+.scan-open{left:17.5%;top:76.8%;width:76%;height:7.0%}
+.scan-collections{left:17.5%;top:84.8%;width:76%;height:7.0%}
+.scan-button-art{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.scan-hit.scan-open::after,.scan-hit.scan-collections::after{inset:5%;z-index:2}
+.scan-hit.pressed .scan-button-art{filter:brightness(1.08);transform:scale(.985);transition:transform .09s ease,filter .09s ease}
+.scan-button-art{transition:transform .09s ease,filter .09s ease}
+@media(prefers-reduced-motion:reduce){.scan-button-art{transition:none}}
 @media(prefers-reduced-motion:reduce){.scan-hit::after{transition:none}}
 </style>
 </head>
@@ -48,8 +53,8 @@
 <div id="scanStatus" class="scan-status" aria-live="polite"></div>
 </div>
 <button id="back" class="scan-hit scan-back" aria-label="Back to My Run"></button>
-<button id="open" class="scan-hit scan-open" aria-label="Open camera and scan"></button>
-<button id="collections" class="scan-hit scan-collections" aria-label="Continue"></button>
+<button id="open" class="scan-hit scan-open" aria-label="Open camera and scan"><img class="scan-button-art" src="./assets/open-camera.webp?v=20261027-visible-buttons-1" alt="" draggable="false"></button>
+<button id="collections" class="scan-hit scan-collections" aria-label="Continue"><img class="scan-button-art" src="./assets/direct-to-my-collections.webp?v=20261027-visible-buttons-1" alt="" draggable="false"></button>
 <canvas id="scanCanvas" hidden></canvas>
 </main>
 <script src="./app.js?v=20261024-universal-qr-domain-1"></script>
