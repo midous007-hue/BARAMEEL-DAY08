@@ -343,13 +343,16 @@ Deno.serve(async (req) => {
         .filter((id): id is string => Boolean(id)))];
     }
 
+    let collectionStateAvailable = true;
+    let collectionStateError = "";
     const ownedPiecesResult = await admin
       .from("player_pieces")
       .select("piece_id")
       .eq("player_id", player.id);
 
     if (ownedPiecesResult.error) {
-      // Keep auth/profile usable; collection state can be hydrated on a later sync.
+      collectionStateAvailable = false;
+      collectionStateError = "PLAYER_PIECES_LOOKUP_FAILED";
       console.error("Player pieces lookup failed:", ownedPiecesResult.error);
     }
 
@@ -365,6 +368,8 @@ Deno.serve(async (req) => {
         .in("id", pieceIds);
 
       if (pieceResult.error) {
+        collectionStateAvailable = false;
+        collectionStateError = "COLLECTION_PIECES_LOOKUP_FAILED";
         console.error("Collection pieces lookup failed:", pieceResult.error);
       }
 
@@ -377,6 +382,8 @@ Deno.serve(async (req) => {
         : { data: [], error: null };
 
       if (imageResult.error) {
+        collectionStateAvailable = false;
+        collectionStateError = "COLLECTION_IMAGES_LOOKUP_FAILED";
         console.error("Collection images lookup failed:", imageResult.error);
       }
 
@@ -424,6 +431,9 @@ Deno.serve(async (req) => {
         weeklyPoints: player.weekly_points,
         checkpoints: checkpointIds,
         collected,
+        collectionStateAvailable,
+        collectionStateError: collectionStateError || null,
+        collectionPieceRows: pieceIds.length,
         scans: player.scans_count,
         rank: Number(rankResult.data || 0),
       },
