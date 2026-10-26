@@ -8,8 +8,10 @@
 <link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
 <script src="./config.js?v=20261007-26.2"></script>
 <style>
-.checkpoint-camera{position:absolute;left:43.4%;top:46.7%;width:51.8%;height:18.8%;z-index:42;overflow:hidden;pointer-events:none}
-.checkpoint-camera video{position:absolute;left:7.0%;top:8.0%;width:86.0%;height:84.0%;object-fit:cover;border-radius:5px;background:#071b2b}
+.checkpoint-camera{position:absolute;left:43.4%;top:46.7%;width:51.8%;height:18.8%;z-index:60;overflow:hidden;pointer-events:none;background:#071b2b;visibility:visible}
+.checkpoint-camera video{display:block;position:absolute;left:7.0%;top:8.0%;width:86.0%;height:84.0%;object-fit:cover;border-radius:5px;background:#071b2b;z-index:2;opacity:0}
+.checkpoint-camera.active video{opacity:1}
+.checkpoint-camera.active{outline:1px solid rgba(244,197,47,.25)}
 .checkpoint-corners{position:absolute;left:7%;top:8%;right:7%;bottom:8%;z-index:5;pointer-events:none}
 .checkpoint-corners i{position:absolute;width:14%;height:15%;border-color:#f4c52f;border-style:solid;filter:drop-shadow(0 0 4px rgba(244,197,47,.75))}
 .checkpoint-corners i:nth-child(1){left:0;top:0;border-width:4px 0 0 4px}
@@ -174,19 +176,40 @@
     raf=requestAnimationFrame(loop);
   }
   async function start(){
-    if(starting||stream)return;starting=true;BR.play('scan');BR.haptic('scan');setStatus('OPENING CAMERA');
-    if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){setStatus('CAMERA NEEDS HTTPS','error');BR.play('error');BR.haptic('error');starting=false;return}
+    if(starting||stream)return;
+    starting=true;BR.play('scan');BR.haptic('scan');setStatus('OPENING CAMERA');
+    if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){
+      setStatus('CAMERA NEEDS HTTPS — OPEN IN CHROME','error');BR.play('error');BR.haptic('error');starting=false;return;
+    }
     try{
-      stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
-      camera.classList.add('active');video.srcObject=stream;await video.play();await native();starting=false;
-      checkpointValue.textContent='READY';
-      pointsValue.textContent='—';
-      setStatus('SCAN QR');
-      loop();
-    }catch{
+      // Prefer the rear camera, but retry with simpler constraints for phones that
+      // reject the requested resolution or camera-facing mode.
+      try{
+        stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+      }catch(firstError){
+        console.warn('[BARAMEEL CAMERA] preferred constraints failed',firstError);
+        stream=await navigator.mediaDevices.getUserMedia({audio:false,video:true});
+      }
+      camera.classList.add('active');
+      video.srcObject=stream;
+      video.muted=true;video.playsInline=true;
+      await video.play();
+      await native();
       starting=false;
+      checkpointValue.textContent='READY';pointsValue.textContent='—';setStatus('SCAN QR');
+      if(!detector&&typeof window.jsQR!=='function'){
+        const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+        s.onload=()=>loop();s.onerror=()=>setStatus('CAMERA ON — QR READER UNAVAILABLE','error');document.head.appendChild(s);
+      }else loop();
+    }catch(err){
+      starting=false;
+      stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;camera.classList.remove('active');
+      console.error('[BARAMEEL CAMERA START]',err);
       const inApp=/Instagram|FBAN|FBAV|FB_IAB|musical_ly|BytedanceWebview/i.test(navigator.userAgent||'');
-      setStatus(inApp?'OPEN IN SAFARI / CHROME TO USE THE CAMERA':'CAMERA ACCESS OFF — ENABLE CAMERA IN BROWSER SETTINGS','error');
+      const denied=err?.name==='NotAllowedError'||err?.name==='PermissionDeniedError';
+      const missing=err?.name==='NotFoundError'||err?.name==='DevicesNotFoundError';
+      const busy=err?.name==='NotReadableError'||err?.name==='TrackStartError';
+      setStatus(inApp?'OPEN IN CHROME TO USE CAMERA':denied?'ALLOW CAMERA PERMISSION IN BROWSER':missing?'NO CAMERA FOUND ON THIS DEVICE':busy?'CAMERA IS BUSY — CLOSE OTHER APPS':'CAMERA FAILED — TAP TO RETRY','error');
       BR.play('error');BR.haptic('error');
     }
   }
@@ -204,6 +227,7 @@
     document.title='BARAMEEL RUN — CHECKPOINT SCANNER — TEST';
   }
   open.onclick=e=>{e.preventDefault();start()};
+  open.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse'){e.preventDefault();start()}},{passive:false});
 
   window.addEventListener('pagehide',stop);
 })();
