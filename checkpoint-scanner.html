@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — CHECKPOINT SCANNER</title>
-<link rel="stylesheet" href="./barameel-flow.css?v=20261007-26.2">
-<script src="./config.js?v=20261007-26.2"></script>
+<link rel="stylesheet" href="./barameel-flow.css?v=20261026-camera-fix-2">
+<script src="./config.js?v=20261026-camera-fix-2"></script>
 <style>
 .checkpoint-camera{position:absolute;left:43.4%;top:46.7%;width:51.8%;height:18.8%;z-index:60;overflow:hidden;pointer-events:none;background:#071b2b;visibility:visible}
 .checkpoint-camera video{display:block;position:absolute;left:7.0%;top:8.0%;width:86.0%;height:84.0%;object-fit:cover;border-radius:5px;background:#071b2b;z-index:2;opacity:0}
@@ -28,7 +28,7 @@
 </head>
 <body>
 <main class="flow-stage art-948x1659">
-<img class="flow-art" src="./assets/checkpoint-scanner.webp?v=20261007-26.2" alt="SCAN CHECKPOINT QR" fetchpriority="high">
+<img class="flow-art" src="./assets/checkpoint-scanner.webp?v=20261026-camera-fix-2" alt="SCAN CHECKPOINT QR" fetchpriority="high">
 <div id="camera" class="checkpoint-camera">
 <video id="video" playsinline webkit-playsinline muted autoplay></video>
 <div class="checkpoint-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -43,7 +43,7 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script src="./app.js?v=20261007-26.2"></script>
+<script src="./app.js?v=20261026-camera-fix-2"></script>
 <script>
 (() => {
   const video=document.getElementById('video'),camera=document.getElementById('camera'),status=document.getElementById('status'),canvas=document.getElementById('canvas');
@@ -177,23 +177,22 @@
   }
   async function start(){
     if(starting||stream)return;
-    starting=true;BR.play('scan');BR.haptic('scan');setStatus('OPENING CAMERA');
-    if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){
-      setStatus('CAMERA NEEDS HTTPS — OPEN IN CHROME','error');BR.play('error');BR.haptic('error');starting=false;return;
+    starting=true;
+    setStatus('OPENING CAMERA');
+    try{window.BR?.play?.('scan');window.BR?.haptic?.('scan')}catch{}
+    if(!window.isSecureContext||!navigator.mediaDevices||typeof navigator.mediaDevices.getUserMedia!=='function'){
+      setStatus('CAMERA API UNAVAILABLE — OPEN HTTPS IN CHROME','error');starting=false;return;
     }
     try{
-      // Prefer the rear camera, but retry with simpler constraints for phones that
-      // reject the requested resolution or camera-facing mode.
       try{
         stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
       }catch(firstError){
         console.warn('[BARAMEEL CAMERA] preferred constraints failed',firstError);
         stream=await navigator.mediaDevices.getUserMedia({audio:false,video:true});
       }
-      camera.classList.add('active');
-      video.srcObject=stream;
-      video.muted=true;video.playsInline=true;
+      video.srcObject=stream;video.muted=true;video.playsInline=true;
       await video.play();
+      camera.classList.add('active');
       await native();
       starting=false;
       checkpointValue.textContent='READY';pointsValue.textContent='—';setStatus('SCAN QR');
@@ -209,8 +208,8 @@
       const denied=err?.name==='NotAllowedError'||err?.name==='PermissionDeniedError';
       const missing=err?.name==='NotFoundError'||err?.name==='DevicesNotFoundError';
       const busy=err?.name==='NotReadableError'||err?.name==='TrackStartError';
-      setStatus(inApp?'OPEN IN CHROME TO USE CAMERA':denied?'ALLOW CAMERA PERMISSION IN BROWSER':missing?'NO CAMERA FOUND ON THIS DEVICE':busy?'CAMERA IS BUSY — CLOSE OTHER APPS':'CAMERA FAILED — TAP TO RETRY','error');
-      BR.play('error');BR.haptic('error');
+      setStatus(inApp?'OPEN IN CHROME TO USE CAMERA':denied?'ALLOW CAMERA PERMISSION IN BROWSER':missing?'NO CAMERA FOUND ON THIS DEVICE':busy?'CAMERA IS BUSY — CLOSE OTHER APPS':err?.name==='OverconstrainedError'?'CAMERA MODE NOT SUPPORTED — TAP TO RETRY':'CAMERA FAILED — TAP TO RETRY','error');
+      try{window.BR?.play?.('error');window.BR?.haptic?.('error')}catch{}
     }
   }
   if(TEST_MODE){
@@ -226,8 +225,9 @@
     pointsValue.textContent='—';
     document.title='BARAMEEL RUN — CHECKPOINT SCANNER — TEST';
   }
-  open.onclick=e=>{e.preventDefault();start()};
+  open.addEventListener('click',e=>{e.preventDefault();start()});
   open.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse'){e.preventDefault();start()}},{passive:false});
+  open.addEventListener('touchend',e=>{e.preventDefault();start()},{passive:false});
 
   window.addEventListener('pagehide',stop);
 })();
