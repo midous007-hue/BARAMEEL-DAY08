@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — COLLECTION QR</title>
-<link rel="stylesheet" href="./styles.css?v=20261027-button-bold-size-4">
-<script src="./config.js?v=20261027-button-bold-size-4"></script>
+<link rel="stylesheet" href="./styles.css?v=20261027-button-gap-5">
+<script src="./config.js?v=20261027-button-gap-5"></script>
 <style>
 .scan-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071c28}
 .scan-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -38,8 +38,8 @@
 .scan-hit:focus-visible{outline:3px solid #fff0a6;outline-offset:-5px;border-radius:999px}
 .scan-back{left:3.7%;top:1.1%;width:11.6%;height:6.4%}
 /* Visible transparent button artwork sits inside the existing interactive hitboxes. */
-.scan-open{left:17.5%;top:76.8%;width:76%;height:7.0%}
-.scan-collections{left:17.5%;top:84.8%;width:76%;height:7.0%}
+.scan-open{left:17.5%;top:76.5%;width:76%;height:6.8%}
+.scan-collections{left:17.5%;top:85.2%;width:76%;height:6.8%}
 /* Keep the transparent artwork's native ~3:1 proportions. The invisible tap zones
    stay exactly where they were; only the visible art is centered and ratio-locked. */
 .scan-button-art{position:absolute;left:50%;top:50%;width:100%;height:100%;max-width:none;aspect-ratio:auto;object-fit:cover;object-position:center;display:block;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-drag:none}
@@ -54,7 +54,7 @@
 </head>
 <body>
 <main class="scan-stage">
-<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261027-button-bold-size-4" alt="BARAMEEL QR SCAN" fetchpriority="high">
+<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261027-button-gap-5" alt="BARAMEEL QR SCAN" fetchpriority="high">
 <div id="cameraWindow" class="collection-qr-frame">
 <video id="video" playsinline webkit-playsinline muted autoplay></video>
 <div class="scanner-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -62,8 +62,8 @@
 <div id="scanStatus" class="scan-status" aria-live="polite"></div>
 </div>
 <button id="back" class="scan-hit scan-back" aria-label="Back to My Run"></button>
-<button id="open" class="scan-hit scan-open" aria-label="Open camera and scan"><img class="scan-button-art" src="./assets/open-camera.webp?v=20261027-button-bold-size-4" alt="" draggable="false"></button>
-<button id="collections" class="scan-hit scan-collections" aria-label="Continue"><img class="scan-button-art" src="./assets/direct-to-my-collections.webp?v=20261027-button-bold-size-4" alt="" draggable="false"></button>
+<button id="open" class="scan-hit scan-open" aria-label="Open camera and scan"><img class="scan-button-art" src="./assets/open-camera.webp?v=20261027-button-gap-5" alt="" draggable="false"></button>
+<button id="collections" class="scan-hit scan-collections" aria-label="Continue"><img class="scan-button-art" src="./assets/direct-to-my-collections.webp?v=20261027-button-gap-5" alt="" draggable="false"></button>
 <canvas id="scanCanvas" hidden></canvas>
 </main>
 <script src="./app.js?v=20261024-universal-qr-domain-1"></script>
