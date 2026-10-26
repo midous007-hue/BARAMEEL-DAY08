@@ -103,21 +103,35 @@ Deno.serve(async (req) => {
     const nickname = String(body.nickname || "").trim().slice(0, 24);
     const phoneNumber = String(body.phone_number || "").trim().slice(0, 32);
     const suppliedPin = String(body.pin || "").trim();
-    if (nickname.length < 3) return json({ ok: false, error: "INVALID_NICKNAME" }, 400);
-    if (!/^\d{6}$/.test(suppliedPin)) return json({ ok: false, error: "INVALID_PIN" }, 400);
-    const pinHash = await hashPlayerPin(suppliedPin);
+    const hasPhone = phoneNumber.length > 0;
+    const hasPin = suppliedPin.length > 0;
+    const hasCredentials = hasPhone || hasPin;
+
+    // Registration/login submits phone + PIN. Routine player sync from app.js
+    // submits only nickname/avatar and must reuse the already-authenticated player.
+    if (hasCredentials && (!hasPhone || !hasPin)) {
+      return json({ ok: false, error: "PHONE_AND_PIN_REQUIRED" }, 400);
+    }
+    if (hasCredentials && nickname.length < 3) {
+      return json({ ok: false, error: "INVALID_NICKNAME" }, 400);
+    }
+    if (hasCredentials && !/^\d{6}$/.test(suppliedPin)) {
+      return json({ ok: false, error: "INVALID_PIN" }, 400);
+    }
 
     const requestedAvatar = String(body.avatar || body.runner || "").toLowerCase();
     const avatar = avatars.includes(requestedAvatar)
       ? requestedAvatar
       : (legacyAvatars[requestedAvatar] || "avatar01");
 
-    // Barameel account identity is the normalized phone number + six-digit PIN.
-    // SMS OTP is intentionally not used. The anonymous Supabase session only
-    // authenticates this API request; the phone/PIN checks below determine the player.
-    const normalizedPhone = phoneNumber.replace(/[\s()-]/g, "");
-    if (!/^\+[1-9]\d{6,14}$/.test(normalizedPhone)) {
-      return json({ ok: false, error: "INVALID_PHONE" }, 400);
+    let normalizedPhone = "";
+    let pinHash = "";
+    if (hasCredentials) {
+      normalizedPhone = phoneNumber.replace(/[\s()-]/g, "");
+      if (!/^\+[1-9]\d{6,14}$/.test(normalizedPhone)) {
+        return json({ ok: false, error: "INVALID_PHONE" }, 400);
+      }
+      pinHash = await hashPlayerPin(suppliedPin);
     }
 
     // First look up the authenticated user's player profile.
@@ -133,13 +147,17 @@ Deno.serve(async (req) => {
     }
 
     let player = existingLookup.data;
-    if (player && player.phone_number && String(player.phone_number).replace(/[\s()-]/g, "") !== normalizedPhone) {
+    if (player && hasCredentials && player.phone_number &&
+        String(player.phone_number).replace(/[\s()-]/g, "") !== normalizedPhone) {
       return json({ ok: false, error: "PHONE_SESSION_MISMATCH" }, 409);
+    }
+    if (!player && !hasCredentials) {
+      return json({ ok: false, error: "PLAYER_NOT_INITIALIZED" }, 409);
     }
 
     // If browser storage was cleared, a new anonymous session can recover the profile
     // by matching the submitted phone and PIN. Existing player data stays attached.
-    if (!player) {
+    if (!player && hasCredentials) {
       const phoneLookup = await admin
         .from("players")
         .select("*")
@@ -158,7 +176,12 @@ Deno.serve(async (req) => {
       if (phoneMatches.length === 1) {
         const recovered = phoneMatches[0];
         // Verify the PIN before reattaching a profile to this anonymous session.
-        if (recovered.pin_hash && !constantTimeEqual(String(recovered.pin_hash), pinHash)) {
+        if (!recovered.pin_hash) {
+          // Do not let a new anonymous session claim a legacy account without
+          // a previously enrolled PIN. Recovery needs a verified credential.
+          return json({ ok: false, error: "LEGACY_PROFILE_RECOVERY_REQUIRED" }, 409);
+        }
+        if (!constantTimeEqual(String(recovered.pin_hash), pinHash)) {
           return json({ ok: false, error: "PIN_MISMATCH" }, 401);
         }
         const reclaimed = await admin
@@ -175,7 +198,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    if (player) {
+    if (player && hasCredentials) {
       if (player.pin_hash) {
         if (!constantTimeEqual(String(player.pin_hash), pinHash)) {
           return json({ ok: false, error: "PIN_MISMATCH" }, 401);
@@ -206,7 +229,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    if (!player) {
+    if (!player && hasCredentials) {
       let insertError: unknown = null;
 
       // Retry only for generated player-code collisions. If another request
@@ -255,7 +278,7 @@ Deno.serve(async (req) => {
     } else {
       const patch: Record<string, unknown> = {};
       if (nickname) patch.nickname = nickname;
-      if (phoneNumber) patch.phone_number = phoneNumber;
+      if (hasCredentials && normalizedPhone) patch.phone_number = normalizedPhone;
       if (body.avatar || body.runner) patch.runner = avatar;
 
       if (Object.keys(patch).length) {
