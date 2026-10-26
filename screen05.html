@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — COLLECTION QR</title>
-<link rel="stylesheet" href="./styles.css?v=20261006-24.0">
-<script src="./config.js?v=20261006-24.0"></script>
+<link rel="stylesheet" href="./styles.css?v=20261026-collection-camera-fix-1">
+<script src="./config.js?v=20261026-collection-camera-fix-1"></script>
 <style>
 .scan-stage{position:relative;width:min(100vw,calc(100dvh*948/1659));height:min(100dvh,calc(100vw*1659/948));aspect-ratio:948/1659;margin:auto;overflow:hidden;background:#071c28}
 .scan-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -33,7 +33,7 @@
 </head>
 <body>
 <main class="scan-stage">
-<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261006-23.9" alt="BARAMEEL QR SCAN" fetchpriority="high">
+<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261026-collection-camera-fix-1" alt="BARAMEEL QR SCAN" fetchpriority="high">
 <div id="cameraWindow" class="collection-qr-frame">
 <video id="video" playsinline webkit-playsinline muted autoplay></video>
 <div class="scanner-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -101,17 +101,31 @@
   }
 
   async function start(){
-    if(starting||stream)return;
+    if(starting)return;
+    if(stream){
+      if(!ticketId){
+        starting=true;
+        const ticket=await ensureTicket();
+        starting=false;
+        if(ticket){
+          setStatus(redemptionMode?'POINT CAMERA AT THE BARAMEEL QR':'POINT CAMERA AT THE BARAMEEL QR');
+          loop();
+        }
+      }
+      return;
+    }
     starting=true;
-    const ticket=await ensureTicket();
-    if(!ticket){starting=false;return;}
-    BR.play('scan');BR.haptic('scan');setStatus(redemptionMode?'SCAN THE BARAMEEL QR TO UNLOCK REDEMPTION':'POINT CAMERA AT THE BARAMEEL QR');
+    BR.play('scan');BR.haptic('scan');
     if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){
       setStatus('CAMERA NEEDS HTTPS','error');BR.play('error');BR.haptic('error');starting=false;return;
     }
     try{
       stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
-      cam.classList.add('active');video.srcObject=stream;await video.play();await native();starting=false;
+      cam.classList.add('active');video.srcObject=stream;await video.play();await native();
+      starting=false;
+      const ticket=await ensureTicket();
+      if(!ticket)return;
+      setStatus(redemptionMode?'POINT CAMERA AT THE BARAMEEL QR':'POINT CAMERA AT THE BARAMEEL QR');
       if(!detector&&typeof window.jsQR!=='function'){
         const script=document.createElement('script');
         script.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
@@ -119,11 +133,15 @@
         script.onerror=()=>{setStatus('QR READER UNAVAILABLE','error');BR.play('error');BR.haptic('error');};
         document.head.appendChild(script);
       }else loop();
-    }catch{
+    }catch(err){
       starting=false;
+      stream?.getTracks().forEach(track=>track.stop());stream=null;video.srcObject=null;cam.classList.remove('active');
       const ua=navigator.userAgent||'';
       const inApp=/Instagram|FBAN|FBAV|FB_IAB|musical_ly|BytedanceWebview/i.test(ua);
-      setStatus(inApp?'OPEN IN SAFARI / CHROME TO USE THE CAMERA':'CAMERA ACCESS OFF — ENABLE CAMERA IN BROWSER SETTINGS','error');
+      const denied=err?.name==='NotAllowedError'||err?.name==='PermissionDeniedError';
+      const missing=err?.name==='NotFoundError'||err?.name==='DevicesNotFoundError';
+      const busy=err?.name==='NotReadableError'||err?.name==='TrackStartError';
+      setStatus(inApp?'OPEN IN SAFARI / CHROME TO USE THE CAMERA':denied?'CAMERA ACCESS OFF — ENABLE CAMERA IN BROWSER SETTINGS':missing?'NO CAMERA FOUND ON THIS DEVICE':busy?'CAMERA BUSY — CLOSE OTHER APPS':'CAMERA FAILED — TAP TO RETRY','error');
       BR.play('error');BR.haptic('error');
     }
   }
@@ -190,7 +208,6 @@
     }
   }
 
-  ensureTicket();
   if(redemptionMode){document.querySelector('.scan-open')?.setAttribute('aria-label','Open final Barameel redemption scanner');document.querySelector('.scan-collections')?.setAttribute('aria-label','Continue to redemption');}
   open.onclick=e=>{e.preventDefault();start()};
   collections.onclick=e=>{
