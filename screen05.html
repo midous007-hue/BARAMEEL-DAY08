@@ -181,6 +181,7 @@
       if(!ticket){
         locked=false;
         setStatus('SCAN TICKET UNAVAILABLE — TAP OPEN CAMERA TO RETRY','error');
+        loop();
         return;
       }
     }
