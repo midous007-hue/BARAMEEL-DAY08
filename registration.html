@@ -106,7 +106,41 @@
       const { data: result, error } = await supabaseClient.functions.invoke('player', {
         body: { nickname: pendingUsername, phone_number: pendingPhone, pin: pendingPin }
       });
-      if (error) throw error;
+      if (error) {
+        // Supabase wraps non-2xx Edge Function responses in FunctionsHttpError.
+        // Read only the structured error code so we can diagnose deployment/schema
+        // failures without displaying raw server details or secrets to players.
+        let serverCode = '';
+        try {
+          const response = error.context;
+          if (response && typeof response.clone === 'function') {
+            const payload = await response.clone().json();
+            serverCode = String(payload?.error || payload?.code || '');
+          }
+        } catch {}
+        console.error('Player Edge Function request failed', {
+          name: error.name,
+          message: error.message,
+          serverCode: serverCode || 'NO_STRUCTURED_ERROR',
+          status: error.context?.status || null
+        });
+        const known = {
+          SERVER_CONFIGURATION_ERROR: 'The registration service is not configured correctly.',
+          PLAYER_LOOKUP_FAILED: 'Could not read the player profile. Please contact support.',
+          PLAYER_PHONE_LOOKUP_FAILED: 'Could not look up this phone number. Please try again.',
+          PLAYER_CREATE_FAILED: 'Could not save the player profile. Please try again.',
+          PLAYER_UPDATE_FAILED: 'Could not update the player profile. Please try again.',
+          CHECKPOINT_STATE_FAILED: 'Game data is temporarily unavailable. Please try again.',
+          COLLECTION_STATE_FAILED: 'Collection data is temporarily unavailable. Please try again.',
+          PLAYER_RANK_FAILED: 'Player ranking is temporarily unavailable. Please try again.',
+          PLAYER_FUNCTION_FAILED: 'The registration service encountered an internal error.',
+          AUTH_REQUIRED: 'Your session expired. Refresh the page and try again.',
+          INVALID_PHONE: 'Check the phone country code and number.',
+          INVALID_PIN: 'Enter a valid 6-digit PIN.',
+          PIN_MISMATCH: 'This phone number is already registered. Enter the correct PIN.'
+        };
+        throw new Error(known[serverCode] || (serverCode ? 'Registration service error: ' + serverCode : 'The registration service returned an error. Please retry once; if it repeats, check the player Edge Function logs.'));
+      }
       if (!result?.ok || !result?.player) {
         const reason = result?.error;
         if (reason === 'PIN_MISMATCH') throw new Error('This phone number is already registered. Enter the correct PIN.');
