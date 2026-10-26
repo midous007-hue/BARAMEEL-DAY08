@@ -176,15 +176,15 @@ button,input,select{font:inherit}
 .collection-stage{aspect-ratio:989/1591;height:min(100dvh,calc(100vw*1591/989));width:min(100vw,calc(100dvh*989/1591));background:#061f27}
 .collection-back{position:absolute;z-index:70;left:2.5%;top:1.05%;width:11.4%;height:6.6%;border:0;background:transparent;padding:0;cursor:pointer;touch-action:manipulation}
 /* The artwork already contains the arrow and circle. The transparent hotspot follows it exactly. */
-.collection-select{position:absolute;z-index:56;left:26.69%;top:21.75%;width:40.37%;height:3.16%;border:0;background:transparent;color:transparent;font-size:0;text-align:center;text-align-last:center;text-transform:uppercase;outline:none;appearance:none;padding:0;line-height:1;cursor:pointer}
- .collection-name{position:absolute;z-index:55;left:28.0%;top:22.05%;width:34.0%;height:2.30%;display:flex;align-items:center;justify-content:center;color:#f7e8bd;font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:clamp(11px,2.62vw,23px);font-weight:400;letter-spacing:.045em;line-height:1;text-transform:uppercase;text-align:center;text-shadow:1.5px 1.5px 0 #071a20,0 0 3px rgba(247,189,39,.30);pointer-events:none;white-space:nowrap;transform:translateY(-1%)}
+.collection-select{position:absolute;z-index:56;left:21.0%;top:20.05%;width:55.2%;height:4.20%;border:0;background:transparent;color:transparent;font-size:0;text-align:center;text-align-last:center;text-transform:uppercase;outline:none;appearance:none;padding:0;line-height:1;cursor:pointer}
+ .collection-name{position:absolute;z-index:55;left:23.85%;top:20.65%;width:40.7%;height:3.10%;display:flex;align-items:center;justify-content:center;color:#f7e8bd;font-family:'Bebas Neue','Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:clamp(11px,2.62vw,23px);font-weight:400;letter-spacing:.045em;line-height:1;text-transform:uppercase;text-align:center;text-shadow:1.5px 1.5px 0 #071a20,0 0 3px rgba(247,189,39,.30);pointer-events:none;white-space:nowrap;transform:translateY(-1%)}
 .collection-select option{color:#071a20;background:var(--cream)}
-.hero-grid{position:absolute;z-index:20;left:19.745%;top:29.648%;width:61.095%;height:30.923%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);column-gap:1.55%;row-gap:1.45%;padding:0;overflow:hidden;pointer-events:none}
+.hero-grid{position:absolute;z-index:20;left:17.896%;top:26.335%;width:61.375%;height:31.112%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);column-gap:1.55%;row-gap:1.45%;padding:0;overflow:hidden;pointer-events:none}
 .hero-piece{min-width:0;min-height:0;background-repeat:no-repeat;background-color:transparent;background-clip:padding-box;box-shadow:inset 0 0 0 1px rgba(239,226,190,.34)}
 .hero-grid.completed{display:block;overflow:hidden;box-shadow:none;animation:completedGlow 1.7s ease both;background-repeat:no-repeat;background-position:center;background-size:100% 100%}
 @keyframes completedGlow{0%{filter:brightness(1) saturate(1)}28%{filter:brightness(1.22) saturate(1.16)}65%{filter:brightness(1.08) saturate(1.08)}100%{filter:brightness(1) saturate(1)}}
 /* Live score: transparent number only. The artwork owns the star/POINTS graphics below it. */
-.points-badge{position:absolute;z-index:66;left:56.8%;top:58.55%;width:29.0%;height:4.55%;display:flex;align-items:center;justify-content:center;pointer-events:none;filter:drop-shadow(0 3px 0 rgba(0,0,0,.55));}
+.points-badge{position:absolute;z-index:66;left:13.650%;top:60.402%;width:27.300%;height:5.217%;display:flex;align-items:center;justify-content:center;pointer-events:none;filter:drop-shadow(0 3px 0 rgba(0,0,0,.55));}
 .points-number{position:relative;z-index:2;color:#ffd21a;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:clamp(18px,4.7vw,44px);font-weight:900;line-height:.92;letter-spacing:-.025em;text-align:center;white-space:nowrap;-webkit-text-stroke:1.5px #d92f25;paint-order:stroke fill;text-shadow:0 3px 0 #071a20,0 0 7px rgba(255,210,26,.34);transform:rotate(-4deg) skewX(-4deg);transform-origin:center}
 .points-badge.revealing{animation:pointsPop .46s cubic-bezier(.16,.9,.2,1) both}
 @keyframes pointsPop{0%{opacity:.15;transform:scale(.68) rotate(-4deg)}65%{opacity:1;transform:scale(1.08) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
@@ -213,8 +213,8 @@ button,input,select{font:inherit}
 /* No /9 or collected-count text: the supplied artwork intentionally owns the card footer. */
 .collection-thumb:active{transform:scale(.985)}
 /* Exact transparent hotspots for the new artwork. */
-#myRewards{left:6.84%;top:60.94%;width:38.20%;height:6.38%;z-index:90}
-#scanMore{left:49.46%;top:60.94%;width:38.30%;height:6.38%;z-index:90}
+#myRewards{left:6.572%;top:67.945%;width:41.052%;height:6.474%;z-index:90}
+#scanMore{left:49.949%;top:67.945%;width:40.951%;height:6.474%;z-index:90}
 .complete-flash{position:absolute;inset:0;z-index:80;pointer-events:none;opacity:0;background:radial-gradient(ellipse 28% 19% at 71% 43%,rgba(255,244,188,.42) 0%,rgba(247,189,39,.16) 38%,rgba(255,245,214,0) 78%);mix-blend-mode:screen}
 .complete-flash.on{animation:completePulse 1.45s ease-in-out both}
 @keyframes completePulse{0%,100%{opacity:0}18%{opacity:.75}38%{opacity:.10}58%{opacity:.42}78%{opacity:.05}}
