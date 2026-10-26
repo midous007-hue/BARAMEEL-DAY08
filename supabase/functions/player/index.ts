@@ -383,7 +383,7 @@ Deno.serve(async (req) => {
         .filter((id): id is string => Boolean(id)))];
 
       const imageResult = imageIds.length && collectionStateAvailable
-        ? await admin.from("collection_images").select("id,collection_id").in("id", imageIds)
+        ? await admin.from("collection_images").select("id,collection_id,image_number").in("id", imageIds)
         : { data: [], error: null };
 
       if (imageResult.error) {
@@ -394,20 +394,32 @@ Deno.serve(async (req) => {
         collectionImageRows = (imageResult.data || []).length;
       }
 
-      const collectionByImage = new Map(
-        (imageResult.data || []).map((row: { id: string; collection_id: string }) => [
+      // Database image IDs are descriptive slugs (e.g. "egyptiantreasures-image03"),
+      // while the puzzle UI reads canonical IDs such as "image03". Map by the
+      // stable image_number column so saved pieces render in the correct cells.
+      const imageLookup = new Map(
+        (imageResult.data || []).map((row: {
+          id: string;
+          collection_id: string;
+          image_number: number | null;
+        }) => [
           String(row.id),
-          String(row.collection_id),
+          {
+            collectionId: String(row.collection_id),
+            imageId: Number.isInteger(Number(row.image_number)) && Number(row.image_number) > 0
+              ? `image${String(Number(row.image_number)).padStart(2, "0")}`
+              : "",
+          },
         ]),
       );
 
       for (const row of pieceResult.data || []) {
-        const collectionId = collectionByImage.get(String(row.image_id));
-        if (!collectionId || !row.image_id) continue;
-        const imageId = String(row.image_id);
-        collected[collectionId] ||= {};
-        collected[collectionId][imageId] ||= [];
-        collected[collectionId][imageId].push(Number(row.piece_number));
+        if (!row.image_id) continue;
+        const image = imageLookup.get(String(row.image_id));
+        if (!image?.collectionId || !image.imageId) continue;
+        collected[image.collectionId] ||= {};
+        collected[image.collectionId][image.imageId] ||= [];
+        collected[image.collectionId][image.imageId].push(Number(row.piece_number));
       }
     }
 
