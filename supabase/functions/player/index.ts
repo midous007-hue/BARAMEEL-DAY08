@@ -345,6 +345,9 @@ Deno.serve(async (req) => {
 
     let collectionStateAvailable = true;
     let collectionStateError = "";
+    let collectionCatalogPieceRows = 0;
+    let collectionImageRows = 0;
+
     const ownedPiecesResult = await admin
       .from("player_pieces")
       .select("piece_id")
@@ -356,12 +359,12 @@ Deno.serve(async (req) => {
       console.error("Player pieces lookup failed:", ownedPiecesResult.error);
     }
 
-    const pieceIds = (ownedPiecesResult.data || [])
+    const pieceIds = [...new Set((ownedPiecesResult.data || [])
       .map((row: { piece_id: string | null }) => row.piece_id)
-      .filter((id): id is string => Boolean(id));
+      .filter((id): id is string => Boolean(id)))];
 
     const collected: Record<string, Record<string, number[]>> = {};
-    if (pieceIds.length) {
+    if (pieceIds.length && collectionStateAvailable) {
       const pieceResult = await admin
         .from("collection_pieces")
         .select("id,image_id,piece_number")
@@ -371,13 +374,15 @@ Deno.serve(async (req) => {
         collectionStateAvailable = false;
         collectionStateError = "COLLECTION_PIECES_LOOKUP_FAILED";
         console.error("Collection pieces lookup failed:", pieceResult.error);
+      } else {
+        collectionCatalogPieceRows = (pieceResult.data || []).length;
       }
 
       const imageIds = [...new Set((pieceResult.data || [])
         .map((row: { image_id: string | null }) => row.image_id)
         .filter((id): id is string => Boolean(id)))];
 
-      const imageResult = imageIds.length
+      const imageResult = imageIds.length && collectionStateAvailable
         ? await admin.from("collection_images").select("id,collection_id").in("id", imageIds)
         : { data: [], error: null };
 
@@ -385,6 +390,8 @@ Deno.serve(async (req) => {
         collectionStateAvailable = false;
         collectionStateError = "COLLECTION_IMAGES_LOOKUP_FAILED";
         console.error("Collection images lookup failed:", imageResult.error);
+      } else {
+        collectionImageRows = (imageResult.data || []).length;
       }
 
       const collectionByImage = new Map(
@@ -411,6 +418,23 @@ Deno.serve(async (req) => {
       }
     }
 
+    const collectedPieceCount = Object.values(collected)
+      .reduce((sum, images) => sum + Object.values(images)
+        .reduce((imageSum, pieces) => imageSum + pieces.length, 0), 0);
+
+    // If the player has saved piece IDs but none can be mapped to a collection,
+    // report the collection state as unavailable instead of silently looking empty.
+    if (pieceIds.length > 0 && collectedPieceCount === 0 && collectionStateAvailable) {
+      collectionStateAvailable = false;
+      collectionStateError = "COLLECTION_STATE_EMPTY_AFTER_LOOKUP";
+      console.error("Collection state empty after lookup:", {
+        playerId: player.id,
+        ownedPieceRows: pieceIds.length,
+        collectionCatalogPieceRows,
+        collectionImageRows,
+      });
+    }
+
     const rankResult = await admin.rpc("player_rank", { p_player_id: player.id });
     if (rankResult.error) {
       // Ranking is supplementary and must not block registration or login.
@@ -434,6 +458,9 @@ Deno.serve(async (req) => {
         collectionStateAvailable,
         collectionStateError: collectionStateError || null,
         collectionPieceRows: pieceIds.length,
+        collectionCatalogPieceRows,
+        collectionImageRows,
+        collectedPieceCount,
         scans: player.scans_count,
         rank: Number(rankResult.data || 0),
       },
