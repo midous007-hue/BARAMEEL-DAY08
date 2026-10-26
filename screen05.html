@@ -108,8 +108,14 @@
         const ticket=await ensureTicket();
         starting=false;
         if(ticket){
-          setStatus(redemptionMode?'POINT CAMERA AT THE BARAMEEL QR':'POINT CAMERA AT THE BARAMEEL QR');
-          loop();
+          setStatus('POINT CAMERA AT THE BARAMEEL QR');
+          if(!detector&&typeof window.jsQR!=='function'){
+            const script=document.createElement('script');
+            script.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+            script.onload=loop;
+            script.onerror=()=>{setStatus('QR READER UNAVAILABLE','error');BR.play('error');BR.haptic('error');};
+            document.head.appendChild(script);
+          }else loop();
         }
       }
       return;
