@@ -178,7 +178,9 @@
       const ticket=await ensureTicket();
       if(!ticket){
         locked=false;
-        loop();
+        // Keep the live preview visible, but pause decoding to avoid repeatedly
+        // requesting a ticket while the same QR remains in frame.
+        cancelAnimationFrame(raf);raf=0;
         return;
       }
     }
