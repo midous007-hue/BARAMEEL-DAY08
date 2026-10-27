@@ -30,7 +30,7 @@
 }
 .reward-flash{z-index:120!important}
 </style></main>
-<script src="./app.js?v=20261027-player-piece-restore-3"></script>
+<script src="./app.js?v=20261027-player-piece-restore-4"></script>
 <script>
 (async()=>{
   const nameEl=document.getElementById('collectionName'),select=document.getElementById('select');
@@ -46,9 +46,17 @@
   document.getElementById('scanMore').onclick=()=>{BR.safeSession.set('barameelActivePath','collection');BR.safeSession.set('barameelCollectionId',collectionId);BR.safeSession.set('barameelCollectionParent','screen06.html');BR.goAfter('screen05.html','scan',220)};
   const rewardFlash=document.getElementById('rewardFlash'),rewardFlashImage=document.getElementById('rewardFlashImage');
 
+  function normalizePuzzleImageId(value){
+    const raw=String(value||'image01').trim();
+    const match=raw.match(/image[_-]?0*(\d{1,2})$/i);
+    if(!match)return raw;
+    const n=Number(match[1]);
+    return n>0&&n<=99?'image'+String(n).padStart(2,'0'):raw;
+  }
+
   const params=new URLSearchParams(location.search);
   let collectionId=params.get('collection')||'collection01';
-  let requestedImage=params.get('image')||'image01';
+  let requestedImage=normalizePuzzleImageId(params.get('image')||'image01');
   let index=[],activeCfg=null,activeImageId=requestedImage;
   const configs=new Map(),masters=new Map();
 
@@ -59,7 +67,7 @@
   await BR.syncPlayer().catch(()=>null);
   const handoff=getHandoff();
   if(handoff?.collection_id)collectionId=String(handoff.collection_id);
-  if(handoff?.image_id)requestedImage=String(handoff.image_id);
+  if(handoff?.image_id)requestedImage=normalizePuzzleImageId(handoff.image_id);
 
   function masterUrl(file){return './'+String(file||'').replace(/^\.\//,'')+'?v='+BR.VERSION}
   function thumbUrl(file){
