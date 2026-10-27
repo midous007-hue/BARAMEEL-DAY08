@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>BARAMEEL RUN — COLLECTION PUZZLE</title>
-<link rel="stylesheet" href="./styles.css?v=20261023-reliable-reward-audio-1">
+<link rel="stylesheet" href="./styles.css?v=20261027-piece-display-hotfix-5">
 <script src="./config.js?v=20261006-23.8"></script>
 </head>
 <body>
@@ -30,7 +30,7 @@
 }
 .reward-flash{z-index:120!important}
 </style></main>
-<script src="./app.js?v=20261027-player-piece-restore-4"></script>
+<script src="./app.js?v=20261027-piece-display-hotfix-5"></script>
 <script>
 (async()=>{
   const nameEl=document.getElementById('collectionName'),select=document.getElementById('select');
@@ -68,6 +68,12 @@
   const handoff=getHandoff();
   if(handoff?.collection_id)collectionId=String(handoff.collection_id);
   if(handoff?.image_id)requestedImage=normalizePuzzleImageId(handoff.image_id);
+  // Re-apply the last server-confirmed reward before drawing the puzzle. This
+  // is intentionally idempotent and does not award points or create server data.
+  const handoffPiece=Number(handoff?.piece_number||handoff?.piece||0);
+  if(handoff?.collection_id && requestedImage && handoffPiece>0){
+    BR.mergePlayer({collected:{[String(handoff.collection_id)]:{[requestedImage]:[handoffPiece]}}});
+  }
 
   function masterUrl(file){return './'+String(file||'').replace(/^\.\//,'')+'?v='+BR.VERSION}
   function thumbUrl(file){
