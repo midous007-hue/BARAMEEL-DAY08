@@ -30,7 +30,7 @@
 }
 .reward-flash{z-index:120!important}
 </style></main>
-<script src="./app.js?v=20261027-piece-display-hotfix-5"></script>
+<script src="./app.js?v=20261027-piece-key-fix-6"></script>
 <script>
 (async()=>{
   const nameEl=document.getElementById('collectionName'),select=document.getElementById('select');
@@ -68,6 +68,22 @@
   const handoff=getHandoff();
   if(handoff?.collection_id)collectionId=String(handoff.collection_id);
   if(handoff?.image_id)requestedImage=normalizePuzzleImageId(handoff.image_id);
+  if(!params.get('collection')&&!handoff?.collection_id){
+    // Returning player (phone + PIN login): choose the collection with the most
+    // unique collected pieces. Canonicalize image keys first so legacy aliases
+    // (for example, image03 and egyptiantreasures-image03) are not double-counted.
+    const totals=Object.entries(BR.state.collected||{}).map(([cid,imgs])=>{
+      const byImage=new Map();
+      for(const [rawImageId,list] of Object.entries(imgs||{})){
+        const iid=BR.canonImageId(rawImageId);
+        if(!Array.isArray(list))continue;
+        if(!byImage.has(iid))byImage.set(iid,new Set());
+        for(const piece of list){const n=Number(piece);if(Number.isFinite(n))byImage.get(iid).add(n);}
+      }
+      return [cid,[...byImage.values()].reduce((sum,pieces)=>sum+pieces.size,0)];
+    }).filter(([,n])=>n>0).sort((a,b)=>b[1]-a[1]);
+    if(totals.length)collectionId=totals[0][0];
+  }
   // Re-apply the last server-confirmed reward before drawing the puzzle. This
   // is intentionally idempotent and does not award points or create server data.
   const handoffPiece=Number(handoff?.piece_number||handoff?.piece||0);
@@ -147,7 +163,7 @@
 
   async function renderImage(iid){
     activeImageId=String(iid||requestedImage);
-    const im=(activeCfg?.images||[]).find(x=>x.imageId===iid)||activeCfg?.images?.[0];
+    const im=(activeCfg?.images||[]).find(x=>BR.canonImageId(x.imageId)===BR.canonImageId(iid))||activeCfg?.images?.[0];
     if(!im)return;
     renderHero(im);
     BR.track('collection_view',{collection_id:collectionId,image_id:im.imageId});

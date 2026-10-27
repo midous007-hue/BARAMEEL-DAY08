@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261023-egyptian-treasures-1';
+  const VERSION = '20261027-piece-key-fix-6';
   const STORAGE = 'barameel.world.player.v23.7';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -56,7 +56,15 @@
   function setRunner(v){const id=LEGACY_AVATAR_MAP[String(v||'').toLowerCase()]||String(v||'').toLowerCase();if(AVATARS.includes(id))setAvatar(id)}
   function selectedAvatar(){const id=String(state.avatar||'').toLowerCase();return AVATARS.includes(id)?id:(LEGACY_AVATAR_MAP[String(state.runner||'').toLowerCase()]||'avatar01')}
   function selected(){ return selectedAvatar(); }
-  function pieces(c='collection01', i='image01'){ return (state.collected?.[c]?.[i]||[]).map(Number).sort((a,b)=>a-b); }
+  // Canonical image id: "egyptiantreasures-image03" / "image3" / "image03" -> "image03".
+  // collection02/03 JSON files use prefixed ids while saved player state uses canonical ids,
+  // so every lookup compares the canonical form of both sides.
+  function canonImageId(v){const m=String(v||'').match(/image[_-]?0*(\d{1,2})$/i);return m?'image'+String(Number(m[1])).padStart(2,'0'):String(v||'');}
+  function pieces(c='collection01', i='image01'){
+    const want=canonImageId(i),out=[];
+    for(const [k,list] of Object.entries(state.collected?.[c]||{})) if(canonImageId(k)===want&&Array.isArray(list)) out.push(...list);
+    return Array.from(new Set(out.map(Number).filter(Number.isFinite))).sort((a,b)=>a-b);
+  }
   function hasPiece(c,i,p){ return pieces(c,i).includes(Number(p)); }
   function count(c,i){ return pieces(c,i).length; }
   function mergePlayer(p){
@@ -381,7 +389,7 @@
     return null;
   }
 
-  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,AVATARS,RARITY,get state(){return state},setNickname,setAvatar,setRunner,selectedAvatar,selected,playSelect,playAvatarSelect,pieces,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,scanCheckpoint,duoLink,fetchCollection,listCollections,parseUniversalQR,saveState,ensureAuth,API_BASE};
+  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,AVATARS,RARITY,get state(){return state},setNickname,setAvatar,setRunner,selectedAvatar,selected,playSelect,playAvatarSelect,pieces,canonImageId,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,scanCheckpoint,duoLink,fetchCollection,listCollections,parseUniversalQR,saveState,ensureAuth,API_BASE};
   if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v='+VERSION,{updateViaCache:'none'}).catch(()=>{});}
   if(document.body?.dataset?.backend==='required') idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
 })();
