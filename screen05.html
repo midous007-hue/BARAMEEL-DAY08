@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — COLLECTION QR</title>
 <link rel="stylesheet" href="./styles.css?v=20261027-tldraw-button-height-288">
-<script src="./config.js?v=20261027-tldraw-native-layout-11"></script>
+<script src="./config.js?v=20261027-player-piece-restore-4"></script>
 <style>
 .scan-stage{position:relative;width:min(100vw,calc(100dvh*952/1652));height:min(100dvh,calc(100vw*1652/952));aspect-ratio:952/1652;margin:auto;overflow:hidden;background:#071c28}
 .scan-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
@@ -62,11 +62,11 @@
 <div id="scanStatus" class="scan-status" aria-live="polite"></div>
 </div>
 <button id="back" class="scan-hit scan-back" aria-label="Back to My Run"></button>
-<button id="open" class="scan-hit scan-open" aria-label="Open camera and scan"><img class="scan-button-art" src="./assets/open-camera.webp?v=20261027-button-gap-5" alt="" draggable="false"></button>
-<button id="collections" class="scan-hit scan-collections" aria-label="Continue"><img class="scan-button-art" src="./assets/direct-to-my-collections.webp?v=20261027-button-gap-5" alt="" draggable="false"></button>
+<button id="open" class="scan-hit scan-open" aria-label="Open camera and scan"><img class="scan-button-art" src="./assets/open-camera.webp?v=20261027-player-piece-restore-4" alt="" draggable="false"></button>
+<button id="collections" class="scan-hit scan-collections" aria-label="Continue"><img class="scan-button-art" src="./assets/direct-to-my-collections.webp?v=20261027-player-piece-restore-4" alt="" draggable="false"></button>
 <canvas id="scanCanvas" hidden></canvas>
 </main>
-<script src="./app.js?v=20261024-universal-qr-domain-1"></script>
+<script src="./app.js?v=20261027-player-piece-restore-4"></script>
 <script>
 (() => {
   const video=document.getElementById('video'),cam=document.getElementById('cameraWindow'),status=document.getElementById('scanStatus');
@@ -74,6 +74,14 @@
   const open=document.getElementById('open'),back=document.getElementById('back'),collections=document.getElementById('collections');
   const redemptionMode=BR.safeSession.get('barameelRedemptionScan')==='1';
   let stream=null,detector=null,raf=0,locked=false,starting=false,ticketId=null,ticketPromise=null,lastBadRaw='',badUntil=0;
+
+  function normalizePuzzleImageId(value){
+    const raw=String(value||'image01').trim();
+    const match=raw.match(/image[_-]?0*(\d{1,2})$/i);
+    if(!match)return raw;
+    const n=Number(match[1]);
+    return n>0&&n<=99?'image'+String(n).padStart(2,'0'):raw;
+  }
 
   function setStatus(text,type=''){
     status.textContent=text||'';
@@ -236,7 +244,7 @@
       const handoff={
         ...result,
         collection_id:result.collection_id||reward?.collection_id||'collection01',
-        image_id:result.image_id||reward?.image_id||'image01',
+        image_id:normalizePuzzleImageId(result.image_id||reward?.image_id||'image01'),
         piece_number:Number(result.piece_number||reward?.piece_number||reward?.piece||0),
         points:Number(result.points??result.points_awarded??reward?.points??0)||0,
         rarity:String(result.rarity||reward?.rarity||'COMMON').toUpperCase()
