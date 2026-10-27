@@ -74,7 +74,12 @@
       const merged={...local.collected};
       for(const [cid,images] of Object.entries(incoming.collected||{})){
         merged[cid]={...(merged[cid]||{})};
-        for(const [iid,piecesList] of Object.entries(images||{})){
+        for(const [rawImageId,piecesList] of Object.entries(images||{})){
+          // Older deployed Edge Functions return slugs such as
+          // "egyptiantreasures-image03"; the puzzle UI expects "image03".
+          const match=String(rawImageId||'').match(/image[_-]?0*(\\d{1,2})$/i);
+          const imageNumber=match?Number(match[1]):0;
+          const iid=imageNumber>0&&imageNumber<=99?'image'+String(imageNumber).padStart(2,'0'):String(rawImageId);
           merged[cid][iid]=Array.from(new Set([...(merged[cid][iid]||[]).map(Number),...(Array.isArray(piecesList)?piecesList:[]).map(Number)])).sort((a,b)=>a-b);
         }
       }
