@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0e2a3d">
 <title>BARAMEEL RUN — COLLECTION QR</title>
-<link rel="stylesheet" href="./styles.css?v=20261027-tldraw-button-height-15">
+<link rel="stylesheet" href="./styles.css?v=20261027-tldraw-button-height-288">
 <script src="./config.js?v=20261027-tldraw-native-layout-11"></script>
 <style>
 .scan-stage{position:relative;width:min(100vw,calc(100dvh*952/1652));height:min(100dvh,calc(100vw*1652/952));aspect-ratio:952/1652;margin:auto;overflow:hidden;background:#071c28}
@@ -43,7 +43,7 @@
 /* Keep the transparent artwork's native ~3:1 proportions. The invisible tap zones
    stay exactly where they were; only the visible art is centered and ratio-locked. */
 .scan-button-art{position:absolute;left:50%;top:50%;width:100%;height:100%;max-width:none;aspect-ratio:auto;object-fit:contain;object-position:center;display:block;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-drag:none}
-.scan-open .scan-button-art,.scan-collections .scan-button-art{width:100%;height:115%;max-width:none;object-fit:fill;object-position:center}
+.scan-open .scan-button-art,.scan-collections .scan-button-art{width:100%;height:128.8%;max-width:none;object-fit:fill;object-position:center}
 
 .scan-hit.scan-open::after,.scan-hit.scan-collections::after{content:none!important;display:none!important}
 .scan-hit.pressed .scan-button-art{filter:brightness(1.08);transform:translate(-50%,-50%) scale(.985);transition:transform .09s ease,filter .09s ease}
@@ -54,7 +54,7 @@
 </head>
 <body>
 <main class="scan-stage">
-<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261027-tldraw-button-height-15" alt="BARAMEEL QR SCAN" fetchpriority="high">
+<img class="scan-art" src="./assets/screen05-scanner.webp?v=20261027-tldraw-button-height-288" alt="BARAMEEL QR SCAN" fetchpriority="high">
 <div id="cameraWindow" class="collection-qr-frame">
 <video id="video" playsinline webkit-playsinline muted autoplay></video>
 <div class="scanner-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
