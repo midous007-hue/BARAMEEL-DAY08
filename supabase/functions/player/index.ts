@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
       pinHash = await hashPlayerPin(suppliedPin);
     }
 
-    // First look up the authenticated user's player profile.
+    // Read the player currently attached to this anonymous Supabase session.
     const existingLookup = await admin
       .from("players")
       .select("*")
@@ -147,17 +147,14 @@ Deno.serve(async (req) => {
     }
 
     let player = existingLookup.data;
-    if (player && hasCredentials && player.phone_number &&
-        String(player.phone_number).replace(/[\s()-]/g, "") !== normalizedPhone) {
-      return json({ ok: false, error: "PHONE_SESSION_MISMATCH" }, 409);
-    }
     if (!player && !hasCredentials) {
       return json({ ok: false, error: "PLAYER_NOT_INITIALIZED" }, 409);
     }
 
-    // If browser storage was cleared, a new anonymous session can recover the profile
-    // by matching the submitted phone and PIN. Existing player data stays attached.
-    if (!player && hasCredentials) {
+    // Phone + PIN are the player's recovery credentials, so search by them even
+    // when this browser still has an anonymous session linked to another profile.
+    // Otherwise a stale browser session can silently keep using an empty/new player.
+    if (hasCredentials) {
       const phoneLookup = await admin
         .from("players")
         .select("*")
@@ -168,33 +165,65 @@ Deno.serve(async (req) => {
         console.error("Player phone lookup failed:", phoneLookup.error);
         return json({ ok: false, error: "PLAYER_PHONE_LOOKUP_FAILED" }, 500);
       }
+
       const phoneMatches = phoneLookup.data || [];
       if (phoneMatches.length > 1) {
-        console.error("Multiple legacy profiles share verified phone:", normalizedPhone);
+        console.error("Multiple player profiles share phone:", normalizedPhone);
         return json({ ok: false, error: "PLAYER_PHONE_DUPLICATE" }, 409);
       }
+
       if (phoneMatches.length === 1) {
         const recovered = phoneMatches[0];
-        // Verify the PIN before reattaching a profile to this anonymous session.
+
         if (!recovered.pin_hash) {
-          // Do not let a new anonymous session claim a legacy account without
-          // a previously enrolled PIN. Recovery needs a verified credential.
           return json({ ok: false, error: "LEGACY_PROFILE_RECOVERY_REQUIRED" }, 409);
         }
         if (!constantTimeEqual(String(recovered.pin_hash), pinHash)) {
           return json({ ok: false, error: "PIN_MISMATCH" }, 401);
         }
+
+        // If this session belongs to a different, empty player, release that
+        // auth link only after the supplied phone + PIN successfully verified.
+        // Keep the old row and its data; never delete pieces or scan history.
+        if (player && String(player.id) !== String(recovered.id)) {
+          const detached = await admin
+            .from("players")
+            .update({ auth_user_id: null })
+            .eq("id", player.id)
+            .eq("auth_user_id", user.id)
+            .select("id")
+            .maybeSingle();
+
+          if (detached.error || !detached.data) {
+            console.error("Could not release stale player session link:", detached.error);
+            return json({ ok: false, error: "PLAYER_SESSION_REBIND_FAILED" }, 409);
+          }
+        }
+
         const reclaimed = await admin
           .from("players")
-          .update({ auth_user_id: user.id, nickname: nickname || recovered.nickname, phone_number: normalizedPhone, runner: avatar })
+          .update({
+            auth_user_id: user.id,
+            nickname: nickname || recovered.nickname,
+            phone_number: normalizedPhone,
+            runner: avatar,
+          })
           .eq("id", recovered.id)
           .select("*")
           .single();
+
         if (reclaimed.error || !reclaimed.data) {
           console.error("Could not reattach verified phone profile:", reclaimed.error);
           return json({ ok: false, error: "PLAYER_RECOVERY_FAILED" }, 500);
         }
         player = reclaimed.data;
+      } else if (
+        player?.phone_number &&
+        String(player.phone_number).replace(/[\s()-]/g, "") !== normalizedPhone
+      ) {
+        // Do not overwrite a different phone identity when no matching account
+        // exists; this is not a verified recovery of the current profile.
+        return json({ ok: false, error: "PHONE_SESSION_MISMATCH" }, 409);
       }
     }
 
