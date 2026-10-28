@@ -11,6 +11,31 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
+<script>
+/* Returning players go straight to the card hub; the cinematic intro is for
+   first-time visitors. Use the server-issued BM player code, not a guest ID. */
+(() => {
+  const keys = [
+    'barameel.world.player.v23.7',
+    'barameel.world.player.v23.6',
+    'barameel.world.player.v23.5',
+    'barameel.world.player.v23.4',
+    'barameel.world.player.v23.3',
+    'barameel.world.player.v23.2'
+  ];
+  for (const key of keys) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) || 'null');
+      const code = String(saved?.playerId || saved?.playerCode || saved?.player_code || '');
+      const nickname = String(saved?.nickname || '').trim();
+      if (/^BM-[A-Z0-9]{8}$/i.test(code) && nickname.length >= 3) {
+        location.replace('./world.html?resume=1');
+        return;
+      }
+    } catch {}
+  }
+})();
+</script>
 <title>BARAMEEL WORLD</title>
 <link rel="stylesheet" href="./styles.css?v=20261025-wallpaper-center-1">
 <script src="./config.js?v=20261008-performance-1"></script>
