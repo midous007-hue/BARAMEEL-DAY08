@@ -48,7 +48,7 @@
 </main>
 <script src="./config.js?v=20261024-registration"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261027-player-piece-restore-3"></script>
+<script src="./app.js?v=20261027-piece-key-fix-6"></script>
 <script>
 (() => {
   const countries = [
@@ -96,12 +96,24 @@
   const suggestions = ['RetroRunner','NeonSkater','BrounaFan','SunsetRacer','ArcadeHero','CoastalRunner','GoldenPlayer','DiscoRider'];
   function message(text) { status.textContent = text; status.classList.add('visible'); }
   function saveRegisteredPlayer(result) {
-    try {
-      if (window.BR) {
-        window.BR.setNickname(pendingUsername);
-        if (result?.player) window.BR.mergePlayer(result.player);
-      }
-    } catch (err) { console.error('Could not save local player state', err); }
+    if (!window.BR || !result?.player) {
+      throw new Error('Your profile was verified, but this version could not prepare your player data. Please refresh and try again.');
+    }
+    window.BR.mergePlayer({ ...result.player, nickname: result.player.nickname || pendingUsername });
+    const player = window.BR.state || {};
+    const playerCode = String(player.playerId || player.playerCode || player.player_code || '').trim();
+    const savedNickname = String(player.nickname || '').trim();
+    if (!/^BM-[A-Z0-9]{8}$/i.test(playerCode) || savedNickname.length < 3) {
+      throw new Error('Your profile was verified, but your player data was not saved correctly. Refresh the page and try again.');
+    }
+    // Confirm the profile survives a page navigation, not just the in-memory state.
+    const stored = JSON.parse(localStorage.getItem('barameel.world.player.v23.7') || 'null');
+    const storedCode = String(stored?.playerId || stored?.playerCode || stored?.player_code || '').trim();
+    const storedNickname = String(stored?.nickname || '').trim();
+    if (!/^BM-[A-Z0-9]{8}$/i.test(storedCode) || storedNickname.length < 3) {
+      throw new Error('Your profile was verified, but this browser did not save it. Allow site storage and try again.');
+    }
+    return true;
   }
   function clearMessage() { status.textContent = ''; status.classList.remove('visible'); }
   let supabaseClient = null;
@@ -178,7 +190,7 @@
       }
       saveRegisteredPlayer(result);
       message('Profile ready! Opening Barameel...');
-      window.location.href = './world.html';
+      window.location.replace('./world.html?resume=1');
     } catch (err) {
       console.error('Player registration/login failed', err);
       message(err?.message || 'We could not complete your registration. Please try again.');
