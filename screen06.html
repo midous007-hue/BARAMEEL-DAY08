@@ -149,7 +149,7 @@
       }
       b.appendChild(grid);thumbs.appendChild(b);
       b.onclick=()=>{BR.play('tap');BR.haptic('tap');renderImage(im.imageId)};
-      const thumb=thumbUrl(im.masterFile); [...grid.children].forEach(cell=>cell.style.backgroundImage='url("'+thumb+'")'); loadMaster(im.masterFile).then(source=>syncThumbCrops(grid,source));
+      const thumb=masterUrl(im.thumbnailFile||im.masterFile); [...grid.children].forEach(cell=>cell.style.backgroundImage='url("'+thumb+'")'); loadMaster(im.thumbnailFile||im.masterFile).then(source=>syncThumbCrops(grid,source));
     }
   }
 
@@ -303,7 +303,7 @@
   };
   window.addEventListener('resize',()=>{
     if(!hero.classList.contains('completed'))syncHeroCrops();
-    thumbs.querySelectorAll('.thumb-grid').forEach(grid=>{const b=grid.closest('.collection-thumb'),im=activeCfg?.images?.[Number(b?.dataset.num)-1];if(im)loadMaster(im.masterFile).then(source=>syncThumbCrops(grid,source));});
+    thumbs.querySelectorAll('.thumb-grid').forEach(grid=>{const b=grid.closest('.collection-thumb'),im=activeCfg?.images?.[Number(b?.dataset.num)-1];if(im)loadMaster(im.thumbnailFile||im.masterFile).then(source=>syncThumbCrops(grid,source));});
   },{passive:true});
   BR.track('collection_hunt_view',{collection_id:collectionId});
 })();
