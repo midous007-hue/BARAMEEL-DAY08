@@ -129,13 +129,18 @@
 
   function startReader(){
     setStatus('POINT CAMERA AT THE BARAMEEL QR');
-    if(!detector&&typeof window.jsQR!=='function'){
+    // Always load jsQR as a fallback, even when the browser has BarcodeDetector.
+    // Some mobile browsers expose BarcodeDetector but fail to decode camera frames.
+    if(typeof window.jsQR!=='function'&&!document.querySelector('script[data-barameel-jsqr]')){
       const script=document.createElement('script');
+      script.dataset.barameelJsqr='1';
       script.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
-      script.onload=loop;
-      script.onerror=()=>{setStatus('QR READER UNAVAILABLE — CHECK INTERNET','error');BR.play('error');BR.haptic('error');};
+      script.onerror=()=>{
+        if(!detector){setStatus('QR READER UNAVAILABLE — CHECK INTERNET','error');BR.play('error');BR.haptic('error');}
+      };
       document.head.appendChild(script);
-    }else loop();
+    }
+    loop();
   }
 
   async function start(){
@@ -188,15 +193,20 @@
       decodeBusy=true;lastDecodeAt=now;
       try{
         if(detector){
-          const found=await detector.detect(video);
-          if(found?.length){decodeBusy=false;return handle(found[0].rawValue||'');}
-        }else if(window.jsQR){
-          // Process a larger frame than the old 640px pass, but skip the expensive
-          // inverted-image retry: Barameel's printed QR uses the standard black-on-white pattern.
+          try{
+            const found=await detector.detect(video);
+            if(found?.length){decodeBusy=false;return handle(found[0].rawValue||'');}
+          }catch(err){
+            // Fall through to jsQR if the native decoder exists but fails on this frame.
+            console.debug('[BARAMEEL] native QR decode failed; trying jsQR fallback',err);
+          }
+        }
+        if(window.jsQR){
+          // Keep jsQR active as a fallback even on browsers that expose BarcodeDetector.
           const w=800,h=Math.max(1,Math.round(800*video.videoHeight/video.videoWidth));
           if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
           ctx.drawImage(video,0,0,w,h);
-          const found=window.jsQR(ctx.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'dontInvert'});
+          const found=window.jsQR(ctx.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});
           if(found?.data){decodeBusy=false;return handle(found.data);}
         }
       }catch{}
