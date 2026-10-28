@@ -55,7 +55,7 @@
   }
 
   const params=new URLSearchParams(location.search);
-  let collectionId=params.get('collection')||'collection01';
+  let collectionId=params.get('collection')||BR.safeSession.get('barameelCollectionId')||'collection01';
   let requestedImage=normalizePuzzleImageId(params.get('image')||'image01');
   let index=[],activeCfg=null,activeImageId=requestedImage;
   const configs=new Map(),masters=new Map();
@@ -68,7 +68,7 @@
   const handoff=getHandoff();
   if(handoff?.collection_id)collectionId=String(handoff.collection_id);
   if(handoff?.image_id)requestedImage=normalizePuzzleImageId(handoff.image_id);
-  if(!params.get('collection')&&!handoff?.collection_id){
+  if(!params.get('collection')&&!handoff?.collection_id&&!BR.safeSession.get('barameelCollectionId')){
     // Returning player (phone + PIN login): choose the collection with the most
     // unique collected pieces. Canonicalize image keys first so legacy aliases
     // (for example, image03 and egyptiantreasures-image03) are not double-counted.
@@ -149,7 +149,7 @@
       }
       b.appendChild(grid);thumbs.appendChild(b);
       b.onclick=()=>{BR.play('tap');BR.haptic('tap');renderImage(im.imageId)};
-      const thumb=masterUrl(im.thumbnailFile||im.masterFile); [...grid.children].forEach(cell=>cell.style.backgroundImage='url("'+thumb+'")'); loadMaster(im.thumbnailFile||im.masterFile).then(source=>syncThumbCrops(grid,source));
+      loadThumbImage(im).then(source=>{if(!source)return;const bg='url("'+source.src+'")';[...grid.children].forEach(cell=>cell.style.backgroundImage=bg);syncThumbCrops(grid,source);});
     }
   }
 
@@ -159,6 +159,15 @@
     if(!Array.isArray(cfg.images)||cfg.images.length!==10)throw Error('COLLECTION_MUST_HAVE_10_IMAGES');
     for(const im of cfg.images)if(!Array.isArray(im.pieces)||im.pieces.length!==9)throw Error('COLLECTION_PIECES_INVALID');
     configs.set(cid,cfg);return cfg;
+  }
+
+  async function loadThumbImage(im){
+    const candidates=[im?.thumbnailFile,im?.masterFile].filter(Boolean);
+    for(const file of [...new Set(candidates)]){
+      const img=await loadMaster(file);
+      if(img)return img;
+    }
+    return null;
   }
 
   async function renderImage(iid){
@@ -171,6 +180,7 @@
 
   async function applyCollection(cid,iid){
     collectionId=cid;
+    BR.safeSession.set('barameelCollectionId',cid);
     activeCfg=await loadCollection(cid);
     nameEl.textContent=String(activeCfg.displayName||cid).toUpperCase();
     select.innerHTML='';
@@ -303,7 +313,7 @@
   };
   window.addEventListener('resize',()=>{
     if(!hero.classList.contains('completed'))syncHeroCrops();
-    thumbs.querySelectorAll('.thumb-grid').forEach(grid=>{const b=grid.closest('.collection-thumb'),im=activeCfg?.images?.[Number(b?.dataset.num)-1];if(im)loadMaster(im.thumbnailFile||im.masterFile).then(source=>syncThumbCrops(grid,source));});
+    thumbs.querySelectorAll('.thumb-grid').forEach(grid=>{const b=grid.closest('.collection-thumb'),im=activeCfg?.images?.[Number(b?.dataset.num)-1];if(im)loadThumbImage(im).then(source=>syncThumbCrops(grid,source));});
   },{passive:true});
   BR.track('collection_hunt_view',{collection_id:collectionId});
 })();
