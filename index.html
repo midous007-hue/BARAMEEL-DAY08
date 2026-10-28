@@ -126,9 +126,10 @@
     for (const key of keys) {
       try {
         const saved = JSON.parse(localStorage.getItem(key) || 'null');
-        const playerCode = String(saved?.playerId || saved?.playerCode || saved?.player_code || '');
+        const playerCodes = [saved?.playerCode, saved?.player_code, saved?.playerId]
+          .map(value => String(value || '').trim());
         const nickname = String(saved?.nickname || '').trim();
-        if (/^BM-[A-Z0-9]{8}$/i.test(playerCode) && nickname.length >= 3) return true;
+        if (playerCodes.some(code => /^BM-[A-Z0-9]{8}$/i.test(code)) && nickname.length >= 3) return true;
       } catch {}
     }
     return false;
