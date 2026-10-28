@@ -62,6 +62,33 @@
     ['IN','India','+91','🇮🇳'],['PK','Pakistan','+92','🇵🇰'],['AU','Australia','+61','🇦🇺']
   ];
   const $ = id => document.getElementById(id);
+
+  // Returning players should never see onboarding again on this device.
+  // A recover=1 query is reserved for the recovery route when the server says
+  // the saved anonymous session is no longer linked to a player profile.
+  function hasRegisteredPlayer() {
+    const keys = [
+      'barameel.world.player.v23.7',
+      'barameel.world.player.v23.6',
+      'barameel.world.player.v23.5',
+      'barameel.world.player.v23.4',
+      'barameel.world.player.v23.3',
+      'barameel.world.player.v23.2'
+    ];
+    for (const key of keys) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(key) || 'null');
+        const playerCode = String(saved?.playerId || saved?.playerCode || saved?.player_code || '');
+        const nickname = String(saved?.nickname || '').trim();
+        if (/^BM-[A-Z0-9]{8}$/i.test(playerCode) && nickname.length >= 3) return true;
+      } catch {}
+    }
+    return false;
+  }
+  if (new URLSearchParams(location.search).get('recover') !== '1' && hasRegisteredPlayer()) {
+    location.replace('./world.html?resume=1');
+    return;
+  }
   let selectedCountry = countries[0];
   const username = $('username'), phone = $('phone'), dialog = $('countryDialog'), search = $('countrySearch');
   const status = $('statusMessage');
