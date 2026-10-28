@@ -86,7 +86,13 @@
     }
     return false;
   }
-  if (new URLSearchParams(location.search).get('recover') !== '1' && hasRegisteredPlayer()) {
+  const registrationParams = new URLSearchParams(location.search);
+  // "first=1" is an explicit request to show registration from the splash or
+  // from the world guard. Respect it so invalid/stale local state cannot create
+  // a registration <-> world redirect loop.
+  if (registrationParams.get('recover') !== '1' &&
+      registrationParams.get('first') !== '1' &&
+      hasRegisteredPlayer()) {
     location.replace('./world.html?resume=1');
     return;
   }
