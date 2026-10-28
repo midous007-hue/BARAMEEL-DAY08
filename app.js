@@ -13,7 +13,7 @@
   let supabaseLoaderPromise = null;
   const AVATARS = ['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06'];
   const LEGACY_AVATAR_MAP = {rookie:'avatar01',skater:'avatar02',brona:'avatar03',racer:'avatar04',chiller:'avatar05',dreamer:'avatar06'};
-  const DEFAULTS = {playerId:null,playerCode:null,nickname:'',avatar:'avatar01',runner:'avatar01',points:0,weeklyPoints:0,rank:null,playerCount:0,checkpoints:[],collected:{collection01:{}},totalScans:0,lastReward:null,runHowItWorksSeen:false,routeProgress:0,routeDistance:null,nextCheckpoint:null,activePath:null,lastSeen:null};
+  const DEFAULTS = {playerId:null,playerCode:null,nickname:'',avatar:'avatar01',runner:'avatar01',points:0,weeklyPoints:0,marks:0,rank:null,playerCount:0,checkpoints:[],collected:{collection01:{}},totalScans:0,lastReward:null,runHowItWorksSeen:false,routeProgress:0,routeDistance:null,nextCheckpoint:null,activePath:null,lastSeen:null};
   const memoryStorage = Object.create(null);
   const safeStorage = {
     get(key){ try{return window.localStorage.getItem(key)}catch{return Object.prototype.hasOwnProperty.call(memoryStorage,key)?memoryStorage[key]:null} },
@@ -340,7 +340,7 @@
     if(Array.isArray(r?.checkpoints))mergePlayer({checkpoints:r.checkpoints});
     return r;
   }
-  async function duoLink(otherPlayerCode){const r=await api('/duo-link',{player_id:state.playerId,other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:makeId('duo')});if(r?.player)mergePlayer(r.player);return r;}
+  async function duoLink(otherPlayerCode,idempotencyKey=null){return api('/duo-link',{other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:idempotencyKey||makeId('duo')});}\n  async function duoStatus(){return api('/duo-link',{action:'status'});}\n  async function redeemMaster(qrToken,rewardId,idempotencyKey=null){const r=await api('/redeem-master',{qr_token:String(qrToken||''),reward_id:String(rewardId||''),idempotency_key:idempotencyKey||makeId('redeem')});if(r?.ok&&!r.idempotent){const amount=Number(r.amount||0);if(r.reward_type==='POINTS')patchState({points:Number(state.points||0)+amount,weeklyPoints:Number(state.weeklyPoints||0)+amount});if(r.reward_type==='MARKS')patchState({marks:Number(state.marks||0)+amount});}return r;}
   async function fetchCollection(id='collection01'){
     const key='barameel.collection.'+id+'.v23.3';
     try{const c=sessionStorage.getItem(key);if(c)return JSON.parse(c);}catch{}
@@ -389,7 +389,7 @@
     return null;
   }
 
-  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,AVATARS,RARITY,get state(){return state},setNickname,setAvatar,setRunner,selectedAvatar,selected,playSelect,playAvatarSelect,pieces,canonImageId,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,scanCheckpoint,duoLink,fetchCollection,listCollections,parseUniversalQR,saveState,ensureAuth,API_BASE};
+  window.BR={VERSION,safeStorage,safeSession,makeId,friendlyError,normalizeReward,AVATARS,RARITY,get state(){return state},setNickname,setAvatar,setRunner,selectedAvatar,selected,playSelect,playAvatarSelect,pieces,canonImageId,hasPiece,count,mergePlayer,play,playSelect,playCompletionSound,haptic,markRunHowItWorksSeen,playPointsCountUp,playJackpot,playRewardReveal,rewardSpec,go,goAfter,idle,preload,preloadAll,flash,api,track,syncPlayer,scanUniversal,scanCheckpoint,duoLink,duoStatus,redeemMaster,fetchCollection,listCollections,parseUniversalQR,saveState,ensureAuth,API_BASE};
   if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v='+VERSION,{updateViaCache:'none'}).catch(()=>{});}
   if(document.body?.dataset?.backend==='required') idle(async()=>{const r=await syncPlayer();try{sessionStorage.setItem('barameelPlayerSync',JSON.stringify({ok:!!r?.ok,code:r?.code||null,error:r?.error||null,ts:Date.now()}));}catch{}});
 })();
