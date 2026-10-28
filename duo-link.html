@@ -99,26 +99,27 @@ body{overflow-x:hidden}
 .duo-status-fill{height:100%;width:0;background:linear-gradient(90deg,#0058ff,#20f2ff);transition:width .25s}
 .duo-status-message{position:absolute;left:0;right:0;top:72%;font-size:clamp(8px,2.35vw,11px);line-height:1.2;letter-spacing:1.2px;color:#dbeaff}
 .duo-player-panel{
+  display:contents;
   position:absolute;z-index:3;left:3.2%;top:63.85%;width:93.6%;height:33.8%;
   box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;
   background:transparent;box-shadow:none;text-align:center;
 }
 .duo-player-heading,.duo-id-caption{display:none!important}
 .duo-qr-frame{
-  position:absolute;left:30.4%;top:7.6%;width:35.8%;aspect-ratio:1;
+  position:absolute;left:33.6%;top:70.2%;width:31.8%;aspect-ratio:1;
   box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;
   background:transparent;box-shadow:none;overflow:hidden;display:grid;place-items:center;
 }
 #playerQr{width:100%;height:100%;display:grid;place-items:center;background:transparent}
 #playerQr canvas,#playerQr img{width:100%!important;height:100%!important;object-fit:contain}
 .duo-player-name{
-  position:absolute;left:27%;right:27%;top:78.0%;min-height:0;
+  position:absolute;left:27%;right:27%;top:88.8%;min-height:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   font-family:Arial,sans-serif;font-weight:800;font-size:clamp(10px,3vw,14px);
   line-height:1.2;color:#fff;text-shadow:0 1px 3px #00102f;
 }
 .duo-player-code{
-  position:absolute;left:27%;right:27%;top:84.0%;margin:0;
+  position:absolute;left:27%;right:27%;top:91.0%;margin:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   font-family:monospace;font-size:clamp(9px,2.7vw,12px);letter-spacing:1px;
   line-height:1.2;color:#ffdb22;text-shadow:0 1px 3px #00102f;
