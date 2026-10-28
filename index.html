@@ -11,6 +11,31 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
+<script>
+/* Returning players go straight to the card hub; the cinematic intro is for
+   first-time visitors. Use the server-issued BM player code, not a guest ID. */
+(() => {
+  const keys = [
+    'barameel.world.player.v23.7',
+    'barameel.world.player.v23.6',
+    'barameel.world.player.v23.5',
+    'barameel.world.player.v23.4',
+    'barameel.world.player.v23.3',
+    'barameel.world.player.v23.2'
+  ];
+  for (const key of keys) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) || 'null');
+      const code = String(saved?.playerId || saved?.playerCode || saved?.player_code || '');
+      const nickname = String(saved?.nickname || '').trim();
+      if (/^BM-[A-Z0-9]{8}$/i.test(code) && nickname.length >= 3) {
+        location.replace('./world.html?resume=1');
+        return;
+      }
+    } catch {}
+  }
+})();
+</script>
 <title>BARAMEEL WORLD</title>
 <link rel="stylesheet" href="./styles.css?v=20261025-wallpaper-center-1">
 <script src="./config.js?v=20261008-performance-1"></script>
@@ -41,7 +66,7 @@
 </main>
 
 <script>
-/* BARAMEEL WORLD SPLASH — V23.3 / SCREEN 01
+/* BARAMEEL WORLD SPLASH — V23.4 / RETURNING PLAYER ROUTING
    Visual artwork is untouched. This layer adds motion, real progress cues,
    audio/haptic feedback and the world-entry transition without touching QR,
    Ticket, Supabase or game logic.
@@ -112,6 +137,28 @@
     haptic('light');
   }
 
+  function hasRegisteredPlayer() {
+    // Only a server-issued BARAMEEL player code proves this device completed registration.
+    // The locally generated "player-..." ID is a guest/session ID and must not bypass registration.
+    const keys = [
+      'barameel.world.player.v23.7',
+      'barameel.world.player.v23.6',
+      'barameel.world.player.v23.5',
+      'barameel.world.player.v23.4',
+      'barameel.world.player.v23.3',
+      'barameel.world.player.v23.2'
+    ];
+    for (const key of keys) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(key) || 'null');
+        const playerCode = String(saved?.playerId || saved?.playerCode || saved?.player_code || '');
+        const nickname = String(saved?.nickname || '').trim();
+        if (/^BM-[A-Z0-9]{8}$/i.test(playerCode) && nickname.length >= 3) return true;
+      } catch {}
+    }
+    return false;
+  }
+
   function enterWorld() {
     if (finished) return;
     finished = true;
@@ -122,7 +169,10 @@
     setProgress(100);
     stage.classList.add('world-ready');
     try { sessionStorage.setItem('barameelSplashSeen', '1'); } catch {}
-    window.setTimeout(() => location.replace('./registration.html?v=' + VERSION), 520);
+    const nextScreen = hasRegisteredPlayer()
+      ? './world.html?resume=1'
+      : './registration.html?first=1';
+    window.setTimeout(() => location.replace(nextScreen), 520);
   }
 
   // REAL SPLASH PARALLAX: touch/mouse moves the environment/light layer,
