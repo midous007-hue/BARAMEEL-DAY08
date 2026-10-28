@@ -63,6 +63,72 @@ body{overflow-x:hidden}
 .duo-hidden{display:none!important}
 @media(min-height:850px){.duo-content{gap:15px}.duo-camera-panel{height:clamp(190px,25vh,255px)}.duo-player-panel{padding:17px}}
 @media(prefers-reduced-motion:reduce){.duo-scan-line{animation:none}.duo-status-fill{transition:none}}
+
+/* Duo Connect full-screen artwork with live interactive regions */
+.duo-stage{padding:0;min-height:100svh;align-items:flex-start;background:#06152f}
+.duo-stage:before{display:none}
+.duo-content{
+  position:relative;width:min(100vw,470px);max-width:470px;aspect-ratio:941/1672;
+  min-height:0;display:block;gap:0;overflow:hidden;padding:0;
+  background:#06152f url("./assets/duo-connect-screen.webp") center top/100% 100% no-repeat;
+}
+.duo-top,.duo-brand,.duo-helper{display:none!important}
+.duo-camera-panel{
+  position:absolute;left:3.2%;top:15.85%;width:93.6%;height:24.45%;
+  box-sizing:border-box;margin:0;border:0;border-radius:0;background:transparent;
+  box-shadow:none;display:block;overflow:hidden;z-index:2;
+}
+.duo-camera-panel:before,.duo-corners,.duo-camera-symbol,.duo-scan-line{display:none!important}
+#duoVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.duo-camera-panel.scanning #duoVideo{display:block}
+.duo-connect-button{
+  position:absolute;z-index:5;left:3%;top:40.9%;width:94%;height:11.9%;
+  max-height:none;aspect-ratio:auto;margin:0;padding:0;border:0;border-radius:0;
+  background:transparent;filter:none;opacity:1;cursor:pointer;
+}
+.duo-connect-button:active{transform:none}
+.duo-connect-button:focus-visible{outline:3px solid #20f2ff;outline-offset:-6px;border-radius:24px}
+.duo-button-hit-label{position:absolute;inset:0;display:block;font-size:0;color:transparent}
+.duo-status{
+  position:absolute;z-index:3;left:3.3%;top:53.0%;width:93.4%;height:9.5%;
+  box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;
+  background:transparent;box-shadow:none;text-align:center;display:block;
+}
+.duo-status-label{position:absolute;left:0;right:0;top:0;font-size:clamp(8px,2.5vw,12px);line-height:1.2;color:#20f2ff;letter-spacing:1.2px}
+.duo-status-track{position:absolute;left:12%;right:12%;top:39%;height:13px;margin:0;border:3px solid #20f2ff;border-radius:20px;overflow:hidden;background:rgba(0,16,39,.94)}
+.duo-status-fill{height:100%;width:0;background:linear-gradient(90deg,#0058ff,#20f2ff);transition:width .25s}
+.duo-status-message{position:absolute;left:0;right:0;top:72%;font-size:clamp(8px,2.35vw,11px);line-height:1.2;letter-spacing:1.2px;color:#dbeaff}
+.duo-player-panel{
+  position:absolute;z-index:3;left:3.2%;top:63.85%;width:93.6%;height:33.8%;
+  box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;
+  background:transparent;box-shadow:none;text-align:center;
+}
+.duo-player-heading,.duo-id-caption{display:none!important}
+.duo-qr-frame{
+  position:absolute;left:30.4%;top:7.6%;width:35.8%;aspect-ratio:1;
+  box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;
+  background:transparent;box-shadow:none;overflow:hidden;display:grid;place-items:center;
+}
+#playerQr{width:100%;height:100%;display:grid;place-items:center;background:transparent}
+#playerQr canvas,#playerQr img{width:100%!important;height:100%!important;object-fit:contain}
+.duo-player-name{
+  position:absolute;left:27%;right:27%;top:78.0%;min-height:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:Arial,sans-serif;font-weight:800;font-size:clamp(10px,3vw,14px);
+  line-height:1.2;color:#fff;text-shadow:0 1px 3px #00102f;
+}
+.duo-player-code{
+  position:absolute;left:27%;right:27%;top:84.0%;margin:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:monospace;font-size:clamp(9px,2.7vw,12px);letter-spacing:1px;
+  line-height:1.2;color:#ffdb22;text-shadow:0 1px 3px #00102f;
+}
+.duo-message{
+  position:absolute;z-index:6;left:8%;right:8%;bottom:1.2%;min-height:0;
+  padding:2px 4px;border-radius:8px;background:rgba(0,12,34,.78);
+  font:700 10px/1.25 Arial,sans-serif;color:#e9faff;
+}
+@media(min-width:471px){.duo-stage{padding:0}.duo-content{width:min(100vw,470px)}}
 </style>
 </head>
 <body>
@@ -90,7 +156,7 @@ body{overflow-x:hidden}
     </section>
 
     <button id="connectButton" class="duo-connect-button" type="button" aria-label="Connect and scan a Barameel player QR code">
-      <img src="./assets/duo-connect-button.webp" alt="CONNECT" width="900" height="300" loading="eager" decoding="async">
+      <span class="duo-button-hit-label">Connect</span>
     </button>
 
     <p class="duo-helper">SCAN A PLAYER. DISCOVER YOUR DUO.</p>
