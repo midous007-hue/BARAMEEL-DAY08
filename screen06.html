@@ -181,6 +181,7 @@
   async function applyCollection(cid,iid){
     collectionId=cid;
     BR.safeSession.set('barameelCollectionId',cid);
+    try{const nextUrl=new URL(location.href);nextUrl.searchParams.set('collection',cid);history.replaceState(null,'',nextUrl.toString());}catch{}
     activeCfg=await loadCollection(cid);
     nameEl.textContent=String(activeCfg.displayName||cid).toUpperCase();
     select.innerHTML='';
