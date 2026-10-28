@@ -96,17 +96,32 @@
   const suggestions = ['RetroRunner','NeonSkater','BrounaFan','SunsetRacer','ArcadeHero','CoastalRunner','GoldenPlayer','DiscoRider'];
   function message(text) { status.textContent = text; status.classList.add('visible'); }
   function saveRegisteredPlayer(result) {
-    if (!window.BR || !result?.player) {
-      throw new Error('Your profile was verified, but this version could not prepare your player data. Please refresh and try again.');
+    if (!result?.player) {
+      throw new Error('Your profile was verified, but the player details were missing. Please try again.');
     }
-    window.BR.mergePlayer({ ...result.player, nickname: result.player.nickname || pendingUsername });
-    const player = window.BR.state || {};
+    const incoming = { ...result.player, nickname: result.player.nickname || pendingUsername };
+    // Prefer the shared app state, but do not let a failed/missing app.js export
+    // prevent a verified account from being persisted before navigation.
+    if (window.BR?.mergePlayer) {
+      window.BR.mergePlayer(incoming);
+    } else {
+      const key = 'barameel.world.player.v23.7';
+      let existing = {};
+      try { existing = JSON.parse(localStorage.getItem(key) || 'null') || {}; } catch {}
+      const merged = { ...existing, ...incoming };
+      if (!merged.playerId && merged.player_code) merged.playerId = merged.player_code;
+      if (!merged.playerId && merged.playerCode) merged.playerId = merged.playerCode;
+      if (!merged.playerCode && merged.playerId) merged.playerCode = merged.playerId;
+      if (!merged.playerId && merged.id && /^BM-[A-Z0-9]{8}$/i.test(String(merged.id))) merged.playerId = merged.id;
+      merged.nickname = String(incoming.nickname || pendingUsername).trim();
+      localStorage.setItem(key, JSON.stringify(merged));
+    }
+    const player = window.BR?.state || JSON.parse(localStorage.getItem('barameel.world.player.v23.7') || 'null') || {};
     const playerCode = String(player.playerId || player.playerCode || player.player_code || '').trim();
     const savedNickname = String(player.nickname || '').trim();
     if (!/^BM-[A-Z0-9]{8}$/i.test(playerCode) || savedNickname.length < 3) {
       throw new Error('Your profile was verified, but your player data was not saved correctly. Refresh the page and try again.');
     }
-    // Confirm the profile survives a page navigation, not just the in-memory state.
     const stored = JSON.parse(localStorage.getItem('barameel.world.player.v23.7') || 'null');
     const storedCode = String(stored?.playerId || stored?.playerCode || stored?.player_code || '').trim();
     const storedNickname = String(stored?.nickname || '').trim();
