@@ -155,7 +155,7 @@ body{overflow-x:hidden}
   function setMessage(text,type=''){message.textContent=text||'';message.className='duo-message'+(type?' '+type:'');}
   function setStatus(text,progress=null){statusMessage.textContent=text;if(progress!==null)statusFill.style.width=progress+'%';}
   function stopCamera(){cancelAnimationFrame(raf);raf=0;stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;panel.classList.remove('scanning');locked=false;connect.setAttribute('aria-label','Connect and scan a Barameel player QR code');}
-  function playerCode(){return String(BR.state?.playerCode||BR.state?.player_code||'').trim().toUpperCase();}
+  function playerCode(){return String(BR.state?.playerCode||BR.state?.player_code||BR.state?.playerId||'').trim().toUpperCase();}
   function renderIdentity(){
     ownCode=playerCode();
     playerName.textContent=String(BR.state?.nickname||'BARAMEEL PLAYER').trim().slice(0,40);
