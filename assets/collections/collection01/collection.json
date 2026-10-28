@@ -14,19 +14,19 @@
       "rarity": "COMMON",
       "points": 10000,
       "tierTotalQty": 7000,
-      "tierTotalPercent": 70.0
+      "tierTotalPercent": 70
     },
     {
       "rarity": "UNCOMMON",
       "points": 20000,
       "tierTotalQty": 2000,
-      "tierTotalPercent": 20.0
+      "tierTotalPercent": 20
     },
     {
       "rarity": "RARE",
       "points": 40000,
       "tierTotalQty": 800,
-      "tierTotalPercent": 8.0
+      "tierTotalPercent": 8
     },
     {
       "rarity": "EPIC",
@@ -54,7 +54,7 @@
       "displayName": "ALEXANDRIA 01",
       "description": "Alexandria Library & Corniche Sunset",
       "masterFile": "assets/collections/collection01/masters/image01-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image01.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image01-thumb.webp",
       "pieces": [
         {
           "piece_id": "image01-piece01",
@@ -163,7 +163,7 @@
       "displayName": "ALEXANDRIA 02",
       "description": "Blue Tram & Minaret in Rain",
       "masterFile": "assets/collections/collection01/masters/image02-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image02.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image02-thumb.webp",
       "pieces": [
         {
           "piece_id": "image02-piece01",
@@ -272,7 +272,7 @@
       "displayName": "ALEXANDRIA 03",
       "description": "Qaitbay Citadel & Fishing Harbor",
       "masterFile": "assets/collections/collection01/masters/image03-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image03.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image03-thumb.webp",
       "pieces": [
         {
           "piece_id": "image03-piece01",
@@ -381,7 +381,7 @@
       "displayName": "ALEXANDRIA 04",
       "description": "Yellow Tram & Historic Facade",
       "masterFile": "assets/collections/collection01/masters/image04-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image04.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image04-thumb.webp",
       "pieces": [
         {
           "piece_id": "image04-piece01",
@@ -490,7 +490,7 @@
       "displayName": "ALEXANDRIA 05",
       "description": "Historic Street to the Sea & Taxi",
       "masterFile": "assets/collections/collection01/masters/image05-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image05.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image05-thumb.webp",
       "pieces": [
         {
           "piece_id": "image05-piece01",
@@ -599,7 +599,7 @@
       "displayName": "ALEXANDRIA 06",
       "description": "Au Pavillon de Florelle",
       "masterFile": "assets/collections/collection01/masters/image06-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image06.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image06-thumb.webp",
       "pieces": [
         {
           "piece_id": "image06-piece01",
@@ -708,7 +708,7 @@
       "displayName": "ALEXANDRIA 07",
       "description": "Historic Monument & Sunset Hotel",
       "masterFile": "assets/collections/collection01/masters/image07-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image07.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image07-thumb.webp",
       "pieces": [
         {
           "piece_id": "image07-piece01",
@@ -817,7 +817,7 @@
       "displayName": "ALEXANDRIA 08",
       "description": "Fishing Boats Canal",
       "masterFile": "assets/collections/collection01/masters/image08-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image08.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image08-thumb.webp",
       "pieces": [
         {
           "piece_id": "image08-piece01",
@@ -926,7 +926,7 @@
       "displayName": "ALEXANDRIA 09",
       "description": "Stanley Bridge at Night",
       "masterFile": "assets/collections/collection01/masters/image09-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image09.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image09-thumb.webp",
       "pieces": [
         {
           "piece_id": "image09-piece01",
@@ -1035,7 +1035,7 @@
       "displayName": "ALEXANDRIA 10",
       "description": "Alexandria Sunset Panorama / Existing Master",
       "masterFile": "assets/collections/collection01/masters/image10-master.webp",
-      "thumbnailFile": "assets/collections/collection01/thumbs/image10.jpg",
+      "thumbnailFile": "assets/collections/collection01/thumbs/image10-thumb.webp",
       "pieces": [
         {
           "piece_id": "image10-piece01",
