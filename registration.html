@@ -6,13 +6,13 @@
 <meta name="theme-color" content="#071c34">
 <title>Join Barameel</title>
 <link rel="preload" as="image" href="./assets/barameel-registration-screen.webp">
-<link rel="stylesheet" href="./registration.css?v=20261026-registration-diagnostic-1">
+<link rel="stylesheet" href="./registration.css?v=20261029-registration-submit-guard-1">
 </head>
 <body>
 <main class="registration-shell" id="registrationShell" aria-label="Barameel player registration">
   <div class="registration-art" role="img" aria-label="Barameel retro coastal registration artwork"></div>
 
-  <form id="registrationForm" autocomplete="on">
+  <form id="registrationForm" autocomplete="on" onsubmit="event.preventDefault(); return false;">
     <label class="visually-hidden" for="username">Choose your username</label>
     <input id="username" name="username" class="username-input" type="text" maxlength="24" minlength="3" autocomplete="nickname" placeholder="Enter your nickname" required>
   
@@ -46,9 +46,9 @@
   </div>
   <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
 </main>
-<script src="./config.js?v=20261024-registration"></script>
+<script src="./config.js?v=20261029-registration-submit-guard-1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261029-player-flow-fix-1"></script>
+<script src="./app.js?v=20261029-registration-submit-guard-1"></script>
 <script>
 (() => {
   const countries = [
