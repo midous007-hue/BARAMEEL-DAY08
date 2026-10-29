@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#06152f">
 <title>BARAMEEL WORLD — DUO CONNECT</title>
 <link rel="stylesheet" href="./styles.css?v=20261005-23.4">
-<script src="./config.js?v=20261005-23.4"></script>
+<script src="./config.js?v=20261029-duo-identity-fix-1"></script>
 <style>
 :root{--dc-navy:#06152f;--dc-blue:#0648f5;--dc-cyan:#20f2ff;--dc-gold:#ffd21c;--dc-white:#fff}
 html,body{margin:0;min-height:100%;background:var(--dc-navy);color:var(--dc-white);font-family:Impact,"Arial Narrow",system-ui,sans-serif}
@@ -180,7 +180,7 @@ body{overflow-x:hidden}
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./app.js?v=20261005-23.4"></script>
+<script src="./app.js?v=20261029-duo-identity-fix-1"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 (() => {
@@ -201,15 +201,26 @@ body{overflow-x:hidden}
   function setMessage(text,type=''){message.textContent=text||'';message.className='duo-message'+(type?' '+type:'');}
   function setStatus(text,progress=null){statusMessage.textContent=text;if(progress!==null)statusFill.style.width=progress+'%';}
   function stopCamera(){cancelAnimationFrame(raf);raf=0;stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;panel.classList.remove('scanning');locked=false;connect.setAttribute('aria-label','Connect and scan a Barameel player QR code');}
-  function playerCode(){return String(BR.state?.playerCode||BR.state?.player_code||BR.state?.playerId||'').trim().toUpperCase();}
+  function playerCode(){
+    const stateCode=String(BR.state?.playerCode||BR.state?.player_code||BR.state?.playerId||'').trim().toUpperCase();
+    if(/^BM-[A-Z0-9]{8}$/.test(stateCode))return stateCode;
+    try{
+      const saved=JSON.parse(localStorage.getItem('barameel.world.player.v23.7')||'null');
+      const savedCode=String(saved?.playerCode||saved?.player_code||saved?.playerId||'').trim().toUpperCase();
+      if(/^BM-[A-Z0-9]{8}$/.test(savedCode)){
+        if(typeof BR.mergePlayer==='function')BR.mergePlayer({...saved,playerId:savedCode,playerCode:savedCode,player_code:savedCode});
+        return savedCode;
+      }
+    }catch(error){console.warn('[DUO] Could not restore saved player identity',error);}
+    return '';
+  }
   function renderIdentity(){
     ownCode=playerCode();
     playerName.textContent=String(BR.state?.nickname||'BARAMEEL PLAYER').trim().slice(0,40);
-    playerCodeEl.textContent=ownCode||'PLAYER CODE NOT READY';
+    playerCodeEl.textContent=ownCode||'RESTORING PLAYER CODE…';
     playerQr.innerHTML='';
     if(!ownCode||!/^BM-[A-Z0-9]{8}$/.test(ownCode)){
-      playerQr.innerHTML='<span style="font:700 11px Arial;color:#15335c;text-align:center;padding:8px">OPEN YOUR REGISTERED BARAMEEL ACCOUNT</span>';
-      setMessage('Your registered player code is not available yet. Please sign in again.','error');
+      playerQr.innerHTML='<span style="font:700 11px Arial;color:#15335c;text-align:center;padding:8px">RESTORING YOUR BARAMEEL ID…</span>';
       return;
     }
     if(typeof QRCode!=='function'){playerQr.textContent=ownCode;setMessage('QR renderer did not load. Check your connection.','error');return;}
@@ -295,6 +306,16 @@ body{overflow-x:hidden}
   connect.addEventListener('click',()=>{BR.play('scan');BR.haptic('scan');startCamera();});
   window.addEventListener('pagehide',stopCamera);
   renderIdentity();
+  if(!ownCode&&typeof BR.syncPlayer==='function'){
+    BR.syncPlayer().then(result=>{
+      if(result?.player)BR.mergePlayer(result.player);
+      renderIdentity();
+      if(!ownCode)setMessage('Your registered player code could not be restored. Return to My Barameel and retry.','error');
+    }).catch(error=>{
+      console.error('[DUO] Player identity restore failed',error);
+      setMessage('Could not restore your Barameel code. Check your connection and retry.','error');
+    });
+  }
   BR.duoStatus?.().then(r=>{
     if(r?.ok&&Array.isArray(r.pending_rewards)&&r.pending_rewards.length){
       setMessage('YOU HAVE '+r.pending_rewards.length+' REWARD(S) WAITING FOR REDEMPTION.','success');
