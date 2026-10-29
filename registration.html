@@ -102,37 +102,57 @@
   const suggestions = ['RetroRunner','NeonSkater','BrounaFan','SunsetRacer','ArcadeHero','CoastalRunner','GoldenPlayer','DiscoRider'];
   function message(text) { status.textContent = text; status.classList.add('visible'); }
   function saveRegisteredPlayer(result) {
-    if (!result?.player) {
-      throw new Error('Your profile was verified, but the player details were missing. Please try again.');
+    const raw = result?.player;
+    if (!raw || typeof raw !== 'object') {
+      throw new Error('The server verified the request but did not return player details. Please try again.');
     }
-    const incoming = { ...result.player, nickname: result.player.nickname || pendingUsername };
-    // Prefer the shared app state, but do not let a failed/missing app.js export
-    // prevent a verified account from being persisted before navigation.
-    if (window.BR?.mergePlayer) {
-      window.BR.mergePlayer(incoming);
-    } else {
-      const key = 'barameel.world.player.v23.7';
-      let existing = {};
-      try { existing = JSON.parse(localStorage.getItem(key) || 'null') || {}; } catch {}
-      const merged = { ...existing, ...incoming };
-      if (!merged.playerId && merged.player_code) merged.playerId = merged.player_code;
-      if (!merged.playerId && merged.playerCode) merged.playerId = merged.playerCode;
-      if (!merged.playerCode && merged.playerId) merged.playerCode = merged.playerId;
-      if (!merged.playerId && merged.id && /^BM-[A-Z0-9]{8}$/i.test(String(merged.id))) merged.playerId = merged.id;
-      merged.nickname = String(incoming.nickname || pendingUsername).trim();
-      localStorage.setItem(key, JSON.stringify(merged));
+
+    // Persist the server-confirmed identity first. Do not depend on app.js being
+    // initialized or on mergePlayer/local state to survive the navigation.
+    const code = String(raw.playerId || raw.playerCode || raw.player_code || '').trim();
+    const nickname = String(raw.nickname || pendingUsername || '').trim().slice(0, 24);
+    if (!/^BM-[A-Z0-9]{8}$/i.test(code) || nickname.length < 3) {
+      console.error('Player response is missing required identity fields', {
+        hasPlayerId: !!raw.playerId,
+        hasPlayerCode: !!raw.playerCode,
+        hasPlayerCodeSnake: !!raw.player_code,
+        hasNickname: !!nickname
+      });
+      throw new Error('The server response is missing the player code or nickname. Your account was not changed; please try again.');
     }
-    const player = window.BR?.state || JSON.parse(localStorage.getItem('barameel.world.player.v23.7') || 'null') || {};
-    const playerCode = String(player.playerId || player.playerCode || player.player_code || '').trim();
-    const savedNickname = String(player.nickname || '').trim();
-    if (!/^BM-[A-Z0-9]{8}$/i.test(playerCode) || savedNickname.length < 3) {
-      throw new Error('Your profile was verified, but your player data was not saved correctly. Refresh the page and try again.');
+
+    const key = 'barameel.world.player.v23.7';
+    let previous = {};
+    try { previous = JSON.parse(localStorage.getItem(key) || 'null') || {}; } catch {}
+    const saved = {
+      ...previous,
+      ...raw,
+      id: raw.id || previous.id || null,
+      playerId: code,
+      playerCode: code,
+      player_code: code,
+      nickname,
+      avatar: raw.avatar || raw.runner || previous.avatar || 'avatar01',
+      runner: raw.runner || raw.avatar || previous.runner || 'avatar01'
+    };
+
+    try {
+      localStorage.setItem(key, JSON.stringify(saved));
+      const check = JSON.parse(localStorage.getItem(key) || 'null');
+      if (!check || String(check.playerId || '') !== code || String(check.nickname || '') !== nickname) {
+        throw new Error('Player data could not be verified after saving.');
+      }
+    } catch (storageError) {
+      console.error('Player local persistence failed', storageError);
+      throw new Error('Your account was verified, but this browser could not save the player data. Please enable site storage and try again.');
     }
-    const stored = JSON.parse(localStorage.getItem('barameel.world.player.v23.7') || 'null');
-    const storedCode = String(stored?.playerId || stored?.playerCode || stored?.player_code || '').trim();
-    const storedNickname = String(stored?.nickname || '').trim();
-    if (!/^BM-[A-Z0-9]{8}$/i.test(storedCode) || storedNickname.length < 3) {
-      throw new Error('Your profile was verified, but this browser did not save it. Allow site storage and try again.');
+
+    // Sync the in-memory game state after the durable write. A client-side
+    // state issue must not undo the already-saved server-confirmed profile.
+    try {
+      if (window.BR?.mergePlayer) window.BR.mergePlayer(saved);
+    } catch (stateError) {
+      console.warn('Player state sync deferred; persisted profile remains available.', stateError);
     }
     return true;
   }
