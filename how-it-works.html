@@ -5,31 +5,56 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071b2b">
 <title>BARAMEEL RUN — HOW IT WORKS</title>
-<link rel="preload" as="image" href="./assets/screen01-start.webp?v=20261010-run-transition-1" fetchpriority="high">
-<link rel="stylesheet" href="./barameel-flow.css?v=20261010-run-transition-1">
-<script src="./config.js?v=20261010-run-transition-1"></script>
+<link rel="preload" as="image" href="./assets/screen01-start.webp?v=20261029-stability-audio-flow-1" fetchpriority="high">
+<link rel="stylesheet" href="./barameel-flow.css?v=20261029-stability-audio-flow-1">
+<script src="./config.js?v=20261029-stability-audio-flow-1"></script>
 </head>
 <body>
 <main class="flow-stage">
-<img class="flow-art" src="./assets/how-it-works.webp?v=20261010-run-transition-1" alt="BARAMEEL RUN HOW IT WORKS" fetchpriority="high">
+<img class="flow-art" src="./assets/how-it-works.webp?v=20261029-stability-audio-flow-1" alt="BARAMEEL RUN HOW IT WORKS" fetchpriority="high">
 <div class="arcade-shine"></div>
 <button id="back" class="flow-hit" style="left:3%;top:1%;width:19%;height:6%" aria-label="Back"></button>
 <button id="cta" class="flow-hit" style="left:20%;top:91.8%;width:62%;height:7%" aria-label="Let's Run"></button>
 </main>
-<script src="./app.js?v=20261010-run-transition-1"></script>
-<script src="./barameel-flow.js?v=20261010-run-transition-1"></script>
+<script src="./app.js?v=20261029-stability-audio-flow-1"></script>
+<script src="./barameel-flow.js?v=20261029-stability-audio-flow-1"></script>
 <script>
 (() => {
-  document.getElementById('back').onclick = () => BARAMEEL_FLOW.go('world.html', 'back', 180);
-  document.getElementById('cta').onclick = () => {
-    BR.markRunHowItWorksSeen();
-    BR.safeSession.set('barameelStartFlashPending', '0');
-    BR.safeSession.set('barameelStartFlashShown', '1');
-    BR.haptic('confirm');
-    BR.play('confirm');
-    window.location.replace('./run.html?v=20261010-run-transition-1');
+  const back = document.getElementById('back');
+  const cta = document.getElementById('cta');
+  let navigating = false;
+  const go = (url, kind, delay) => {
+    if (navigating) return;
+    navigating = true;
+    try {
+      if (window.BARAMEEL_FLOW?.go) {
+        window.BARAMEEL_FLOW.go(url, kind, delay);
+        return;
+      }
+      window.BR?.haptic?.(kind);
+      window.BR?.play?.(kind);
+    } catch (error) {
+      console.warn('[BARAMEEL] Transition effects skipped; continuing navigation.', error);
+    }
+    document.body.classList.add('is-leaving');
+    window.setTimeout(() => window.location.assign(url), delay);
   };
-  BARAMEEL_FLOW.preload('./assets/screen01-start.webp?v=20261010-run-transition-1');
+  back?.addEventListener('click', event => {
+    event.preventDefault();
+    go('./world.html', 'back', 180);
+  });
+  cta?.addEventListener('click', event => {
+    event.preventDefault();
+    try {
+      window.BR?.markRunHowItWorksSeen?.();
+      window.BR?.safeSession?.set?.('barameelStartFlashPending', '0');
+      window.BR?.safeSession?.set?.('barameelStartFlashShown', '1');
+    } catch (error) {
+      console.warn('[BARAMEEL] Could not save intro state; continuing to Run.', error);
+    }
+    go('./run.html?v=20261029-stability-audio-flow-1', 'confirm', 180);
+  });
+  window.BARAMEEL_FLOW?.preload?.('./assets/screen01-start.webp?v=20261029-stability-audio-flow-1');
 })();
 </script>
 </body>
