@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#06152f">
+<title>BARAMEEL — DUO REWARD</title>
+<link rel="stylesheet" href="./styles.css?v=20261030-duo-nevado-reward-1">
+<script src="./config.js?v=20261030-duo-nevado-reward-1"></script>
+<style>
+:root{--navy:#06152f;--cyan:#20f2ff;--gold:#ffd21c}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--navy);color:#fff;font-family:Arial,system-ui,sans-serif}
+body{min-height:100svh;display:flex;justify-content:center;align-items:flex-start;overflow-x:hidden}
+.reward-stage{position:relative;width:min(100vw,calc(100svh * 941 / 1672));height:min(100svh,calc(100vw * 1672 / 941));aspect-ratio:941/1672;overflow:hidden;background:var(--navy)}
+.reward-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
+.reward-qr-wrap{position:absolute;left:7.3%;top:71.7%;width:33.2%;aspect-ratio:1;display:grid;place-items:center;padding:2.2%;background:rgba(0,14,39,.28);border-radius:5px}
+#rewardQr{width:100%;height:100%;display:grid;place-items:center;background:#fff;padding:5px;border-radius:3px;box-shadow:0 0 0 2px rgba(32,242,255,.72),0 0 12px rgba(0,190,255,.4)}
+#rewardQr canvas,#rewardQr img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important}
+.qr-loading{color:#0a2850;font:800 clamp(8px,2.5vw,12px)/1.2 Arial;text-align:center;padding:8px}
+.reward-expiry{position:absolute;left:24%;top:91.1%;width:53%;height:3.6%;display:flex;align-items:center;justify-content:center;gap:5px;color:#f8fff8;font:900 clamp(8px,2.6vw,13px)/1 Arial,sans-serif;text-shadow:0 1px 4px #001329;white-space:nowrap}
+.reward-expiry strong{color:#fff36a;letter-spacing:.4px}
+.reward-state{position:absolute;left:25%;top:94.6%;width:50%;text-align:center;color:#6dffb2;font:900 clamp(8px,2.4vw,12px)/1 Arial,sans-serif;letter-spacing:1.2px;text-shadow:0 0 8px #00b85b}
+.reward-error{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:12%;text-align:center;background:rgba(2,12,33,.94);font:800 15px/1.5 Arial,sans-serif}
+.reward-error.show{display:flex}
+.reward-error button{margin-top:16px;padding:12px 22px;border:2px solid var(--gold);border-radius:30px;background:linear-gradient(#fff36a,#ffb900);color:#07152f;font-weight:900}
+@media(min-width:471px){body{align-items:center}.reward-stage{width:min(470px,calc(100svh * 941 / 1672));height:auto}}
+@media(prefers-reduced-motion:no-preference){.reward-qr-wrap{animation:qrAppear .45s ease-out both}.reward-state{animation:stateGlow 2.4s ease-in-out infinite alternate}}
+@keyframes qrAppear{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes stateGlow{to{text-shadow:0 0 14px #00ff89,0 0 22px #00b85b}}
+</style>
+</head>
+<body>
+<main class="reward-stage" aria-label="Duo reward">
+  <img class="reward-poster" src="https://tldrawusercontent.com/hTXIrP1yC9gOi4nrbwbX_-Retro-Nevado-Ice-Cream-Reward-Poster-png" alt="Congratulations — NEVADO Duo Reward" fetchpriority="high">
+  <section class="reward-qr-wrap" aria-label="Personal reward QR code">
+    <div id="rewardQr"><span class="qr-loading">PREPARING YOUR PERSONAL QR…</span></div>
+  </section>
+  <div class="reward-expiry" id="rewardExpiry">VALID UNTIL <strong>-- / -- / ----</strong></div>
+  <div class="reward-state" id="rewardState">REWARD AVAILABLE</div>
+  <section class="reward-error" id="rewardError" role="alert">
+    <div>
+      <div id="rewardErrorText">Your Duo reward could not be verified.</div>
+      <button id="backToDuo" type="button">BACK TO DUO CONNECT</button>
+    </div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js?v=20261030-duo-nevado-reward-1"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(() => {
+  const qr=document.getElementById('rewardQr');
+  const expiry=document.getElementById('rewardExpiry');
+  const state=document.getElementById('rewardState');
+  const errorPanel=document.getElementById('rewardError');
+  const errorText=document.getElementById('rewardErrorText');
+  const back=document.getElementById('backToDuo');
+  const showError=(message)=>{qr.innerHTML='';errorText.textContent=message;errorPanel.classList.add('show');state.textContent='REWARD UNAVAILABLE';};
+  const formatDate=(date)=>new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'Africa/Cairo'}).format(date);
+  back.addEventListener('click',()=>{window.location.href='./duo-link.html';});
+  async function init(){
+    if(!window.BR||typeof BR.duoStatus!=='function'){showError('The reward service is unavailable. Please return to Duo Connect and try again.');return;}
+    try{
+      const result=await BR.duoStatus();
+      if(!result?.ok||!result.last_attempt?.discovered){showError('No successful Duo match was found for this user.');return;}
+      const attempt=result.last_attempt;
+      const playerCode=String(result.player_code||'').trim().toUpperCase();
+      if(!attempt.id||!/^BM-[A-Z0-9]{7,8}$/.test(playerCode)){showError('Your personal reward details could not be verified.');return;}
+      const pending=(result.pending_rewards||[]).find(r=>r.source_type==='DUO'&&r.source_id===attempt.id&&r.status==='PENDING');
+      if(!pending){showError('This Duo reward is not currently available. Please contact Barameel support.');return;}
+      const createdAt=new Date(attempt.created_at);
+      if(Number.isNaN(createdAt.getTime())){showError('The reward validity date could not be verified.');return;}
+      const expiresAt=new Date(createdAt.getTime()+7*24*60*60*1000);
+      expiry.innerHTML='VALID UNTIL <strong>'+formatDate(expiresAt)+'</strong>';
+      if(Date.now()>expiresAt.getTime()){
+        qr.innerHTML='';
+        state.textContent='REWARD EXPIRED';
+        showError('This Duo reward has expired. It was valid for 7 days from the successful match date.');
+        state.textContent='REWARD EXPIRED';
+        return;
+      }
+      if(typeof QRCode!=='function'){showError('The QR generator did not load. Check your connection and reopen this screen.');return;}
+      // Unique per-user payload, linked to the same successful Duo attempt.
+      // The cashier flow must validate this payload against the authenticated server record.
+      const payload='BARAMEEL-DUO-REWARD|'+attempt.id+'|'+playerCode;
+      qr.innerHTML='';
+      new QRCode(qr,{text:payload,width:320,height:320,colorDark:'#06152f',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+      state.textContent='REWARD AVAILABLE';
+      BR.track?.('duo_reward_screen_view',{attempt_id:attempt.id});
+    }catch(err){
+      console.error('[DUO REWARD] Could not load reward:',err);
+      showError('Could not load your Duo reward. Check your connection and try again.');
+    }
+  }
+  init();
+})();
+</script>
+</body>
+</html>
