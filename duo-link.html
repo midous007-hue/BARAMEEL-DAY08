@@ -65,11 +65,20 @@ body{overflow-x:hidden}
 .duo-success-badge{position:relative;z-index:2;width:96%;height:auto;max-height:78%;object-fit:contain;filter:drop-shadow(0 0 16px #00cfff) drop-shadow(0 0 30px #ffd21c);animation:duoBadgePop .55s cubic-bezier(.16,1.4,.35,1) both}
 .duo-success-overlay:before{content:"";position:absolute;z-index:3;left:-25%;right:-25%;bottom:-45%;height:42%;background:linear-gradient(0deg,transparent 0%,rgba(0,220,255,.08) 12%,rgba(255,255,255,.98) 42%,rgba(255,219,35,.95) 50%,rgba(0,207,255,.45) 63%,transparent 100%);filter:blur(8px);transform:rotate(-8deg);animation:duoArcadeFlash 1.15s linear infinite}
 .duo-success-overlay:after{content:"";position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(0deg,transparent 0 18px,rgba(255,255,255,.16) 19px 21px);mix-blend-mode:screen;animation:duoFlashPulse .42s steps(2,end) infinite}
+.duo-fail-overlay{position:absolute;inset:0;z-index:31;display:none;align-items:center;justify-content:center;overflow:hidden;pointer-events:none;background:rgba(12,0,13,.82);backdrop-filter:grayscale(.55) blur(2px)}
+.duo-fail-overlay.show{display:flex;animation:duoFailIn .25s ease-out both}
+.duo-fail-badge{position:relative;z-index:2;width:98%;height:auto;max-height:82%;object-fit:contain;filter:drop-shadow(0 0 14px #ff263c) drop-shadow(0 0 28px #00bfff);animation:duoFailImpact .5s cubic-bezier(.2,1.5,.4,1) both}
+.duo-fail-overlay:before{content:"";position:absolute;z-index:3;left:-25%;right:-25%;top:-48%;height:44%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.2) 15%,rgba(255,255,255,.95) 43%,rgba(255,40,58,.9) 52%,rgba(0,205,255,.48) 65%,transparent);filter:blur(9px);transform:rotate(8deg);animation:duoReverseFlash 1.05s linear infinite}
+.duo-fail-overlay:after{content:"";position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(180deg,rgba(255,30,50,.10) 0 2px,transparent 2px 15px);mix-blend-mode:screen;animation:duoFailPulse .3s steps(2,end) infinite}
+@keyframes duoFailIn{from{opacity:0}to{opacity:1}}
+@keyframes duoFailImpact{0%{transform:scale(1.15) translateY(-16px);opacity:0}45%{transform:scale(.96) translateY(3px);opacity:1}70%{transform:translateX(-5px)}85%{transform:translateX(5px)}100%{transform:scale(1) translateX(0)}}
+@keyframes duoReverseFlash{0%{top:-48%}100%{top:112%}}
+@keyframes duoFailPulse{0%,100%{opacity:.18}50%{opacity:.8}}
 @keyframes duoSuccessIn{from{opacity:0}to{opacity:1}}
 @keyframes duoBadgePop{0%{transform:scale(.52) rotate(-5deg);opacity:0}65%{transform:scale(1.06) rotate(1deg);opacity:1}100%{transform:scale(1) rotate(0)}}
 @keyframes duoArcadeFlash{0%{bottom:-48%}100%{bottom:112%}}
 @keyframes duoFlashPulse{0%,100%{opacity:.16}50%{opacity:.72}}
-@media(prefers-reduced-motion:reduce){.duo-success-overlay:before,.duo-success-overlay:after,.duo-success-badge{animation:none}}
+@media(prefers-reduced-motion:reduce){.duo-success-overlay:before,.duo-success-overlay:after,.duo-success-badge,.duo-fail-overlay:before,.duo-fail-overlay:after,.duo-fail-badge{animation:none}}
 .duo-hidden{display:none!important}
 @media(min-height:850px){.duo-content{gap:15px}.duo-camera-panel{height:clamp(190px,25vh,255px)}.duo-player-panel{padding:17px}}
 @media(prefers-reduced-motion:reduce){.duo-scan-line{animation:none}.duo-status-fill{transition:none}}
@@ -148,6 +157,8 @@ body{overflow-x:hidden}
     </section>
     <div id="duoMessage" class="duo-message" role="status" aria-live="polite"></div>
     <div id="duoSuccessOverlay" class="duo-success-overlay" aria-hidden="true"><img class="duo-success-badge" src="./assets/duo-connected-badge.webp" alt="Duo Connected"></div>
+    <div id="duoFailOverlay" class="duo-fail-overlay" aria-hidden="true"><img class="duo-fail-badge" src="./assets/duo-try-again.webp" alt="Try Again — Find Your Duo Again"></div>
+    <audio id="duoLoseSound" preload="auto" src="./assets/duo-try-again-lose.mp3"></audio>
   </div>
 </main>
 
@@ -169,12 +180,15 @@ body{overflow-x:hidden}
   const statusFill=document.getElementById('statusFill');
   const message=document.getElementById('duoMessage');
   const successOverlay=document.getElementById('duoSuccessOverlay');
-  let successOverlayTimer=0;
+  const failOverlay=document.getElementById('duoFailOverlay');
+  const loseSound=document.getElementById('duoLoseSound');
+  let successOverlayTimer=0,failOverlayTimer=0;
   let stream=null, detector=null, raf=0, busy=false, locked=false, jsqrLoading=false;
   let ownCode='', lastRaw='', lastAt=0, scannedCode='';
 
   function setMessage(text,type=''){message.textContent=text||'';message.className='duo-message'+(type?' '+type:'');}
-  function showDuoSuccess(){clearTimeout(successOverlayTimer);message.textContent='';message.className='duo-message';successOverlay.classList.add('show');successOverlay.setAttribute('aria-hidden','false');successOverlayTimer=setTimeout(()=>{successOverlay.classList.remove('show');successOverlay.setAttribute('aria-hidden','true');},7800);}
+  function showDuoSuccess(){clearTimeout(successOverlayTimer);clearTimeout(failOverlayTimer);failOverlay.classList.remove('show');failOverlay.setAttribute('aria-hidden','true');message.textContent='';message.className='duo-message';successOverlay.classList.add('show');successOverlay.setAttribute('aria-hidden','false');successOverlayTimer=setTimeout(()=>{successOverlay.classList.remove('show');successOverlay.setAttribute('aria-hidden','true');},7800);}
+  function showDuoFailure(){clearTimeout(failOverlayTimer);clearTimeout(successOverlayTimer);successOverlay.classList.remove('show');successOverlay.setAttribute('aria-hidden','true');message.textContent='';message.className='duo-message';failOverlay.classList.add('show');failOverlay.setAttribute('aria-hidden','false');try{loseSound.currentTime=0;const play=loseSound.play();if(play?.catch)play.catch(()=>{});}catch{}failOverlayTimer=setTimeout(()=>{failOverlay.classList.remove('show');failOverlay.setAttribute('aria-hidden','true');},6200);}
   function setStatus(text,progress=null){statusMessage.textContent=text;if(progress!==null)statusFill.style.width=Math.max(0,Math.min(100,progress))+'%';}
   let progressAudio=null,progressFrame=0;
   function progressTone(value,up){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;progressAudio=progressAudio||new AC();if(progressAudio.state==='suspended')progressAudio.resume();const p=Math.max(0,Math.min(100,value))/100,t=progressAudio.currentTime,o=progressAudio.createOscillator(),g=progressAudio.createGain();o.type='triangle';o.frequency.value=up?260+900*p:900-620*p;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.09);o.connect(g).connect(progressAudio.destination);o.start(t);o.stop(t+.1);}catch{}}
@@ -275,7 +289,7 @@ body{overflow-x:hidden}
     let result;try{result=await BR.duoLink(scannedCode,key);}catch(error){result={ok:false,message:'Could not connect right now. Please try again.'};}
     if(!result?.ok){setStatus('CONNECTION FAILED',45);animateProgress(0,false,650);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
     if(result.discovered){setStatus('PARTNER DISCOVERED!',100);animateProgress(100,true,1250);showDuoSuccess();BR.play('reward');BR.haptic('reward');BR.flash();}
-    else{setStatus('NO DISCOVERY THIS TIME',45);animateProgress(0,false,900);setMessage('NO DUO MATCH THIS TIME. SCAN ANOTHER PLAYER AND TRY AGAIN.','error');BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
+    else{setStatus('NO DISCOVERY THIS TIME',45);animateProgress(0,false,900);showDuoFailure();BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
   }
   startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
   connect.addEventListener('click',connectScannedPlayer);
