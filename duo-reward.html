@@ -69,7 +69,8 @@ body{min-height:100svh;display:flex;justify-content:center;align-items:flex-star
       if(!attempt.id||!/^BM-[A-Z0-9]{7,8}$/.test(playerCode)){showError('Your personal reward details could not be verified.');return;}
       const pending=(result.pending_rewards||[]).find(r=>r.source_type==='DUO'&&r.source_id===attempt.id&&r.status==='PENDING');
       if(!pending){showError('This Duo reward is not currently available. Please contact Barameel support.');return;}
-      const createdAt=new Date(attempt.created_at);
+      if(String(pending.reward_type||'').toUpperCase()!=='PRODUCT'||String(pending.product_code||'').toUpperCase()!=='NEVADO_ICE_CREAM'){showError('The fixed NEVADO reward is not enabled for this match yet. Please try again after the reward system update.');return;}
+      const createdAt=new Date(pending.created_at||attempt.created_at);
       if(Number.isNaN(createdAt.getTime())){showError('The reward validity date could not be verified.');return;}
       const expiresAt=new Date(createdAt.getTime()+7*24*60*60*1000);
       expiry.innerHTML='VALID UNTIL <strong>'+formatDate(expiresAt)+'</strong>';
