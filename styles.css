@@ -341,3 +341,20 @@ body{
   background-attachment:fixed;
   padding-top:0;
 }
+
+
+/* V23.3 — CONSISTENT VIEWPORT ALIGNMENT + STATIC SCREEN ARTWORK.
+   Keep the authored artwork geometry intact; center the screen container itself.
+   Motion is limited to local controls/feedback, never the full-screen artwork. */
+html{min-height:100%;height:100%}
+body{width:100%;min-height:100svh;min-height:100dvh;align-items:center;justify-content:center}
+body>main{flex-shrink:0}
+.duo-stage{width:100%;min-height:100svh;min-height:100dvh;align-items:center;justify-content:center}
+.world-hub-stage .world-art,
+.world-splash-stage .world-splash-art{animation:none!important;transform:none!important;transition:none!important;will-change:auto!important}
+.world-hub-stage .world-ambient-glow,
+.world-hub-stage .world-scanline,
+.world-hub-stage .world-grain,
+.splash-parallax-light,
+.splash-world-glow,
+.splash-grain{animation:none!important;transform:none!important;transition:none!important}
