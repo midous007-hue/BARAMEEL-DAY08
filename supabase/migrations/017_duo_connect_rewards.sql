@@ -161,12 +161,12 @@ begin
   where id=p_scanner_player_id
   for update;
   if not found or v_scanner.auth_user_id is null or
-     v_scanner.player_code !~* '^BM-[A-Z0-9]{8}$' or length(trim(coalesce(v_scanner.nickname,''))) < 3 then
+     v_scanner.player_code !~* '^BM-[A-Z0-9]{7,8}$' or length(trim(coalesce(v_scanner.nickname,''))) < 3 then
     raise exception using errcode='P0001', message='DUO_PLAYER_NOT_REGISTERED';
   end if;
 
   v_code := upper(trim(coalesce(p_other_player_code,'')));
-  if v_code !~ '^BM-[A-Z0-9]{8}$' then
+  if v_code !~ '^BM-[A-Z0-9]{7,8}$' then
     raise exception using errcode='P0001', message='DUO_PLAYER_CODE_INVALID';
   end if;
 
@@ -174,7 +174,7 @@ begin
   from public.players
   where upper(player_code)=v_code and auth_user_id is not null
   limit 1;
-  if not found or v_other.player_code !~* '^BM-[A-Z0-9]{8}$' or
+  if not found or v_other.player_code !~* '^BM-[A-Z0-9]{7,8}$' or
      length(trim(coalesce(v_other.nickname,''))) < 3 then
     raise exception using errcode='P0001', message='DUO_PLAYER_NOT_FOUND';
   end if;
