@@ -150,6 +150,7 @@ body{overflow-x:hidden}
   const canvas=document.getElementById('duoCanvas');
   const ctx=canvas.getContext('2d',{willReadFrequently:true});
   const connect=document.getElementById('connectButton');
+  const startScan=document.getElementById('startScanButton');
   const playerQr=document.getElementById('playerQr');
   const playerName=document.getElementById('playerName');
   const playerCodeEl=document.getElementById('playerCode');
@@ -157,11 +158,11 @@ body{overflow-x:hidden}
   const statusFill=document.getElementById('statusFill');
   const message=document.getElementById('duoMessage');
   let stream=null, detector=null, raf=0, busy=false, locked=false, jsqrLoading=false;
-  let ownCode='', lastRaw='', lastAt=0;
+  let ownCode='', lastRaw='', lastAt=0, scannedCode='';
 
   function setMessage(text,type=''){message.textContent=text||'';message.className='duo-message'+(type?' '+type:'');}
   function setStatus(text,progress=null){statusMessage.textContent=text;if(progress!==null)statusFill.style.width=progress+'%';}
-  function stopCamera(){cancelAnimationFrame(raf);raf=0;stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;panel.classList.remove('scanning');locked=false;connect.setAttribute('aria-label','Connect and scan a Barameel player QR code');}
+  function stopCamera(){cancelAnimationFrame(raf);raf=0;stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;panel.classList.remove('scanning');locked=false;startScan.setAttribute('aria-label','Start QR scanner');}
   function playerCode(){
     const stateCode=String(BR.state?.playerCode||BR.state?.player_code||BR.state?.playerId||'').trim().toUpperCase();
     if(/^BM-[A-Z0-9]{8}$/.test(stateCode))return stateCode;
@@ -207,7 +208,7 @@ body{overflow-x:hidden}
     try{
       stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
       video.srcObject=stream;await video.play();panel.classList.add('scanning');
-      connect.setAttribute('aria-label','Stop camera scanner');
+      startScan.setAttribute('aria-label','Stop camera scanner');
       setStatus('SCANNING FOR A BARAMEEL PLAYER QR',10);
       await nativeReader();
       const ok=await loadJsQR();
@@ -245,26 +246,22 @@ body{overflow-x:hidden}
       setMessage('This is not a Barameel player code. Scan another player’s QR.','error');return;
     }
     if(code===ownCode){setMessage('That is your own QR code. Scan another player.','error');return;}
-    locked=true;setStatus('CHECKING PLAYER…',45);setMessage('');
-    stopCamera();
-    const key='duo-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
-    const result=await BR.duoLink(code,key);
-    if(!result?.ok){
-      setStatus('READY TO CONNECT',0);
-      setMessage(result?.message||'Could not connect right now. Please try again.','error');
-      return;
-    }
-    if(result.discovered){
-      setStatus('PARTNER DISCOVERED!',100);
-      const reward=result.reward;
-      setMessage('DUO DISCOVERED! '+(reward?.reward_label?'YOUR REWARD: '+reward.reward_label:'Your reward is pending final redemption.'),'success');
-      BR.play('reward');BR.haptic('reward');BR.flash();
-    }else{
-      setStatus('NO DISCOVERY THIS TIME',0);
-      setMessage('No partner discovery this time. Keep searching with another Barameel player.');
-    }
+    scannedCode=code;stopCamera();connect.disabled=false;
+    setStatus('PLAYER SCANNED — READY TO CONNECT',0);
+    setMessage('PLAYER CODE READ SUCCESSFULLY. PRESS CONNECT TO CHECK YOUR DUO.','success');
+    BR.play('confirm');BR.haptic('confirm');
   }
-  connect.addEventListener('click',()=>{BR.play('scan');BR.haptic('scan');startCamera();});
+  async function connectScannedPlayer(){
+    if(!scannedCode||locked)return;
+    locked=true;connect.disabled=true;setMessage('CHECKING DUO COMPATIBILITY…');setStatus('CHECKING PLAYER…',45);
+    const key='duo-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
+    let result;try{result=await BR.duoLink(scannedCode,key);}catch(error){result={ok:false,message:'Could not connect right now. Please try again.'};}
+    if(!result?.ok){setStatus('CONNECTION FAILED',0);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
+    if(result.discovered){setStatus('PARTNER DISCOVERED!',100);const reward=result.reward;setMessage('DUO DISCOVERED! '+(reward?.reward_label?'YOUR REWARD: '+reward.reward_label:'Your reward is pending final redemption.'),'success');BR.play('reward');BR.haptic('reward');BR.flash();}
+    else{setStatus('NO DISCOVERY THIS TIME',0);setMessage('NO DUO MATCH THIS TIME. SCAN ANOTHER PLAYER AND TRY AGAIN.','error');BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
+  }
+  startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
+  connect.addEventListener('click',connectScannedPlayer);
   window.addEventListener('pagehide',stopCamera);
   renderIdentity();
   if(!ownCode&&typeof BR.syncPlayer==='function'){
