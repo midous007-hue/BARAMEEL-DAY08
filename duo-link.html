@@ -159,6 +159,7 @@ body{overflow-x:hidden}
     <div id="duoSuccessOverlay" class="duo-success-overlay" aria-hidden="true"><img class="duo-success-badge" src="./assets/duo-connected-badge.webp" alt="Duo Connected"></div>
     <div id="duoFailOverlay" class="duo-fail-overlay" aria-hidden="true"><img class="duo-fail-badge" src="./assets/duo-try-again.webp" alt="Try Again — Find Your Duo Again"></div>
     <audio id="duoLoseSound" preload="auto" src="./assets/duo-try-again-lose.mp3"></audio>
+    <audio id="duoJackpotSound" preload="auto" src="./assets/duo-connected-jackpot.mp3"></audio>
   </div>
 </main>
 
@@ -182,12 +183,13 @@ body{overflow-x:hidden}
   const successOverlay=document.getElementById('duoSuccessOverlay');
   const failOverlay=document.getElementById('duoFailOverlay');
   const loseSound=document.getElementById('duoLoseSound');
+  const jackpotSound=document.getElementById('duoJackpotSound');
   let successOverlayTimer=0,failOverlayTimer=0;
   let stream=null, detector=null, raf=0, busy=false, locked=false, jsqrLoading=false;
   let ownCode='', lastRaw='', lastAt=0, scannedCode='';
 
   function setMessage(text,type=''){message.textContent=text||'';message.className='duo-message'+(type?' '+type:'');}
-  function showDuoSuccess(){clearTimeout(successOverlayTimer);clearTimeout(failOverlayTimer);failOverlay.classList.remove('show');failOverlay.setAttribute('aria-hidden','true');message.textContent='';message.className='duo-message';successOverlay.classList.add('show');successOverlay.setAttribute('aria-hidden','false');successOverlayTimer=setTimeout(()=>{successOverlay.classList.remove('show');successOverlay.setAttribute('aria-hidden','true');},7800);}
+  function showDuoSuccess(){clearTimeout(successOverlayTimer);clearTimeout(failOverlayTimer);failOverlay.classList.remove('show');failOverlay.setAttribute('aria-hidden','true');message.textContent='';message.className='duo-message';successOverlay.classList.add('show');successOverlay.setAttribute('aria-hidden','false');try{jackpotSound.currentTime=0;const play=jackpotSound.play();if(play?.catch)play.catch(()=>{});}catch{}successOverlayTimer=setTimeout(()=>{successOverlay.classList.remove('show');successOverlay.setAttribute('aria-hidden','true');},7800);}
   function showDuoFailure(){clearTimeout(failOverlayTimer);clearTimeout(successOverlayTimer);successOverlay.classList.remove('show');successOverlay.setAttribute('aria-hidden','true');message.textContent='';message.className='duo-message';failOverlay.classList.add('show');failOverlay.setAttribute('aria-hidden','false');try{loseSound.currentTime=0;const play=loseSound.play();if(play?.catch)play.catch(()=>{});}catch{}failOverlayTimer=setTimeout(()=>{failOverlay.classList.remove('show');failOverlay.setAttribute('aria-hidden','true');},6200);}
   function setStatus(text,progress=null){statusMessage.textContent=text;if(progress!==null)statusFill.style.width=Math.max(0,Math.min(100,progress))+'%';}
   let progressAudio=null,progressFrame=0;
@@ -288,7 +290,7 @@ body{overflow-x:hidden}
     const key='duo-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
     let result;try{result=await BR.duoLink(scannedCode,key);}catch(error){result={ok:false,message:'Could not connect right now. Please try again.'};}
     if(!result?.ok){setStatus('CONNECTION FAILED',45);animateProgress(0,false,650);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
-    if(result.discovered){setStatus('PARTNER DISCOVERED!',100);animateProgress(100,true,1250);showDuoSuccess();BR.play('reward');BR.haptic('reward');BR.flash();}
+    if(result.discovered){setStatus('PARTNER DISCOVERED!',100);animateProgress(100,true,1250);showDuoSuccess();BR.haptic('reward');BR.flash();}
     else{setStatus('NO DISCOVERY THIS TIME',45);animateProgress(0,false,900);showDuoFailure();BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
   }
   startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
