@@ -198,11 +198,11 @@ body{overflow-x:hidden}
   function stopCamera(){cancelAnimationFrame(raf);raf=0;stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;panel.classList.remove('scanning');locked=false;startScan.setAttribute('aria-label','Start QR scanner');}
   function playerCode(){
     const stateCode=String(BR.state?.playerCode||BR.state?.player_code||BR.state?.playerId||'').trim().toUpperCase();
-    if(/^BM-[A-Z0-9]{8}$/.test(stateCode))return stateCode;
+    if(/^BM-[A-Z0-9]{7,8}$/.test(stateCode))return stateCode;
     try{
       const saved=JSON.parse(localStorage.getItem('barameel.world.player.v23.7')||'null');
       const savedCode=String(saved?.playerCode||saved?.player_code||saved?.playerId||'').trim().toUpperCase();
-      if(/^BM-[A-Z0-9]{8}$/.test(savedCode)){
+      if(/^BM-[A-Z0-9]{7,8}$/.test(savedCode)){
         if(typeof BR.mergePlayer==='function')BR.mergePlayer({...saved,playerId:savedCode,playerCode:savedCode,player_code:savedCode});
         return savedCode;
       }
@@ -214,7 +214,7 @@ body{overflow-x:hidden}
     playerName.textContent=String(BR.state?.nickname||'BARAMEEL PLAYER').trim().slice(0,40);
     playerCodeEl.textContent=ownCode||'RESTORING PLAYER CODE…';
     playerQr.innerHTML='';
-    if(!ownCode||!/^BM-[A-Z0-9]{8}$/.test(ownCode)){
+    if(!ownCode||!/^BM-[A-Z0-9]{7,8}$/.test(ownCode)){
       playerQr.innerHTML='<span style="font:700 11px Arial;color:#15335c;text-align:center;padding:8px">RESTORING YOUR BARAMEEL ID…</span>';
       return;
     }
@@ -236,7 +236,7 @@ body{overflow-x:hidden}
     if(stream){stopCamera();setStatus('READY TO CONNECT',0);return;}
     setMessage('');
     if(!ownCode)renderIdentity();
-    if(!ownCode||!/^BM-[A-Z0-9]{8}$/.test(ownCode)){setMessage('Your Barameel player code is not ready.','error');return;}
+    if(!ownCode||!/^BM-[A-Z0-9]{7,8}$/.test(ownCode)){setMessage('Your Barameel player code is not ready.','error');return;}
     if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){setMessage('Camera requires HTTPS. Open Barameel in Safari or Chrome.','error');return;}
     try{
       stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
@@ -274,7 +274,7 @@ body{overflow-x:hidden}
   async function handle(raw){
     if(locked)return;
     const code=String(raw||'').trim().toUpperCase();
-    if(!/^BM-[A-Z0-9]{8}$/.test(code)){
+    if(!/^BM-[A-Z0-9]{7,8}$/.test(code)){
       const now=Date.now();if(code===lastRaw&&now-lastAt<1800)return;lastRaw=code;lastAt=now;
       setMessage('This is not a Barameel player code. Scan another player’s QR.','error');return;
     }
