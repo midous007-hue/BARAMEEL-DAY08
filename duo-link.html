@@ -161,7 +161,10 @@ body{overflow-x:hidden}
   let ownCode='', lastRaw='', lastAt=0, scannedCode='';
 
   function setMessage(text,type=''){message.textContent=text||'';message.className='duo-message'+(type?' '+type:'');}
-  function setStatus(text,progress=null){statusMessage.textContent=text;if(progress!==null)statusFill.style.width=progress+'%';}
+  function setStatus(text,progress=null){statusMessage.textContent=text;if(progress!==null)statusFill.style.width=Math.max(0,Math.min(100,progress))+'%';}
+  let progressAudio=null,progressFrame=0;
+  function progressTone(value,up){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;progressAudio=progressAudio||new AC();if(progressAudio.state==='suspended')progressAudio.resume();const p=Math.max(0,Math.min(100,value))/100,t=progressAudio.currentTime,o=progressAudio.createOscillator(),g=progressAudio.createGain();o.type='triangle';o.frequency.value=up?260+900*p:900-620*p;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.09);o.connect(g).connect(progressAudio.destination);o.start(t);o.stop(t+.1);}catch{}}
+  function animateProgress(target,up,duration){cancelAnimationFrame(progressFrame);const from=parseFloat(statusFill.style.width)||0,start=performance.now();let last=-1;function tick(now){const p=Math.min(1,(now-start)/duration),e=up?1-Math.pow(1-p,2):p*p,value=from+(target-from)*e;statusFill.style.width=value+'%';const step=Math.floor(value/7);if(step!==last){last=step;progressTone(value,up);}if(p<1)progressFrame=requestAnimationFrame(tick);else statusFill.style.width=target+'%';}progressFrame=requestAnimationFrame(tick);}
   function stopCamera(){cancelAnimationFrame(raf);raf=0;stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;panel.classList.remove('scanning');locked=false;startScan.setAttribute('aria-label','Start QR scanner');}
   function playerCode(){
     const stateCode=String(BR.state?.playerCode||BR.state?.player_code||BR.state?.playerId||'').trim().toUpperCase();
@@ -256,9 +259,9 @@ body{overflow-x:hidden}
     locked=true;connect.disabled=true;setMessage('CHECKING DUO COMPATIBILITY…');setStatus('CHECKING PLAYER…',45);
     const key='duo-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
     let result;try{result=await BR.duoLink(scannedCode,key);}catch(error){result={ok:false,message:'Could not connect right now. Please try again.'};}
-    if(!result?.ok){setStatus('CONNECTION FAILED',0);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
-    if(result.discovered){setStatus('PARTNER DISCOVERED!',100);const reward=result.reward;setMessage('DUO DISCOVERED! '+(reward?.reward_label?'YOUR REWARD: '+reward.reward_label:'Your reward is pending final redemption.'),'success');BR.play('reward');BR.haptic('reward');BR.flash();}
-    else{setStatus('NO DISCOVERY THIS TIME',0);setMessage('NO DUO MATCH THIS TIME. SCAN ANOTHER PLAYER AND TRY AGAIN.','error');BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
+    if(!result?.ok){setStatus('CONNECTION FAILED',0);animateProgress(0,false,650);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
+    if(result.discovered){setStatus('PARTNER DISCOVERED!',100);animateProgress(100,true,1250);const reward=result.reward;setMessage('DUO DISCOVERED! '+(reward?.reward_label?'YOUR REWARD: '+reward.reward_label:'Your reward is pending final redemption.'),'success');BR.play('reward');BR.haptic('reward');BR.flash();}
+    else{setStatus('NO DISCOVERY THIS TIME',0);animateProgress(0,false,900);setMessage('NO DUO MATCH THIS TIME. SCAN ANOTHER PLAYER AND TRY AGAIN.','error');BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
   }
   startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
   connect.addEventListener('click',connectScannedPlayer);
