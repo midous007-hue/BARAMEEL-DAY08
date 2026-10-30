@@ -108,8 +108,13 @@ body{overflow-x:hidden}
 .duo-camera-panel.scanning #duoVideo{display:block}
 .duo-start-scan{position:absolute;z-index:5;left:12.12%;top:30.83%;width:29.41%;height:9.17%;margin:0;padding:0;border:0;border-radius:0;background:transparent;cursor:pointer;color:transparent;font-size:0;appearance:none}
 .duo-start-scan:focus-visible,.duo-connect-button:focus-visible{outline:3px solid #20f2ff;outline-offset:-5px;border-radius:16px}
-.duo-connect-button{position:absolute;z-index:5;left:3.05%;top:43.55%;width:94.10%;height:11.32%;max-height:none;aspect-ratio:auto;margin:0;padding:0;border:0;border-radius:0;background:transparent;filter:none;cursor:pointer;color:transparent;font-size:0}
-.duo-connect-button:disabled{cursor:not-allowed;opacity:.72}
+.duo-connect-button{position:absolute;z-index:5;left:3.05%;top:43.55%;width:94.10%;height:11.32%;max-height:none;aspect-ratio:auto;margin:0;padding:0;border:0;border-radius:0;background:transparent;filter:none;cursor:pointer;color:transparent;font-size:0;overflow:hidden}
+.duo-connect-button img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none}
+.duo-connect-button .connect-ready-art{display:none}
+.duo-connect-button.is-ready .connect-idle-art{display:none}
+.duo-connect-button.is-ready .connect-ready-art{display:block}
+.duo-connect-button:disabled{cursor:not-allowed}
+.duo-connect-button:active:not(:disabled){transform:scale(.985)}
 .duo-status{position:absolute;z-index:3;left:16.88%;top:59.27%;width:66.67%;height:2.21%;box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;display:block}
 .duo-status-label{display:none!important}
 .duo-status-track{position:absolute;inset:0;height:100%;margin:0;padding:0;border:3px solid #20f2ff;border-radius:999px;overflow:hidden;background:rgba(0,16,39,.94);box-sizing:border-box;box-shadow:0 0 10px rgba(0,214,255,.65)}
@@ -152,7 +157,7 @@ body{overflow-x:hidden}
     </section>
 
     <button id="startScanButton" class="duo-start-scan" type="button" aria-label="Start QR scanner">START SCAN</button>
-    <button id="connectButton" class="duo-connect-button" type="button" aria-label="Connect to scanned Barameel player" disabled>CONNECT</button>
+    <button id="connectButton" class="duo-connect-button" type="button" aria-label="Connect to scanned Barameel player" disabled><img class="connect-idle-art" src="./assets/distressed-connect-game-button.webp" alt=""><img class="connect-ready-art" src="./assets/glossy-neon-connect-button.webp" alt=""></button>
 
     <p class="duo-helper">SCAN A PLAYER. DISCOVER YOUR DUO.</p>
 
@@ -294,21 +299,21 @@ body{overflow-x:hidden}
       setMessage('This is not a Barameel player code. Scan another player’s QR.','error');return;
     }
     if(code===ownCode){setMessage('That is your own QR code. Scan another player.','error');return;}
-    scannedCode=code;stopCamera();connect.disabled=false;
+    scannedCode=code;stopCamera();connect.disabled=false;connect.classList.add('is-ready');
     setStatus('PLAYER SCANNED — READY TO CONNECT',0);
     setMessage('PLAYER CODE READ SUCCESSFULLY. PRESS CONNECT TO CHECK YOUR DUO.','success');
     BR.play('confirm');BR.haptic('confirm');
   }
   async function connectScannedPlayer(){
     if(!scannedCode||locked)return;
-    locked=true;connect.disabled=true;setMessage('CHECKING DUO COMPATIBILITY…');setStatus('CHECKING PLAYER…',45);BR.play('confirm');BR.haptic('confirm');progressTone(45,true);
+    locked=true;connect.disabled=true;connect.classList.remove('is-ready');setMessage('CHECKING DUO COMPATIBILITY…');setStatus('CHECKING PLAYER…',45);BR.play('confirm');BR.haptic('confirm');progressTone(45,true);
     const key='duo-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
     let result;try{result=await BR.duoLink(scannedCode,key);}catch(error){result={ok:false,message:'Could not connect right now. Please try again.'};}
     if(!result?.ok){setStatus('CONNECTION FAILED',45);animateProgress(0,false,650);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
     if(result.discovered){setStatus('MATCHING…',parseFloat(statusFill.style.width)||45);animateProgress(100,true,1250,()=>{setStatus('PARTNER DISCOVERED!',100);showDuoSuccess();BR.haptic('reward');});}
     else{setStatus('NO DISCOVERY THIS TIME',45);animateProgress(0,false,900);showDuoFailure();BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
   }
-  startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
+  startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;connect.classList.remove('is-ready');setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
   connect.addEventListener('click',connectScannedPlayer);
   rewardNext.addEventListener('click',()=>{if(rewardNext.disabled)return;window.location.href='./reveal-barameel-box.html';});
   window.addEventListener('pagehide',stopCamera);
