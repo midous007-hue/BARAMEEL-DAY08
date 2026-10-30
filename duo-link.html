@@ -60,6 +60,16 @@ body{overflow-x:hidden}
 .duo-id-caption{margin:8px 0 0;color:#d9faff;font-size:10px;letter-spacing:2px}
 .duo-message{min-height:20px;text-align:center;font:700 12px/1.4 Arial,sans-serif;color:#e9faff}
 .duo-message.error{color:#ff8a72}.duo-message.success{color:#72ffcb}
+.duo-success-overlay{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;overflow:hidden;pointer-events:none;background:rgba(0,5,24,.78);backdrop-filter:blur(2px)}
+.duo-success-overlay.show{display:flex;animation:duoSuccessIn .22s ease-out both}
+.duo-success-badge{position:relative;z-index:2;width:96%;height:auto;max-height:78%;object-fit:contain;filter:drop-shadow(0 0 16px #00cfff) drop-shadow(0 0 30px #ffd21c);animation:duoBadgePop .55s cubic-bezier(.16,1.4,.35,1) both}
+.duo-success-overlay:before{content:"";position:absolute;z-index:3;left:-25%;right:-25%;bottom:-45%;height:42%;background:linear-gradient(0deg,transparent 0%,rgba(0,220,255,.08) 12%,rgba(255,255,255,.98) 42%,rgba(255,219,35,.95) 50%,rgba(0,207,255,.45) 63%,transparent 100%);filter:blur(8px);transform:rotate(-8deg);animation:duoArcadeFlash 1.15s linear infinite}
+.duo-success-overlay:after{content:"";position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(0deg,transparent 0 18px,rgba(255,255,255,.16) 19px 21px);mix-blend-mode:screen;animation:duoFlashPulse .42s steps(2,end) infinite}
+@keyframes duoSuccessIn{from{opacity:0}to{opacity:1}}
+@keyframes duoBadgePop{0%{transform:scale(.52) rotate(-5deg);opacity:0}65%{transform:scale(1.06) rotate(1deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes duoArcadeFlash{0%{bottom:-48%}100%{bottom:112%}}
+@keyframes duoFlashPulse{0%,100%{opacity:.16}50%{opacity:.72}}
+@media(prefers-reduced-motion:reduce){.duo-success-overlay:before,.duo-success-overlay:after,.duo-success-badge{animation:none}}
 .duo-hidden{display:none!important}
 @media(min-height:850px){.duo-content{gap:15px}.duo-camera-panel{height:clamp(190px,25vh,255px)}.duo-player-panel{padding:17px}}
 @media(prefers-reduced-motion:reduce){.duo-scan-line{animation:none}.duo-status-fill{transition:none}}
@@ -137,6 +147,7 @@ body{overflow-x:hidden}
       <p class="duo-id-caption">YOUR CODE. YOUR IDENTITY.</p>
     </section>
     <div id="duoMessage" class="duo-message" role="status" aria-live="polite"></div>
+    <div id="duoSuccessOverlay" class="duo-success-overlay" aria-hidden="true"><img class="duo-success-badge" src="./assets/duo-connected-badge.webp" alt="Duo Connected"></div>
   </div>
 </main>
 
@@ -157,10 +168,13 @@ body{overflow-x:hidden}
   const statusMessage=document.getElementById('statusMessage');
   const statusFill=document.getElementById('statusFill');
   const message=document.getElementById('duoMessage');
+  const successOverlay=document.getElementById('duoSuccessOverlay');
+  let successOverlayTimer=0;
   let stream=null, detector=null, raf=0, busy=false, locked=false, jsqrLoading=false;
   let ownCode='', lastRaw='', lastAt=0, scannedCode='';
 
   function setMessage(text,type=''){message.textContent=text||'';message.className='duo-message'+(type?' '+type:'');}
+  function showDuoSuccess(){clearTimeout(successOverlayTimer);message.textContent='';message.className='duo-message';successOverlay.classList.add('show');successOverlay.setAttribute('aria-hidden','false');successOverlayTimer=setTimeout(()=>{successOverlay.classList.remove('show');successOverlay.setAttribute('aria-hidden','true');},7800);}
   function setStatus(text,progress=null){statusMessage.textContent=text;if(progress!==null)statusFill.style.width=Math.max(0,Math.min(100,progress))+'%';}
   let progressAudio=null,progressFrame=0;
   function progressTone(value,up){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;progressAudio=progressAudio||new AC();if(progressAudio.state==='suspended')progressAudio.resume();const p=Math.max(0,Math.min(100,value))/100,t=progressAudio.currentTime,o=progressAudio.createOscillator(),g=progressAudio.createGain();o.type='triangle';o.frequency.value=up?260+900*p:900-620*p;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.09);o.connect(g).connect(progressAudio.destination);o.start(t);o.stop(t+.1);}catch{}}
@@ -260,7 +274,7 @@ body{overflow-x:hidden}
     const key='duo-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
     let result;try{result=await BR.duoLink(scannedCode,key);}catch(error){result={ok:false,message:'Could not connect right now. Please try again.'};}
     if(!result?.ok){setStatus('CONNECTION FAILED',45);animateProgress(0,false,650);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
-    if(result.discovered){setStatus('PARTNER DISCOVERED!');animateProgress(100,true,1250);const reward=result.reward;setMessage('DUO DISCOVERED! '+(reward?.reward_label?'YOUR REWARD: '+reward.reward_label:'Your reward is pending final redemption.'),'success');BR.play('reward');BR.haptic('reward');BR.flash();}
+    if(result.discovered){setStatus('PARTNER DISCOVERED!',100);animateProgress(100,true,1250);showDuoSuccess();BR.play('reward');BR.haptic('reward');BR.flash();}
     else{setStatus('NO DISCOVERY THIS TIME',45);animateProgress(0,false,900);setMessage('NO DUO MATCH THIS TIME. SCAN ANOTHER PLAYER AND TRY AGAIN.','error');BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
   }
   startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
