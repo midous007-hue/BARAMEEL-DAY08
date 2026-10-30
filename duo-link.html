@@ -68,6 +68,14 @@ body{overflow-x:hidden}
 .duo-success-emblem:after{content:"";position:absolute;z-index:1;inset:4%;border-radius:22%;background:radial-gradient(ellipse,rgba(255,255,255,.72),rgba(0,205,255,.30) 45%,transparent 72%);mix-blend-mode:screen;animation:duoFlashPulse .38s steps(2,end) infinite;pointer-events:none}
 .duo-success-overlay:before{content:none}
 .duo-success-overlay:after{content:none}
+.duo-reward-next{position:absolute;z-index:8;left:4%;right:4%;bottom:7.5%;width:92%;padding:0;border:0;background:transparent;display:block;opacity:1;cursor:default;pointer-events:none;filter:none}
+.duo-reward-next img{display:block;width:100%;height:auto;object-fit:contain}
+.duo-reward-next .duo-reward-color{display:none}
+.duo-reward-next.is-ready{cursor:pointer;pointer-events:auto;animation:duoRewardReady .55s ease-out both}
+.duo-reward-next.is-ready .duo-reward-muted{display:none}
+.duo-reward-next.is-ready .duo-reward-color{display:block;filter:drop-shadow(0 0 12px #20f2ff) drop-shadow(0 0 22px #ffd21c)}
+.duo-reward-next:focus-visible{outline:3px solid #fff;outline-offset:4px;border-radius:18px}
+@keyframes duoRewardReady{0%{transform:scale(.97);filter:brightness(.65)}65%{transform:scale(1.025);filter:brightness(1.35)}100%{transform:scale(1);filter:brightness(1)}}
 .duo-fail-overlay{position:absolute;inset:0;z-index:31;display:none;align-items:center;justify-content:center;overflow:hidden;pointer-events:none;background:rgba(12,0,13,.82);backdrop-filter:grayscale(.55) blur(2px)}
 .duo-fail-overlay.show{display:flex;animation:duoFailIn .25s ease-out both}
 .duo-fail-badge{position:relative;z-index:2;width:98%;height:auto;max-height:82%;object-fit:contain;filter:drop-shadow(0 0 14px #ff263c) drop-shadow(0 0 28px #00bfff);animation:duoFailImpact .5s cubic-bezier(.2,1.5,.4,1) both}
@@ -159,7 +167,7 @@ body{overflow-x:hidden}
       <p class="duo-id-caption">YOUR CODE. YOUR IDENTITY.</p>
     </section>
     <div id="duoMessage" class="duo-message" role="status" aria-live="polite"></div>
-    <div id="duoSuccessOverlay" class="duo-success-overlay" aria-hidden="true"><div class="duo-success-emblem"><img class="duo-success-badge" src="./assets/duo-connected-badge.webp" alt="Duo Connected"></div></div>
+    <div id="duoSuccessOverlay" class="duo-success-overlay" aria-hidden="true"><div class="duo-success-emblem"><img class="duo-success-badge" src="./assets/duo-connected-badge.webp" alt="Duo Connected"></div><button id="duoRewardNext" class="duo-reward-next" type="button" aria-label="Discover your reward" disabled><img class="duo-reward-muted" src="./assets/discover-your-reward-monochrome.webp" alt="Discover your reward"><img class="duo-reward-color" src="./assets/discover-your-reward.webp" alt=""></button></div>
     <div id="duoFailOverlay" class="duo-fail-overlay" aria-hidden="true"><img class="duo-fail-badge" src="./assets/duo-try-again.webp" alt="Try Again — Find Your Duo Again"></div>
     <audio id="duoLoseSound" preload="auto" src="./assets/duo-try-again-lose.mp3"></audio>
     <audio id="duoJackpotSound" preload="auto" src="./assets/duo-connected-jackpot.mp3"></audio>
@@ -187,12 +195,12 @@ body{overflow-x:hidden}
   const failOverlay=document.getElementById('duoFailOverlay');
   const loseSound=document.getElementById('duoLoseSound');
   const jackpotSound=document.getElementById('duoJackpotSound');
-  let successOverlayTimer=0,failOverlayTimer=0;
+  let successOverlayTimer=0,failOverlayTimer=0;\n  const rewardNext=document.getElementById('duoRewardNext');
   let stream=null, detector=null, raf=0, busy=false, locked=false, jsqrLoading=false;
   let ownCode='', lastRaw='', lastAt=0, scannedCode='';
 
   function setMessage(text,type=''){message.textContent=text||'';message.className='duo-message'+(type?' '+type:'');}
-  function showDuoSuccess(){clearTimeout(successOverlayTimer);clearTimeout(failOverlayTimer);failOverlay.classList.remove('show');failOverlay.setAttribute('aria-hidden','true');message.textContent='';message.className='duo-message';successOverlay.classList.add('show');successOverlay.setAttribute('aria-hidden','false');try{jackpotSound.currentTime=0;const play=jackpotSound.play();if(play?.catch)play.catch(()=>{});}catch{}successOverlayTimer=setTimeout(()=>{successOverlay.classList.remove('show');successOverlay.setAttribute('aria-hidden','true');},7800);}
+  function showDuoSuccess(){clearTimeout(successOverlayTimer);clearTimeout(failOverlayTimer);failOverlay.classList.remove('show');failOverlay.setAttribute('aria-hidden','true');message.textContent='';message.className='duo-message';rewardNext.disabled=true;rewardNext.classList.remove('is-ready');successOverlay.classList.add('show');successOverlay.setAttribute('aria-hidden','false');let advanced=false;const enableReward=()=>{if(advanced)return;advanced=true;rewardNext.disabled=false;rewardNext.classList.add('is-ready');};jackpotSound.onended=enableReward;try{jackpotSound.currentTime=0;const play=jackpotSound.play();if(play?.catch)play.catch(()=>{enableReward();});}catch{enableReward();}successOverlayTimer=setTimeout(()=>{if(!advanced)enableReward();},9000);}
   function showDuoFailure(){clearTimeout(failOverlayTimer);clearTimeout(successOverlayTimer);successOverlay.classList.remove('show');successOverlay.setAttribute('aria-hidden','true');message.textContent='';message.className='duo-message';failOverlay.classList.add('show');failOverlay.setAttribute('aria-hidden','false');try{loseSound.currentTime=0;const play=loseSound.play();if(play?.catch)play.catch(()=>{});}catch{}failOverlayTimer=setTimeout(()=>{failOverlay.classList.remove('show');failOverlay.setAttribute('aria-hidden','true');},6200);}
   function setStatus(text,progress=null){statusMessage.textContent=text;if(progress!==null)statusFill.style.width=Math.max(0,Math.min(100,progress))+'%';}
   let progressAudio=null,progressFrame=0;
@@ -298,6 +306,7 @@ body{overflow-x:hidden}
   }
   startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
   connect.addEventListener('click',connectScannedPlayer);
+  rewardNext.addEventListener('click',()=>{if(rewardNext.disabled)return;window.location.href='./reveal-barameel-box.html';});
   window.addEventListener('pagehide',stopCamera);
   renderIdentity();
   if(!ownCode&&typeof BR.syncPlayer==='function'){
