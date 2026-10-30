@@ -85,7 +85,7 @@ body{overflow-x:hidden}
 .duo-player-panel{display:contents}
 .duo-player-heading,.duo-id-caption{display:none!important}
 .duo-qr-frame{position:absolute;left:14.08%;top:74.32%;width:30.74%;height:15.96%;box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:hidden;display:grid;place-items:center}
-#playerQr{width:100%;height:100%;display:grid;place-items:center;background:transparent}
+#playerQr{width:auto;height:100%;max-width:100%;aspect-ratio:1;display:grid;place-items:center;background:transparent}
 #playerQr canvas,#playerQr img{width:100%!important;height:100%!important;object-fit:contain}
 .duo-player-name{position:absolute;left:54.49%;width:30.86%;right:auto;top:77.12%;min-height:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;font-family:Arial,sans-serif;font-weight:800;font-size:clamp(10px,2.8vw,14px);line-height:1.2;color:#fff;text-shadow:0 1px 3px #00102f}
 .duo-player-code{position:absolute;left:54.62%;width:30.61%;right:auto;top:84.87%;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;font-family:monospace;font-size:clamp(9px,2.55vw,12px);letter-spacing:1px;line-height:1.2;color:#ffdb22;text-shadow:0 1px 3px #00102f}
@@ -259,9 +259,9 @@ body{overflow-x:hidden}
     locked=true;connect.disabled=true;setMessage('CHECKING DUO COMPATIBILITY…');setStatus('CHECKING PLAYER…',45);
     const key='duo-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
     let result;try{result=await BR.duoLink(scannedCode,key);}catch(error){result={ok:false,message:'Could not connect right now. Please try again.'};}
-    if(!result?.ok){setStatus('CONNECTION FAILED',0);animateProgress(0,false,650);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
-    if(result.discovered){setStatus('PARTNER DISCOVERED!',100);animateProgress(100,true,1250);const reward=result.reward;setMessage('DUO DISCOVERED! '+(reward?.reward_label?'YOUR REWARD: '+reward.reward_label:'Your reward is pending final redemption.'),'success');BR.play('reward');BR.haptic('reward');BR.flash();}
-    else{setStatus('NO DISCOVERY THIS TIME',0);animateProgress(0,false,900);setMessage('NO DUO MATCH THIS TIME. SCAN ANOTHER PLAYER AND TRY AGAIN.','error');BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
+    if(!result?.ok){setStatus('CONNECTION FAILED',45);animateProgress(0,false,650);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
+    if(result.discovered){setStatus('PARTNER DISCOVERED!');animateProgress(100,true,1250);const reward=result.reward;setMessage('DUO DISCOVERED! '+(reward?.reward_label?'YOUR REWARD: '+reward.reward_label:'Your reward is pending final redemption.'),'success');BR.play('reward');BR.haptic('reward');BR.flash();}
+    else{setStatus('NO DISCOVERY THIS TIME',45);animateProgress(0,false,900);setMessage('NO DUO MATCH THIS TIME. SCAN ANOTHER PLAYER AND TRY AGAIN.','error');BR.play('error');BR.haptic('error');scannedCode='';locked=false;}
   }
   startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
   connect.addEventListener('click',connectScannedPlayer);
