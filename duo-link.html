@@ -256,7 +256,7 @@ body{overflow-x:hidden}
   }
   async function connectScannedPlayer(){
     if(!scannedCode||locked)return;
-    locked=true;connect.disabled=true;setMessage('CHECKING DUO COMPATIBILITY…');setStatus('CHECKING PLAYER…',45);
+    locked=true;connect.disabled=true;setMessage('CHECKING DUO COMPATIBILITY…');setStatus('CHECKING PLAYER…',45);BR.play('confirm');BR.haptic('confirm');progressTone(45,true);
     const key='duo-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
     let result;try{result=await BR.duoLink(scannedCode,key);}catch(error){result={ok:false,message:'Could not connect right now. Please try again.'};}
     if(!result?.ok){setStatus('CONNECTION FAILED',45);animateProgress(0,false,650);setMessage(result?.message||'Could not connect right now. Please try again.','error');scannedCode='';locked=false;return;}
