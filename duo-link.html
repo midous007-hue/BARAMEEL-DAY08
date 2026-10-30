@@ -195,7 +195,8 @@ body{overflow-x:hidden}
   const failOverlay=document.getElementById('duoFailOverlay');
   const loseSound=document.getElementById('duoLoseSound');
   const jackpotSound=document.getElementById('duoJackpotSound');
-  let successOverlayTimer=0,failOverlayTimer=0;\n  const rewardNext=document.getElementById('duoRewardNext');
+  let successOverlayTimer=0,failOverlayTimer=0;
+  const rewardNext=document.getElementById('duoRewardNext');
   let stream=null, detector=null, raf=0, busy=false, locked=false, jsqrLoading=false;
   let ownCode='', lastRaw='', lastAt=0, scannedCode='';
 
