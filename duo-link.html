@@ -315,7 +315,7 @@ body{overflow-x:hidden}
   }
   startScan.addEventListener('click',()=>{if(stream){stopCamera();setStatus('READY TO SCAN',0);return;}scannedCode='';connect.disabled=true;connect.classList.remove('is-ready');setStatus('READY TO SCAN',0);BR.play('scan');BR.haptic('scan');startCamera();});
   connect.addEventListener('click',connectScannedPlayer);
-  rewardNext.addEventListener('click',()=>{if(rewardNext.disabled)return;window.location.href='./reveal-barameel-box.html';});
+  rewardNext.addEventListener('click',()=>{if(rewardNext.disabled)return;window.location.href='./duo-reward.html';});
   window.addEventListener('pagehide',stopCamera);
   renderIdentity();
   if(!ownCode&&typeof BR.syncPlayer==='function'){
