@@ -3,7 +3,7 @@
    ONE printed QR = BARAMEEL-UNIVERSAL.
 */
 (() => {
-  const VERSION = '20261027-piece-key-fix-6';
+  const VERSION = '20261030-core-js-parse-fix-1';
   const STORAGE = 'barameel.world.player.v23.7';
   const API_BASE = String(window.BARAMEEL_API_BASE || '').replace(/\/$/, '');
   const SUPABASE_URL = String(window.BARAMEEL_SUPABASE_URL || '').replace(/\/$/, '');
@@ -340,7 +340,9 @@
     if(Array.isArray(r?.checkpoints))mergePlayer({checkpoints:r.checkpoints});
     return r;
   }
-  async function duoLink(otherPlayerCode,idempotencyKey=null){return api('/duo-link',{other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:idempotencyKey||makeId('duo')});}\n  async function duoStatus(){return api('/duo-link',{action:'status'});}\n  async function redeemMaster(qrToken,rewardId,idempotencyKey=null){const r=await api('/redeem-master',{qr_token:String(qrToken||''),reward_id:String(rewardId||''),idempotency_key:idempotencyKey||makeId('redeem')});if(r?.ok&&!r.idempotent){const amount=Number(r.amount||0);if(r.reward_type==='POINTS')patchState({points:Number(state.points||0)+amount,weeklyPoints:Number(state.weeklyPoints||0)+amount});if(r.reward_type==='MARKS')patchState({marks:Number(state.marks||0)+amount});}return r;}
+  async function duoLink(otherPlayerCode,idempotencyKey=null){return api('/duo-link',{other_player_code:String(otherPlayerCode||'').trim(),idempotency_key:idempotencyKey||makeId('duo')});}
+  async function duoStatus(){return api('/duo-link',{action:'status'});}
+  async function redeemMaster(qrToken,rewardId,idempotencyKey=null){const r=await api('/redeem-master',{qr_token:String(qrToken||''),reward_id:String(rewardId||''),idempotency_key:idempotencyKey||makeId('redeem')});if(r?.ok&&!r.idempotent){const amount=Number(r.amount||0);if(r.reward_type==='POINTS')patchState({points:Number(state.points||0)+amount,weeklyPoints:Number(state.weeklyPoints||0)+amount});if(r.reward_type==='MARKS')patchState({marks:Number(state.marks||0)+amount});}return r;}
   async function fetchCollection(id='collection01'){
     const key='barameel.collection.'+id+'.v23.3';
     try{const c=sessionStorage.getItem(key);if(c)return JSON.parse(c);}catch{}
