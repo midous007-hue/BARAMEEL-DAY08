@@ -81,3 +81,17 @@ UNIFIED REGISTRATION SCREEN
 ---------------------------
 assets/barameel-registration-screen.webp
 assets/verify-create-profile-button.webp
+
+
+BARAMEEL MENU
+-------------
+assets/barameel-menu/01-menu-categories.webp
+assets/barameel-menu/02-v-fries-family.webp
+assets/barameel-menu/03-nano-volt-product.webp
+assets/barameel-menu/04-nano-volt-anatomy.webp
+assets/barameel-menu/menu-assets.js
+barameel-menu.css
+barameel-menu.js
+menu.html
+menu-family.html
+nano-volt.html
