@@ -1,0 +1,23 @@
+/* BARAMEEL MENU — premium retro arcade interaction layer.
+   Artwork remains supplied by the approved image files; UI layers provide real navigation.
+*/
+:root{--bm-teal:#0e2a3d;--bm-yellow:#f0c830;--bm-orange:#c2571a;--bm-cream:#f5e9dc;--bm-red:#bd281b;--bm-glow:rgba(240,200,48,.72)}
+.bm-menu-page{position:fixed;inset:0;overflow:hidden;background:var(--bm-teal);color:var(--bm-cream);font-family:inherit;isolation:isolate}
+.bm-menu-stage{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;background:var(--bm-teal);user-select:none;-webkit-user-drag:none}
+.bm-menu-hotspot{position:absolute;display:block;border:0;background:transparent;border-radius:18px;cursor:pointer;touch-action:manipulation;outline:none;-webkit-tap-highlight-color:transparent}
+.bm-menu-hotspot:focus-visible{outline:2px solid var(--bm-cream);outline-offset:3px}
+.bm-menu-hotspot::after{content:"";position:absolute;inset:-3px;border-radius:inherit;opacity:0;pointer-events:none;transition:opacity .16s ease,filter .16s ease;box-shadow:0 0 0 2px rgba(245,233,220,.92),0 0 12px 4px rgba(240,200,48,.82),0 0 28px 10px rgba(194,87,26,.36);}
+.bm-menu-hotspot:active::after,.bm-menu-hotspot.is-selected::after{opacity:1;animation:bm-hotspot-pulse .42s ease-out}
+.bm-menu-hotspot:active{filter:brightness(1.2)}
+.bm-menu-page.is-transitioning .bm-menu-stage{animation:bm-screen-enter .28s ease-out both}
+.bm-menu-flash{position:absolute;inset:0;z-index:50;pointer-events:none;background:radial-gradient(ellipse at center,rgba(255,232,160,.48),rgba(240,200,48,.16) 30%,transparent 68%);opacity:0}
+.bm-menu-flash.on{animation:bm-flash .32s ease-out}
+.bm-menu-anatomy{position:absolute;inset:0;z-index:40;display:grid;place-items:center;background:rgba(2,11,17,.96);opacity:0;visibility:hidden;transition:opacity .24s ease,visibility .24s}
+.bm-menu-anatomy.is-open{opacity:1;visibility:visible}
+.bm-menu-anatomy img{width:100%;height:100%;object-fit:contain;max-width:100vw;max-height:100dvh;cursor:zoom-out}
+.bm-menu-anatomy-close{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;z-index:2;width:46px;height:46px;border-radius:50%;border:2px solid var(--bm-cream);background:rgba(14,42,61,.88);color:var(--bm-cream);font-size:25px;box-shadow:0 0 16px rgba(240,200,48,.5)}
+.bm-menu-live{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@keyframes bm-hotspot-pulse{0%{transform:scale(.985);filter:brightness(1.4)}60%{transform:scale(1.018)}100%{transform:scale(1)}}
+@keyframes bm-flash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+@keyframes bm-screen-enter{0%{transform:scale(1.012);filter:brightness(1.28)}100%{transform:scale(1);filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){.bm-menu-page *{animation:none!important;transition:none!important}}
