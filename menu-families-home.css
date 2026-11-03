@@ -1,14 +1,14 @@
-/* BARAMEEL menu — exact artwork coordinates transcribed from the approved tldraw composition. */
+/* BARAMEEL menu — exact tldraw frame and child-shape geometry. */
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#061c27}
 body{overflow-x:hidden}
-.bm-families-home{width:100%;min-height:100svh;display:flex;justify-content:center;align-items:flex-start;overflow-x:hidden;background:#061c27}
-.bm-menu-artboard{position:relative;flex:none;width:min(100vw,66.6667svh);aspect-ratio:6903.417452626557/10355.126178939834;overflow:hidden;isolation:isolate;background:#062532}
-.bm-artwork-background{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:-1}
+.bm-families-home{width:100%;min-height:100svh;display:flex;justify-content:center;align-items:center;overflow:hidden;background:#061c27}
+.bm-menu-artboard{position:relative;flex:none;width:min(100vw,69.055svh);aspect-ratio:7700.741569763026/11152.450296076302;overflow:hidden;isolation:isolate;background:#061c27}
+.bm-artwork-background{position:absolute;left:5.1769%;top:3.5747%;width:89.6461%;height:92.8507%;display:block;object-fit:fill;z-index:-1}
 .bm-artwork-logo,.bm-artwork-menu,.bm-artwork-banner{position:absolute;display:block;object-fit:fill}
-.bm-artwork-logo{left:1.6095%;top:.3907%;width:43.487%;height:14.4957%}
-.bm-artwork-menu{left:57.2705%;top:1.7207%;width:42.434%;height:11.6869%}
-.bm-artwork-banner{left:8.1354%;top:12.0674%;width:84.2587%;height:18.7241%}
+.bm-artwork-logo{left:6.6198%;top:3.9375%;width:38.9845%;height:13.4593%}
+.bm-artwork-menu{left:56.5177%;top:5.1724%;width:38.0404%;height:10.8514%}
+.bm-artwork-banner{left:12.47%;top:14.7793%;width:75.5346%;height:17.3855%}
 .bm-artwork-hotspots{position:absolute;inset:0}
 .bm-artwork-card{position:absolute;display:block;margin:0;padding:0;overflow:hidden;line-height:0;text-decoration:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .bm-artwork-card img{display:block;width:100%;height:100%;object-fit:fill}
