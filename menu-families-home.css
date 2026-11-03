@@ -1,14 +1,14 @@
-/* BARAMEEL menu — preserve the approved artwork proportions and cover the viewport (crop edges, never stretch). */
+/* BARAMEEL menu — size the actual artwork bounds, not the larger tldraw frame. Preserve all original proportions and positions. */
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;min-height:100%;margin:0;padding:0;background:#061c27}
 body{display:block!important;min-height:100dvh;overflow:hidden}
 .bm-families-home{position:fixed;inset:0;width:100vw;height:100dvh;min-height:0;margin:0;padding:0;display:flex;justify-content:center;align-items:center;overflow:hidden;background:#061c27}
-.bm-menu-artboard{position:relative;display:block;flex:none;width:max(100vw,calc(100dvh * 0.6904977261));height:max(100dvh,calc(100vw / 0.6904977261));max-width:none;max-height:none;aspect-ratio:0.6904977261;overflow:hidden;isolation:isolate;background:#061c27}
-.bm-artwork-background{position:absolute;left:5.1769%;top:3.5747%;width:89.6461%;height:92.8507%;max-width:none;max-height:none;display:block;object-fit:fill;z-index:-1}
+.bm-menu-artboard{position:relative;display:block;flex:none;width:min(100vw,calc(100dvh * .6666667));height:min(100dvh,calc(100vw / .6666667));max-width:100vw;max-height:100dvh;aspect-ratio:2/3;overflow:hidden;isolation:isolate;background:#061c27}
+.bm-artwork-background{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;max-height:none;display:block;object-fit:fill;z-index:-1}
 .bm-artwork-logo,.bm-artwork-menu,.bm-artwork-banner{position:absolute;display:block;max-width:none;max-height:none;object-fit:fill}
-.bm-artwork-logo{left:6.6198%;top:3.9375%;width:38.9845%;height:13.4593%}
-.bm-artwork-menu{left:56.5177%;top:5.1724%;width:38.0404%;height:10.8514%}
-.bm-artwork-banner{left:12.47%;top:14.7793%;width:75.5346%;height:17.3855%}
+.bm-artwork-logo{left:1.6096%;top:.3907%;width:43.4871%;height:14.4956%}
+.bm-artwork-menu{left:57.2705%;top:1.7207%;width:42.434%;height:11.6869%}
+.bm-artwork-banner{left:8.1354%;top:12.0673%;width:84.2587%;height:18.7241%}
 .bm-artwork-hotspots{position:absolute;inset:0;width:100%;height:100%}
 .bm-artwork-card{position:absolute;display:block;margin:0;padding:0;overflow:hidden;line-height:0;text-decoration:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .bm-artwork-card img{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:fill}
