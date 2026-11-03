@@ -1,6 +1,6 @@
 /* Canonical asset references for the BARAMEEL menu-families home screen. */
 (() => {
-  const base = './assets/الشاشة الرئيسية للعائلات/';
+  const base = './assets/menu-families-home/';
   window.BARAMEEL_MENU_FAMILIES_ASSETS = Object.freeze({
     background: base + 'Vintage Teal Retro Wave Background.webp',
     crown: base + 'Barameel Neon Crown Logo.webp',
