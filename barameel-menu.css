@@ -21,3 +21,12 @@
 @keyframes bm-flash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
 @keyframes bm-screen-enter{0%{transform:scale(1.012);filter:brightness(1.28)}100%{transform:scale(1);filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){.bm-menu-page *{animation:none!important;transition:none!important}}
+
+
+/* V FRIES family screen — exact 2:3 artwork bounds from the approved tldraw frame. */
+.bm-menu-page[data-screen="family"]{display:flex;align-items:center;justify-content:center;padding:0;background:#0e2a3d}
+.bm-family-artboard{position:relative;flex:none;width:min(100vw,calc(100dvh * 0.6666667));height:min(100dvh,calc(100vw * 1.5));max-width:100vw;max-height:100dvh;aspect-ratio:2/3;overflow:hidden;isolation:isolate;background:#0e2a3d}
+.bm-family-artboard .bm-menu-stage{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:fill;object-position:center;user-select:none;-webkit-user-drag:none}
+.bm-family-artboard .bm-menu-hotspot{border-radius:0}
+.bm-family-artboard .bm-menu-hotspot::after{border-radius:inherit}
+.bm-family-artboard .bm-menu-flash{position:absolute;inset:0;z-index:50;pointer-events:none}
