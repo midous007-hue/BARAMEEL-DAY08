@@ -1,21 +1,30 @@
-BARAMEEL MENU FAMILIES HOME — ASSET DROP LOCATION
+BARAMEEL — MENU FAMILIES HOME ASSETS
 
-Place the 13 original WebP files from the supplied archive in this folder.
-Keep every filename exactly as shown below (including spaces and capitalization).
-Do not convert, rename, recompress, or change the extension.
+UPLOAD LOCATION (exact):
+assets/menu-families-home/
 
-Barameel Neon Crown Logo.webp
-Fries Vintage Badge Logo.webp
-Glossy Baked Fills Logo.webp
-Glossy Drinks Badge Sticker.webp
-Glossy Retro Crunchers Badge.webp
-Glossy Retro Drinks Sign Logo.webp
-Glossy Retro Ice Cream Badge.webp
-Grilled Rolls Flame Badge.webp
-Retro 3D Menu Category Banner.webp
-Retro Fried Burgers Logo Badge.webp
-Vibrant Retro R Wraps Badge.webp
-Vintage Glossy MENU Badge.webp
-Vintage Teal Retro Wave Background.webp
+Upload the 12 WebP images from the prepared BARAMEEL-clean-development-menu-assets.zip into this folder.
+Use the canonical filenames below exactly. The filenames are case-sensitive and must not be changed.
 
-The correct extension is .webp for all 13 assets.
+1. barameel-neon-crown-logo.webp
+2. menu-category-banner.webp
+3. menu-screen-background.webp
+4. menu-category-fries.webp
+5. menu-category-ice-cream.webp
+6. menu-category-drinks.webp
+7. menu-category-fried-burgers.webp
+8. menu-category-wraps.webp
+9. menu-category-grilled-rolls.webp
+10. menu-category-baked-fills.webp
+11. menu-category-retro-crunchers.webp
+12. menu-badge-menu.webp
+
+FORMAT:
+- All 12 files must remain .webp.
+- Do not upload PNG/JPG versions under these names.
+- Do not put product/family detail artwork in this folder.
+- The existing menu-category-retro-drinks.webp is a legacy compatibility asset; leave it unchanged unless the screen code is deliberately updated.
+
+SCREEN SCOPE:
+This folder is loaded by the Menu Families Home screen only.
+The V Fries family, product detail, and anatomy artwork belong in assets/barameel-menu/ and use the filenames documented there.
