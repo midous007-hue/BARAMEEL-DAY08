@@ -1,10 +1,9 @@
-/* BARAMEEL MENU — canonical static asset paths. */
+/* BARAMEEL — menu artwork paths. */
 (() => {
-  const base = './assets/barameel-menu/';
+  const root = './assets/menu-families/fries/';
   window.BARAMEEL_MENU_ASSETS = Object.freeze({
-    categories: base + '01-menu-categories.webp',
-    vFriesFamily: base + '02-v-fries-family.webp',
-    nanoVoltProduct: base + '03-nano-volt-product.webp',
-    nanoVoltAnatomy: base + '04-nano-volt-anatomy.webp'
+    vFriesFamily: root + 'family-screen/v-fries-family.webp',
+    nanoVoltProduct: root + 'products/nano-volt/product-screen.webp',
+    nanoVoltAnatomy: root + 'products/nano-volt/anatomy.webp'
   });
 })();
